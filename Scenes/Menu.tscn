@@ -1,0 +1,141 @@
+[gd_scene load_steps=5 format=3 uid="uid://e1m1ngajve62"]
+
+[ext_resource type="Script" path="res://Scripts/Menu.cs" id="1_nvb0i"]
+[ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="2_afw1a"]
+[ext_resource type="Texture2D" uid="uid://7fv32lw2tawt" path="res://Imports/Logos/Designer (5).jpeg" id="3_406t5"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ydy06"]
+font = ExtResource("2_afw1a")
+font_size = 100
+outline_color = Color(0, 0, 0, 1)
+
+[node name="MainMenu" type="Control"]
+process_mode = 3
+custom_minimum_size = Vector2(1920, 1080)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+script = ExtResource("1_nvb0i")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 686.0
+offset_bottom = 121.0
+theme_override_fonts/font = ExtResource("2_afw1a")
+text = "IGNITION"
+label_settings = SubResource("LabelSettings_ydy06")
+vertical_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_right = 666.0
+offset_bottom = 1012.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "PLAY"
+alignment = 0
+icon_alignment = 1
+
+[node name="Space" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="OptionsButton" type="Button" parent="PanelContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+text = "OPTIONS"
+alignment = 0
+icon_alignment = 1
+
+[node name="Space5" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ControlsButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+text = "CONTROLS"
+alignment = 0
+
+[node name="Space3" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="GraphicsButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+text = "GRAPHICS"
+alignment = 0
+icon_alignment = 1
+
+[node name="Space4" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="AudioButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+text = "AUDIO"
+alignment = 0
+icon_alignment = 1
+
+[node name="Control3" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Control4" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ExitButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 50
+text = "EXIT"
+alignment = 0
+
+[node name="TextureRect" type="TextureRect" parent="."]
+show_behind_parent = true
+layout_mode = 0
+offset_right = 2560.0
+offset_bottom = 1440.0
+scale = Vector2(0.75, 0.75)
+mouse_filter = 2
+texture = ExtResource("3_406t5")
+
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/PlayButton" to="." method="_on_play_button_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/PlayButton" to="PanelContainer/VBoxContainer/PlayButton" method="_on_pressed"]
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/OptionsButton" to="." method="_on_options_button_mouse_entered"]
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/ControlsButton" to="." method="_on_controls_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/ControlsButton" to="." method="_on_controls_pressed"]
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/GraphicsButton" to="." method="_on_graphics_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/GraphicsButton" to="." method="_on_graphics_pressed"]
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/AudioButton" to="." method="_on_audio_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/AudioButton" to="." method="_on_audio_pressed"]
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/ExitButton" to="." method="_on_exit_button_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]

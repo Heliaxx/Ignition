@@ -1,0 +1,148 @@
+[gd_scene load_steps=15 format=3 uid="uid://d3mqn4lo1yhif"]
+
+[ext_resource type="Script" path="res://Scripts/Level.cs" id="1_dxspx"]
+[ext_resource type="Shader" path="res://SpaceShader.gdshader" id="2_30e73"]
+[ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="2_68634"]
+[ext_resource type="PackedScene" uid="uid://ddgevdqt1br2k" path="res://Scenes/station4.tscn" id="6_iyb8r"]
+[ext_resource type="PackedScene" uid="uid://wn0gyopklyqd" path="res://Scenes/fighter.tscn" id="7_rw0bt"]
+[ext_resource type="PackedScene" uid="uid://dmy55noj8bktd" path="res://Scenes/PauseMenu.tscn" id="9_2dgjq"]
+[ext_resource type="Script" path="res://Scripts/ProceduralAsteroids.cs" id="10_cltcu"]
+[ext_resource type="PackedScene" uid="uid://2ioulklqarom" path="res://Scenes/asteroid.tscn" id="11_147hu"]
+[ext_resource type="PackedScene" uid="uid://p8bmcn3ds03m" path="res://Scenes/fps_meter.tscn" id="11_yujfc"]
+[ext_resource type="PackedScene" uid="uid://drknsoaeuoqqh" path="res://Scenes/kaito.tscn" id="12_hva0j"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
+shader = ExtResource("2_30e73")
+shader_parameter/sun_pos = Vector3(2000, 0, 1000)
+shader_parameter/sky_tex = ExtResource("2_68634")
+
+[sub_resource type="Sky" id="Sky_w7017"]
+sky_material = SubResource("ShaderMaterial_7645s")
+
+[sub_resource type="Environment" id="Environment_r05y7"]
+background_mode = 2
+sky = SubResource("Sky_w7017")
+sky_rotation = Vector3(0, 3.14159, 0)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.15
+reflected_light_source = 1
+tonemap_mode = 2
+ssao_intensity = 16.0
+ssao_detail = 5.0
+ssao_sharpness = 0.0
+glow_levels/1 = 7.1
+glow_levels/2 = 7.35
+glow_levels/3 = 6.45
+glow_levels/4 = 6.69
+glow_levels/5 = 2.85
+glow_levels/7 = 6.85
+glow_normalized = true
+glow_mix = 0.113
+glow_hdr_luminance_cap = 41.19
+fog_light_color = Color(0.337255, 0.584314, 0.72549, 1)
+fog_light_energy = 3.2
+fog_sun_scatter = 0.45
+fog_density = 0.0
+fog_aerial_perspective = 0.19
+fog_sky_affect = 0.0
+volumetric_fog_density = 0.0
+volumetric_fog_anisotropy = -0.9
+volumetric_fog_temporal_reprojection_enabled = false
+volumetric_fog_temporal_reprojection_amount = 0.5
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_qi7iq"]
+
+[node name="Level" type="Node3D"]
+script = ExtResource("1_dxspx")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_r05y7")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_qi7iq")
+
+[node name="Station" parent="NavigationRegion3D" instance=ExtResource("6_iyb8r")]
+
+[node name="Kaito MCS-71" parent="NavigationRegion3D" instance=ExtResource("12_hva0j")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 500)
+
+[node name="Fighter_01" parent="NavigationRegion3D" instance=ExtResource("7_rw0bt")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.573577, 0, -0.819152, 0, 1, 0, 0.819152, 0, -0.573577, 0, 0, -20)
+light_bake_mode = 0
+sky_mode = 1
+
+[node name="FPSMeter" parent="." instance=ExtResource("11_yujfc")]
+mouse_filter = 2
+
+[node name="Scenery" type="Node3D" parent="."]
+visible = false
+
+[node name="asteroid2" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 38.0172, -50.0941, -71.1941)
+
+[node name="asteroid3" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 71.4904, -21.2069, -11.6517)
+
+[node name="asteroid4" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 64.2297, 41.9596, -14.724)
+
+[node name="asteroid5" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, -46.1415, 54.6674, -15.9132)
+
+[node name="asteroid6" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, -76.7266, 0, -1.11131)
+
+[node name="asteroid7" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, -62.3936, 0, 48.2019)
+
+[node name="asteroid8" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, -20.6009, -23.62, 8.61588)
+
+[node name="asteroid9" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, -6.01012, -34.9503, 51.5395)
+
+[node name="asteroid10" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, -3.62988, 39.8916, -20.3207)
+
+[node name="asteroid11" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, -44.6608, -19.0742, -20.1784)
+
+[node name="asteroid12" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 56.7836, 0, 37.3431)
+
+[node name="asteroid13" parent="Scenery" instance=ExtResource("11_147hu")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 21.3598, 22.4746, -8.17367)
+
+[node name="SpawnLocations" type="Node3D" parent="."]
+
+[node name="0" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 50)
+
+[node name="1" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 50)
+
+[node name="2" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 50)
+
+[node name="3" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 50)
+
+[node name="4" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 50)
+
+[node name="5" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 50)
+
+[node name="6" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 50)
+
+[node name="7" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 50)
+
+[node name="PauseMenu" parent="." instance=ExtResource("9_2dgjq")]
+
+[node name="ProceduralAsteroids" type="Node3D" parent="."]
+script = ExtResource("10_cltcu")
