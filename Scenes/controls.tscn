@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://b8s0y7ay00fc3"]
 
-[ext_resource type="Script" path="res://Scripts/controls.gd" id="1_krk6f"]
+[ext_resource type="Script" path="res://Scripts/Controls.cs" id="1_fdf8q"]
 [ext_resource type="PackedScene" uid="uid://p3dujtw54uuu" path="res://Scenes/input_button.tscn" id="2_bhnol"]
 [ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="3_oyrkr"]
 
@@ -22,7 +22,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_krk6f")
+script = ExtResource("1_fdf8q")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1

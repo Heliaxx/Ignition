@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AstroArena", "AstroArena.csproj", "{44F6BF5C-3B72-4E17-954F-2BBD60EC450E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AstroArena", "AstroArena.csproj", "{3ECB9F34-26BD-4788-8609-F3AECD7A86D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,11 +9,11 @@ Global
 	ExportRelease|Any CPU = ExportRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{44F6BF5C-3B72-4E17-954F-2BBD60EC450E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44F6BF5C-3B72-4E17-954F-2BBD60EC450E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44F6BF5C-3B72-4E17-954F-2BBD60EC450E}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
-		{44F6BF5C-3B72-4E17-954F-2BBD60EC450E}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
-		{44F6BF5C-3B72-4E17-954F-2BBD60EC450E}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
-		{44F6BF5C-3B72-4E17-954F-2BBD60EC450E}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{3ECB9F34-26BD-4788-8609-F3AECD7A86D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ECB9F34-26BD-4788-8609-F3AECD7A86D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ECB9F34-26BD-4788-8609-F3AECD7A86D0}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{3ECB9F34-26BD-4788-8609-F3AECD7A86D0}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{3ECB9F34-26BD-4788-8609-F3AECD7A86D0}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{3ECB9F34-26BD-4788-8609-F3AECD7A86D0}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
 	EndGlobalSection
 EndGlobal

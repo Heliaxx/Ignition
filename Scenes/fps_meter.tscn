@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://p8bmcn3ds03m"]
 
-[ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/fonts/Eurostile.ttf" id="1_7w6r2"]
-[ext_resource type="Script" path="res://Scripts/FPSCounter.gd" id="1_be6ps"]
+[ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="1_7w6r2"]
+[ext_resource type="Script" path="res://Scripts/FPSCounter.cs" id="2_sxyjt"]
 
 [node name="FPSMeter" type="Control"]
 layout_mode = 3
@@ -21,4 +21,4 @@ offset_bottom = 23.0
 theme_override_colors/font_color = Color(1, 0.709804, 0.219608, 1)
 theme_override_fonts/font = ExtResource("1_7w6r2")
 theme_override_font_sizes/font_size = 20
-script = ExtResource("1_be6ps")
+script = ExtResource("2_sxyjt")

@@ -4,12 +4,11 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://ca1c1gqh7070t"
-path="res://.godot/imported/Fighter_01.fbx-83399d9d29204448fbe7d0a843e7d7ef.scn"
+valid=false
 
 [deps]
 
 source_file="res://Imports/Spaceships/Fighter_01_Fbx/Fighter_01.fbx"
-dest_files=["res://.godot/imported/Fighter_01.fbx-83399d9d29204448fbe7d0a843e7d7ef.scn"]
 
 [params]
 
