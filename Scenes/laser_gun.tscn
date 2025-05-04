@@ -1,0 +1,102 @@
+[gd_scene load_steps=14 format=3 uid="uid://cknvuo3cv1qx3"]
+
+[ext_resource type="Script" path="res://Scripts/laser_gun.gd" id="1_d84oy"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ed0iw"]
+flip_faces = true
+height = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c1iea"]
+transparency = 1
+albedo_color = Color(0.352941, 0, 0, 0.72549)
+emission_enabled = true
+emission = Color(0.352941, 0, 0, 1)
+emission_energy_multiplier = 16.0
+disable_receive_shadows = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1hh0h"]
+transparency = 1
+albedo_color = Color(0.831373, 0, 0.101961, 1)
+emission_enabled = true
+emission = Color(0.831373, 0, 0.101961, 1)
+emission_energy_multiplier = 16.0
+disable_receive_shadows = true
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Curve" id="Curve_1kv2p"]
+_data = [Vector2(0, 0.3), 0.0, 0.0, 0, 0, Vector2(0.2, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_h4xwn"]
+curve = SubResource("Curve_1kv2p")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_y5b8s"]
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
+direction = Vector3(0, -1, 0)
+spread = 0.0
+initial_velocity_min = 200.0
+initial_velocity_max = 200.0
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_h4xwn")
+collision_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_5d825"]
+size = Vector2(0.2, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ge22x"]
+transparency = 1
+albedo_color = Color(0.54902, 0, 0, 1)
+emission_enabled = true
+emission = Color(0.54902, 0, 0, 1)
+emission_energy_multiplier = 16.0
+disable_receive_shadows = true
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Curve" id="Curve_qg8e8"]
+_data = [Vector2(0, 0.5), 0.0, 0.0, 0, 0, Vector2(0.154167, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_qb0v4"]
+curve = SubResource("Curve_qg8e8")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_cbvfs"]
+spread = 90.0
+initial_velocity_min = 6.0
+initial_velocity_max = 6.0
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_qb0v4")
+
+[sub_resource type="QuadMesh" id="QuadMesh_l0bxy"]
+size = Vector2(0.4, 0.4)
+
+[node name="LaserGun" type="RayCast3D"]
+script = ExtResource("1_d84oy")
+
+[node name="BeamMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_ed0iw")
+surface_material_override/0 = SubResource("StandardMaterial3D_c1iea")
+
+[node name="BeamParticles" type="GPUParticles3D" parent="."]
+material_override = SubResource("StandardMaterial3D_1hh0h")
+emitting = false
+amount = 50
+lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_y5b8s")
+draw_pass_1 = SubResource("QuadMesh_5d825")
+
+[node name="EndParticles" type="GPUParticles3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_ge22x")
+emitting = false
+amount = 25
+lifetime = 0.3
+process_material = SubResource("ParticleProcessMaterial_cbvfs")
+draw_pass_1 = SubResource("QuadMesh_l0bxy")

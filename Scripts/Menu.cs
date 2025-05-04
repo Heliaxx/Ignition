@@ -9,7 +9,7 @@ public partial class Menu : Control
 	private Button playButton;
 	private Button exitButton;
 	
-	private AudioStreamPlayer backgroundMusic;
+	// private AudioStreamPlayer backgroundMusic;
 	private AudioStreamPlayer hoverSound;
 	private AudioStreamPlayer clickSound;
 
@@ -24,20 +24,25 @@ public partial class Menu : Control
 		exitButton = GetNode<Button>("PanelContainer/VBoxContainer/ExitButton");
 
 		// Create and add audio players
-		backgroundMusic = new AudioStreamPlayer();
+		// backgroundMusic = new AudioStreamPlayer();
 		hoverSound = new AudioStreamPlayer();
 		clickSound = new AudioStreamPlayer();
 
-		AddChild(backgroundMusic);
+		// AddChild(backgroundMusic);
 		AddChild(hoverSound);
 		AddChild(clickSound);
 
 		// Load audio files
-		backgroundMusic.Stream = (AudioStream)GD.Load("res://Imports/Sounds/main_menu_2.mp3");
+		// backgroundMusic.Stream = (AudioStream)GD.Load("res://Imports/Sounds/main_menu_2.mp3");
 		hoverSound.Stream = (AudioStream)GD.Load("res://Imports/Sounds/hover_menu_sound.mp3");
 		clickSound.Stream = (AudioStream)GD.Load("res://Imports/Sounds/click_sound_menu2.mp3");
 
-		backgroundMusic.Play(); // Start playing menu music
+		// backgroundMusic.Play(); // Start playing menu music
+
+		var musicManager = GetNode<MusicManager>("/root/MusicManager");
+		var music = GD.Load<AudioStream>("res://Imports/Sounds/main_menu_2.mp3");
+    	if (!musicManager.IsPlaying())
+        	musicManager.PlayMusic(music);
 
 		// Connect button signals
 		playButton.Pressed += OnPlayButtonPressed;

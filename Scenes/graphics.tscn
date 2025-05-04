@@ -1,6 +1,5 @@
-[gd_scene load_steps=12 format=3 uid="uid://bc3usmh68nbe0"]
+[gd_scene load_steps=11 format=3 uid="uid://bc3usmh68nbe0"]
 
-[ext_resource type="Script" path="res://Scripts/graphics.gd" id="1_46613"]
 [ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="2_ii5nb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pcutd"]
@@ -36,7 +35,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_46613")
 
 [node name="Menu" type="HBoxContainer" parent="."]
 layout_mode = 1

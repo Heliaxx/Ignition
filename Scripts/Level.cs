@@ -5,6 +5,8 @@ public partial class Level : Node3D
 {
 	private Node3D player;
 	//private Node3D spawns;
+
+	private MusicManager musicManager;
 	private NavigationRegion3D navigationRegion;
 	private PackedScene enemyShip = (PackedScene)GD.Load("res://Scenes/corvette.tscn"); // Preload enemy ship scene
 	private Node3D instance;
@@ -12,9 +14,12 @@ public partial class Level : Node3D
 	public override void _Ready()
 	{
 		// Get references to nodes
-		player = GetNode<Node3D>("NavigationRegion3D/Kaito MCS-71");
+		player = GetNode<Node3D>("NavigationRegion3D/Player");
 		//spawns = GetNode<Node3D>("Spawns");
 		navigationRegion = GetNode<NavigationRegion3D>("NavigationRegion3D");
+
+		musicManager = GetNode<MusicManager>("/root/MusicManager");
+		musicManager.StopMusic();
 	}
 
 	public override void _PhysicsProcess(double delta)

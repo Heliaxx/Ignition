@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://p3dujtw54uuu"]
 
-[ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://imports/fonts/Eurostile.ttf" id="1_tkuei"]
+[ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="1_tkuei"]
 
 [node name="InputButton" type="Button"]
 custom_minimum_size = Vector2(0, 30)

@@ -38,7 +38,6 @@ public partial class Kaito : CharacterBody3D
 		lightLeft = GetNode<Light3D>("LeftLight");
 		lightRight = GetNode<Light3D>("RightLight");
 		dustParticles = GetNode<Node3D>("dustParticles");
-		
 		bullet = GD.Load<PackedScene>("res://Scenes/bullet.tscn");
 	}
 
@@ -84,7 +83,13 @@ public partial class Kaito : CharacterBody3D
 		angularVelocity += torque * delta;
 		angularVelocity = angularVelocity.LimitLength(MAX_ANGULAR_SPEED);
 
-		MoveAndCollide(Velocity * delta);
+		var collision = MoveAndCollide(Velocity * delta);
+		if (collision != null)
+			{
+    		// Jednoduchý "bounce back" efekt
+    		Velocity = Velocity.Bounce(collision.GetNormal()) * 0.2f;
+		}
+
 		RotateObjectLocal(Vector3.Right, angularVelocity.X * delta);
 		RotateObjectLocal(Vector3.Up, angularVelocity.Y * delta);
 		RotateObjectLocal(Vector3.Back, angularVelocity.Z * delta);

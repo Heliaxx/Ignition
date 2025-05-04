@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://nm72khdxivm4"
-path="res://.godot/imported/watercolor-galaxy-background_23.png-434424affe12e520eb9fbf7a982112a3.ctex"
+uid="uid://dxi6c3tynjkja"
+path="res://.godot/imported/Ignition_logo.png-89954edd125dafa5d588f6606bc885aa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Imports/Logos/watercolor-galaxy-background_23.png"
-dest_files=["res://.godot/imported/watercolor-galaxy-background_23.png-434424affe12e520eb9fbf7a982112a3.ctex"]
+source_file="res://Imports/Logos/Ignition_logo.png"
+dest_files=["res://.godot/imported/Ignition_logo.png-89954edd125dafa5d588f6606bc885aa.ctex"]
 
 [params]
 

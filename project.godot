@@ -12,14 +12,13 @@ config_version=5
 
 config/name="Ignition"
 run/main_scene="res://Scenes/Menu.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
-config/icon="res://Imports/Logos/pixelcut-export.png"
+config/features=PackedStringArray("4.3", "C#", "Forward Plus")
+config/icon="res://Imports/Logos/Ignition_logo.png"
 
 [autoload]
 
-GameManager="*res://Scripts/GameManager.gd"
-GlobalSignals="*res://Scripts/GlobalSignals.gd"
 ConfigFileHandler="*res://Scripts/ConfigFileHandler.cs"
+MusicManager="*res://Scenes/MusicManager.tscn"
 
 [display]
 

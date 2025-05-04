@@ -225,3 +225,4 @@ skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_8pr0y")
 
 [node name="CanvasLayer" parent="." instance=ExtResource("3_qcx3i")]
+layer = 0
