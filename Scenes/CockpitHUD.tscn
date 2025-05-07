@@ -50,7 +50,6 @@ custom_minimum_size = Vector2(150, 40)
 layout_mode = 2
 size_flags_horizontal = 10
 size_flags_vertical = 4
-value = 18.09
 show_percentage = false
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
@@ -65,5 +64,4 @@ custom_minimum_size = Vector2(150, 40)
 layout_mode = 2
 size_flags_horizontal = 10
 size_flags_vertical = 4
-value = 60.0
 show_percentage = false

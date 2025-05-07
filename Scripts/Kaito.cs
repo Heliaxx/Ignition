@@ -25,8 +25,15 @@ public partial class Kaito : CharacterBody3D
 	private Light3D lightLeft;
 	private Light3D lightRight;
 	private Node3D dustParticles;
-	
 	private PackedScene bullet;
+	private CanvasLayer canvasLayer;
+	private ProgressBar speedBar;
+	private ProgressBar healthBar;
+	private HealthComponent health;
+	public float CurrentHealth => health.CurrentHealth;
+	public float MaxHealth => health.MaxHealth;
+
+	public float CurrentSpeed => Velocity.Length();
 
 	public override void _Ready()
 	{
@@ -38,10 +45,28 @@ public partial class Kaito : CharacterBody3D
 		lightLeft = GetNode<Light3D>("LeftLight");
 		lightRight = GetNode<Light3D>("RightLight");
 		dustParticles = GetNode<Node3D>("dustParticles");
+		canvasLayer = GetNode<CanvasLayer>("CanvasLayer");
+		speedBar = canvasLayer.GetNode<ProgressBar>("Panel/MarginContainer/VBoxContainer/HBoxContainer2/SpeedBar");
+    	healthBar = canvasLayer.GetNode<ProgressBar>("Panel/MarginContainer/VBoxContainer/HBoxContainer/HealthBar");
+		health = GetNode<HealthComponent>("HealthComponent");
+		healthBar.MaxValue = health.MaxHealth;
+		healthBar.Value = health.CurrentHealth;
+		health.HealthChanged += OnHealthChanged;
+		health.Died += OnDied;
 		bullet = GD.Load<PackedScene>("res://Scenes/bullet.tscn");
 	}
 
-	public override void _Input(InputEvent @event)
+    private void OnDied()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void OnHealthChanged(float current, float max)
+    {
+        healthBar.Value = current;
+    }
+
+    public override void _Input(InputEvent @event)
 	{
 		if (@event is InputEventMouseMotion mouseEvent)
 		{
@@ -53,6 +78,8 @@ public partial class Kaito : CharacterBody3D
 	public override void _Process(double delta)
 	{
 		ApplyInputs((float)delta);
+		speedBar.MaxValue = MAX_SPEED;
+		speedBar.Value = CurrentSpeed;
 	}
 
 	private void ApplyInputs(float delta)

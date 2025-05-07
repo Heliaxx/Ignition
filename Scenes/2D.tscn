@@ -1,7 +1,8 @@
 [gd_scene load_steps=3 format=3 uid="uid://cojk1jv4p3p0h"]
 
 [ext_resource type="PackedScene" uid="uid://22kh3pwrifff" path="res://Scenes/Background.tscn" id="1_hxnb6"]
-[ext_resource type="PackedScene" uid="uid://d3mqn4lo1yhif" path="res://Scenes/Level.tscn" id="2_su6my"]
+[ext_resource type="PackedScene" uid="uid://d3mqn4lo1yhif" path="res://Scenes/LevelFreeFlight.tscn" id="2_su6my"]
+
 
 [node name="Control" type="Control"]
 layout_mode = 3

@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=4 uid="uid://drknsoaeuoqqh"]
+[gd_scene load_steps=26 format=4 uid="uid://drknsoaeuoqqh"]
 
 [ext_resource type="Script" path="res://Scripts/Kaito.cs" id="1_8p5tm"]
 [ext_resource type="PackedScene" uid="uid://c5r7xilp2j2yt" path="res://Scenes/shakeable_camera.tscn" id="1_ypk4o"]
@@ -11,6 +11,7 @@
 [ext_resource type="AudioStream" uid="uid://csmb15gf7523j" path="res://Imports/Sounds/shooting.mp3" id="6_3f0po"]
 [ext_resource type="AudioStream" uid="uid://bmcmfve3xbpak" path="res://Imports/Sounds/shooting_end.mp3" id="7_op6vm"]
 [ext_resource type="PackedScene" uid="uid://bqttajb6waoy5" path="res://Scenes/dustParticles.tscn" id="8_l46sp"]
+[ext_resource type="Script" path="res://Scripts/HealthComponent.cs" id="12_e2hpg"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ow3ph"]
 points = PackedVector3Array(-5.37973, 0.767429, 3.13164, -7.01603, 0.767429, 2.04045, -7.83483, 0.767429, 3.13164, -7.01603, 1.31308, 2.31349, -7.83483, 1.31308, 3.67739, -4.56094, 1.04025, 2.04045, -6.19788, 1.31308, 3.67739, -6.74299, 0.767429, 3.67739, -4.56094, 0.767429, 2.04045, -5.65245, 1.31308, 2.31349, -7.83483, 1.31308, 3.13164, -7.83483, 0.767429, 3.67739, -4.56094, 1.04025, 2.31349, -7.01603, 1.04025, 2.04045, -5.65245, 1.31308, 3.13164, -6.19788, 1.04025, 3.67739, -4.56094, 0.767429, 2.31349, -5.37973, 1.04025, 3.13164)
@@ -226,3 +227,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_8pr0y")
 
 [node name="CanvasLayer" parent="." instance=ExtResource("3_qcx3i")]
 layer = 0
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("12_e2hpg")

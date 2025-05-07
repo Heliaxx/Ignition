@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://e1m1ngajve62"]
+[gd_scene load_steps=6 format=3 uid="uid://e1m1ngajve62"]
 
 [ext_resource type="Script" path="res://Scripts/Menu.cs" id="1_nvb0i"]
 [ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="2_afw1a"]
 [ext_resource type="Texture2D" uid="uid://7fv32lw2tawt" path="res://Imports/Logos/Designer (5).jpeg" id="3_406t5"]
+[ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="3_nj5k7"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ydy06"]
 font = ExtResource("2_afw1a")
@@ -42,12 +43,52 @@ layout_mode = 2
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="PlayButton" type="Button" parent="PanelContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_nj5k7")
+theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+text = "PLAY"
+
+[node name="PlayButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 mouse_default_cursor_shape = 2
 text = "PLAY"
+alignment = 0
+icon_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="FreeFlyButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "FREE FLIGHT"
+alignment = 0
+icon_alignment = 1
+
+[node name="SkirmishButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "SKIRMISH"
+alignment = 0
+icon_alignment = 1
+
+[node name="WavesButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "WAVES"
 alignment = 0
 icon_alignment = 1
 
@@ -127,9 +168,15 @@ scale = Vector2(0.75, 0.75)
 mouse_filter = 2
 texture = ExtResource("3_406t5")
 
-[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/PlayButton" to="." method="_on_play_button_mouse_entered"]
-[connection signal="pressed" from="PanelContainer/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
-[connection signal="pressed" from="PanelContainer/VBoxContainer/PlayButton" to="PanelContainer/VBoxContainer/PlayButton" method="_on_pressed"]
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/HBoxContainer/PlayButton" to="." method="_on_play_button_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/PlayButton" to="PanelContainer/VBoxContainer/HBoxContainer/PlayButton" method="_on_pressed"]
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/FreeFlyButton" to="." method="_on_free_fly_button_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/FreeFlyButton" to="." method="_on_free_fly_button_pressed"]
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/SkirmishButton" to="." method="_on_skirmish_button_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/SkirmishButton" to="." method="_on_skirmish_button_pressed"]
+[connection signal="mouse_entered" from="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/WavesButton" to="." method="_on_waves_button_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/WavesButton" to="." method="_on_waves_button_pressed"]
 [connection signal="mouse_entered" from="PanelContainer/VBoxContainer/OptionsButton" to="." method="_on_options_button_mouse_entered"]
 [connection signal="mouse_entered" from="PanelContainer/VBoxContainer/ControlsButton" to="." method="_on_controls_mouse_entered"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/ControlsButton" to="." method="_on_controls_pressed"]

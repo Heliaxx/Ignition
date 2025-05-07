@@ -1,19 +1,18 @@
-[gd_scene load_steps=14 format=3 uid="uid://d3mqn4lo1yhif"]
+[gd_scene load_steps=13 format=3 uid="uid://d3mqn4lo1yhif"]
 
-[ext_resource type="Script" path="res://Scripts/Level.cs" id="1_dxspx"]
-[ext_resource type="Shader" path="res://SpaceShader.gdshader" id="2_30e73"]
-[ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="2_68634"]
-[ext_resource type="PackedScene" uid="uid://ddgevdqt1br2k" path="res://Scenes/station4.tscn" id="6_iyb8r"]
-[ext_resource type="PackedScene" uid="uid://wn0gyopklyqd" path="res://Scenes/fighter.tscn" id="7_rw0bt"]
-[ext_resource type="PackedScene" uid="uid://dmy55noj8bktd" path="res://Scenes/PauseMenu.tscn" id="9_2dgjq"]
-[ext_resource type="Script" path="res://Scripts/ProceduralAsteroids.cs" id="10_cltcu"]
-[ext_resource type="PackedScene" uid="uid://p8bmcn3ds03m" path="res://Scenes/fps_meter.tscn" id="11_yujfc"]
-[ext_resource type="PackedScene" uid="uid://drknsoaeuoqqh" path="res://Scenes/kaito.tscn" id="12_hva0j"]
+[ext_resource type="Script" path="res://Scripts/LevelFreeFlight.cs" id="1_xijtb"]
+[ext_resource type="Shader" path="res://SpaceShader.gdshader" id="2_fmvnv"]
+[ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="3_02vup"]
+[ext_resource type="PackedScene" uid="uid://ddgevdqt1br2k" path="res://Scenes/station4.tscn" id="4_d3pwp"]
+[ext_resource type="PackedScene" uid="uid://drknsoaeuoqqh" path="res://Scenes/kaito.tscn" id="5_3qx6a"]
+[ext_resource type="PackedScene" uid="uid://p8bmcn3ds03m" path="res://Scenes/fps_meter.tscn" id="7_6pirs"]
+[ext_resource type="PackedScene" uid="uid://dmy55noj8bktd" path="res://Scenes/PauseMenu.tscn" id="8_63mkt"]
+[ext_resource type="Script" path="res://Scripts/ProceduralAsteroids.cs" id="9_6rtd5"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
-shader = ExtResource("2_30e73")
+shader = ExtResource("2_fmvnv")
 shader_parameter/sun_pos = Vector3(2000, 0, 1000)
-shader_parameter/sky_tex = ExtResource("2_68634")
+shader_parameter/sky_tex = ExtResource("3_02vup")
 
 [sub_resource type="Sky" id="Sky_w7017"]
 sky_material = SubResource("ShaderMaterial_7645s")
@@ -53,7 +52,7 @@ volumetric_fog_temporal_reprojection_amount = 0.5
 [sub_resource type="NavigationMesh" id="NavigationMesh_qi7iq"]
 
 [node name="Level" type="Node3D"]
-script = ExtResource("1_dxspx")
+script = ExtResource("1_xijtb")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_r05y7")
@@ -61,20 +60,17 @@ environment = SubResource("Environment_r05y7")
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_qi7iq")
 
-[node name="Station" parent="NavigationRegion3D" instance=ExtResource("6_iyb8r")]
+[node name="Station" parent="NavigationRegion3D" instance=ExtResource("4_d3pwp")]
 
-[node name="Player" parent="NavigationRegion3D" instance=ExtResource("12_hva0j")]
+[node name="Player" parent="NavigationRegion3D" instance=ExtResource("5_3qx6a")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 500)
-
-[node name="Fighter_01" parent="NavigationRegion3D" instance=ExtResource("7_rw0bt")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.573577, 0, -0.819152, 0, 1, 0, 0.819152, 0, -0.573577, 0, 0, -20)
 light_bake_mode = 0
 sky_mode = 1
 
-[node name="FPSMeter" parent="." instance=ExtResource("11_yujfc")]
+[node name="FPSMeter" parent="." instance=ExtResource("7_6pirs")]
 mouse_filter = 2
 
 [node name="Scenery" type="Node3D" parent="."]
@@ -105,7 +101,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 50)
 [node name="7" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 50)
 
-[node name="PauseMenu" parent="." instance=ExtResource("9_2dgjq")]
+[node name="PauseMenu" parent="." instance=ExtResource("8_63mkt")]
 
 [node name="ProceduralAsteroids" type="Node3D" parent="."]
-script = ExtResource("10_cltcu")
+script = ExtResource("9_6rtd5")

@@ -1,0 +1,44 @@
+Models/Textures:
+	
+Asteroids
+https://game-piggs.com/models/
+
+Background space textures
+https://www.solarsystemscope.com/textures/
+
+Player Spaceship
+Kaito - Frosnix
+
+Space Station 3 (https://sketchfab.com/3d-models/space-station-3-a7a6ad10261149cab31aa394bfcf8940) by re1monsen (https://sketchfab.com/re1monsen) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+
+Menu Image/Game Icon
+ChatGPT Image Gen
+
+
+
+Fonts:
+Eurostile
+https://font.download/font/eurostile-2
+
+Guides:
+Making a basic finite state machine [Godot 4/C# 🇬🇧 Tutorial] - Mina Pêcheux
+https://www.youtube.com/watch?v=Kcg1SEgDqyk&ab_channel=MinaP%C3%AAcheux
+
+Easy Input Settings Menu | Let's Godot - DashNothing
+https://www.youtube.com/watch?v=ZDPM45cHHlI&list=PLZ5M-iu7scCsZKPMBT-D2KfcNnwb25iPK&ab_channel=DashNothing
+
+Save and Load Settings in Godot 4 with ConfigFile | Let's Godot - DashNothing
+https://www.youtube.com/watch?v=tfqJjDw0o7Y&list=PLZ5M-iu7scCsZKPMBT-D2KfcNnwb25iPK&index=2&ab_channel=DashNothing
+
+Raycast Projectile 3D Bullet Tutorial | FPS Attempt 9 | Godot Engine 4 - KexTex
+https://www.youtube.com/watch?v=Qt3OLcxlIBM&list=PLZ5M-iu7scCsZKPMBT-D2KfcNnwb25iPK&index=3&ab_channel=Kextex
+
+Godot 4: Responsive UI for your games (tutorial) - FencerDevLog
+https://www.youtube.com/watch?v=ALhInfxq4KE&ab_channel=FencerDevLog
+
+Godot 4: Sky shader, part 1/2 - FencerDevLog
+https://www.youtube.com/watch?v=tbpXDWVzVqQ&t=1835s&ab_channel=FencerDevLog
+
+Royalty Free Music from Tunetank.com
+Track: Ambient Panoramas by Alexey Anisimov
+https://tunetank.com/track/5193-ambient-panoramas/

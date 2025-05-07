@@ -1,16 +1,11 @@
 extends RayCast3D
 
-# Source:
-# https://www.youtube.com/watch?v=8QumOFwX9Z0
-# Godot 4: 3D Laser Tutorial
-# by ConnorFoo
 @onready var beam_mesh := $BeamMesh
 @onready var end_particles := $EndParticles
 @onready var beam_particles := $BeamParticles
 
 # Damage per second when the beam is at full radius
 @export var damage_max:float = 20.0
-
 @export var ray_length:float = 400.0
 
 @export var power_on_time:float = 5.0 # Seconds
@@ -40,10 +35,11 @@ enum LaserState {
 
 # Ca I led when the node enters the scene tree for the first tíne.
 func _ready():
-	await get_tree().create_timer(2.0).timeout
-	deactivate(1)
-	await get_tree().create_timer(2.0).timeout
-	activate(1)
+	pass
+	#await get_tree().create_timer(2.0).timeout
+	#deactivate(1)
+	#await get_tree().create_timer(2.0).timeout
+	#activate(1)
 
 
 func _process(delta: float) -> void:
