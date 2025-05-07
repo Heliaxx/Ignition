@@ -1,6 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cknvuo3cv1qx3"]
-
-[ext_resource type="Script" path="res://Scripts/laser_gun.gd" id="1_d84oy"]
+[gd_scene load_steps=13 format=3 uid="uid://cknvuo3cv1qx3"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_ed0iw"]
 flip_faces = true
@@ -78,7 +76,6 @@ scale_curve = SubResource("CurveTexture_qb0v4")
 size = Vector2(0.4, 0.4)
 
 [node name="LaserGun" type="RayCast3D"]
-script = ExtResource("1_d84oy")
 
 [node name="BeamMesh" type="MeshInstance3D" parent="."]
 mesh = SubResource("CylinderMesh_ed0iw")

@@ -73,6 +73,7 @@ visible = false
 
 [node name="Fighter_01" parent="NavigationRegion3D" instance=ExtResource("6_53gw7")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+visible = false
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.573577, 0, -0.819152, 0, 1, 0, 0.819152, 0, -0.573577, 0, 0, -20)

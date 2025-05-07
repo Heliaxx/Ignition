@@ -15,12 +15,12 @@
 [ext_resource type="Texture2D" uid="uid://c8rm68h7jdp8" path="res://Imports/Spaceships/Fighter_01_Blender/textures/textures/Fighter_01_Windows_BaseColor.png" id="12_exv0b"]
 [ext_resource type="Texture2D" uid="uid://6ynnay7p0cc4" path="res://Imports/Spaceships/Fighter_01_Blender/textures/textures/Fighter_01_Windows_Roughness.png" id="13_ut7pb"]
 [ext_resource type="Texture2D" uid="uid://beegv3somhiu4" path="res://Imports/Spaceships/Fighter_01_Blender/textures/textures/Fighter_01_Windows_Normal.png" id="14_jnrc7"]
-[ext_resource type="PackedScene" uid="uid://cknvuo3cv1qx3" path="res://Scenes/laser_gun.tscn" id="16_uxd2i"]
 [ext_resource type="Script" path="res://States/StateMachine.cs" id="17_eoynk"]
 [ext_resource type="Script" path="res://States/Idle.cs" id="18_ludg2"]
 [ext_resource type="Script" path="res://States/Follow.cs" id="19_pnmsy"]
 [ext_resource type="Script" path="res://States/Run.cs" id="20_31jvb"]
 [ext_resource type="Script" path="res://States/ReturnToCenter.cs" id="21_q3xub"]
+[ext_resource type="PackedScene" uid="uid://ddlwyobo7a3il" path="res://Scenes/Laser.tscn" id="22_y1n25"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v2edl"]
 resource_name = "Body"
@@ -190,8 +190,8 @@ skeleton = NodePath("")
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2.6996e-06, 0.136662, 0.00813229)
 shape = SubResource("ConcavePolygonShape3D_dwtfq")
 
-[node name="LaserGun" parent="." instance=ExtResource("16_uxd2i")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.595, -6.93997)
+[node name="Laser" parent="." instance=ExtResource("22_y1n25")]
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, -0.8, -3.4)
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("17_eoynk")

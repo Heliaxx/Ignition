@@ -1,20 +1,17 @@
 Models/Textures:
-	
 Asteroids
 https://game-piggs.com/models/
 
 Background space textures
 https://www.solarsystemscope.com/textures/
 
-Player Spaceship
-Kaito - Frosnix
+Player Spaceship - Frosnix
+Kaito model
 
 Space Station 3 (https://sketchfab.com/3d-models/space-station-3-a7a6ad10261149cab31aa394bfcf8940) by re1monsen (https://sketchfab.com/re1monsen) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 
 Menu Image/Game Icon
 ChatGPT Image Gen
-
-
 
 Fonts:
 Eurostile
@@ -32,6 +29,9 @@ https://www.youtube.com/watch?v=tfqJjDw0o7Y&list=PLZ5M-iu7scCsZKPMBT-D2KfcNnwb25
 
 Raycast Projectile 3D Bullet Tutorial | FPS Attempt 9 | Godot Engine 4 - KexTex
 https://www.youtube.com/watch?v=Qt3OLcxlIBM&list=PLZ5M-iu7scCsZKPMBT-D2KfcNnwb25iPK&index=3&ab_channel=Kextex
+
+How to make a 3D laser in Godot 3.5 - Alenvei
+https://www.youtube.com/watch?v=cXEpJFKgvoQ&ab_channel=Alenvei
 
 Godot 4: Responsive UI for your games (tutorial) - FencerDevLog
 https://www.youtube.com/watch?v=ALhInfxq4KE&ab_channel=FencerDevLog
