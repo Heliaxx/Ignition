@@ -7,7 +7,7 @@ public partial class LevelSkirmish : Node3D
 	private Node3D spawns;
 	private MusicManager musicManager;
 	private NavigationRegion3D navigationRegion;
-	private PackedScene enemyShip = GD.Load<PackedScene>("res://Scenes/Fighter.tscn");
+	private PackedScene enemyShip = GD.Load<PackedScene>("res://Scenes/fighter.tscn");
 
 	public override void _Ready()
 	{
