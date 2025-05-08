@@ -31,7 +31,7 @@ window/vsync/vsync_mode=0
 
 [dotnet]
 
-project/assembly_name="AstroArena"
+project/assembly_name="Ignition"
 
 [editor]
 
