@@ -47,7 +47,7 @@ public partial class Kaito : CharacterBody3D
 		dustParticles = GetNode<Node3D>("dustParticles");
 		canvasLayer = GetNode<CanvasLayer>("CanvasLayer");
 		speedBar = canvasLayer.GetNode<ProgressBar>("Panel/MarginContainer/VBoxContainer/HBoxContainer2/SpeedBar");
-    	healthBar = canvasLayer.GetNode<ProgressBar>("Panel/MarginContainer/VBoxContainer/HBoxContainer/HealthBar");
+		healthBar = canvasLayer.GetNode<ProgressBar>("Panel/MarginContainer/VBoxContainer/HBoxContainer/HealthBar");
 		health = GetNode<HealthComponent>("HealthComponent");
 		healthBar.MaxValue = health.MaxHealth;
 		healthBar.Value = health.CurrentHealth;
@@ -56,17 +56,17 @@ public partial class Kaito : CharacterBody3D
 		bullet = GD.Load<PackedScene>("res://Scenes/bullet.tscn");
 	}
 
-    private void OnDied()
-    {
-        throw new NotImplementedException();
-    }
+	private void OnDied()
+	{
+		throw new NotImplementedException();
+	}
 
-    private void OnHealthChanged(float current, float max)
-    {
-        healthBar.Value = current;
-    }
+	private void OnHealthChanged(float current, float max)
+	{
+		healthBar.Value = current;
+	}
 
-    public override void _Input(InputEvent @event)
+	public override void _Input(InputEvent @event)
 	{
 		if (@event is InputEventMouseMotion mouseEvent)
 		{
@@ -113,8 +113,7 @@ public partial class Kaito : CharacterBody3D
 		var collision = MoveAndCollide(Velocity * delta);
 		if (collision != null)
 			{
-    		// Jednoduchý "bounce back" efekt
-    		Velocity = Velocity.Bounce(collision.GetNormal()) * 0.2f;
+			Velocity = Velocity.Bounce(collision.GetNormal()) * 0.2f;
 		}
 
 		RotateObjectLocal(Vector3.Right, angularVelocity.X * delta);
@@ -148,7 +147,6 @@ public partial class Kaito : CharacterBody3D
 
 		if (Input.IsActionPressed("primary_fire"))
 		{
-			GetNode("TraumaCauser").Call("CauseTrauma");
 			Shoot();
 		}
 

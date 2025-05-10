@@ -1,6 +1,6 @@
 using Godot;
 
-public partial class ShakeableCamera : Area3D // Název třídy odpovídá názvu souboru
+public partial class ShakeableCamera : Area3D
 {
 	[Export] public float TraumaReductionRate { get; set; } = 1.0f;
 	[Export] public float MaxX { get; set; } = 0.0f;
@@ -17,8 +17,7 @@ public partial class ShakeableCamera : Area3D // Název třídy odpovídá názv
 
 	public override void _Ready()
 	{
-		//camera = FindChild("Camera3D") as Camera3D;
-		camera = GetNode<Camera3D>("Camera3D");
+		camera = FindChild("Camera3D") as Camera3D;
 		initialRotation = camera.RotationDegrees;
 		Noise = new FastNoiseLite();
 	}

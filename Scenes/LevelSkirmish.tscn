@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://f8fa15xgmwqp"]
+[gd_scene load_steps=13 format=3 uid="uid://f8fa15xgmwqp"]
 
 [ext_resource type="Script" path="res://Scripts/LevelSkirmish.cs" id="1_mrvn6"]
 [ext_resource type="Shader" path="res://SpaceShader.gdshader" id="2_ak2k7"]
@@ -51,9 +51,6 @@ volumetric_fog_temporal_reprojection_amount = 0.5
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_qi7iq"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_nmcw4"]
-radius = 2026.12
-
 [node name="Level" type="Node3D"]
 script = ExtResource("1_mrvn6")
 
@@ -98,8 +95,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 50)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 50)
 
 [node name="PauseMenu" parent="." instance=ExtResource("8_3dypt")]
-
-[node name="Area3D" type="Area3D" parent="."]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
-shape = SubResource("SphereShape3D_nmcw4")

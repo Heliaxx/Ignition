@@ -17,10 +17,10 @@ public partial class ProceduralAsteroids : Node3D
 	public float AreaDepth = 2000f;
 
 	[Export]
-	public float minScale = 10.0f;
+	public float MinScale = 10.0f;
 
 	[Export]
-	public float maxScale = 30.0f;
+	public float MaxScale = 30.0f;
 	
 	[Export]
 	public bool UseEllipsoidArea = true;
@@ -38,7 +38,6 @@ public partial class ProceduralAsteroids : Node3D
 			var asteroidInstance = (Node3D)prefab.Instantiate();
 			Vector3 spawnOffset;
 			
-			// Náhodná pozice
 			if (UseEllipsoidArea)
 			{
 				Vector3 randomDir;
@@ -67,11 +66,9 @@ public partial class ProceduralAsteroids : Node3D
 			}
 			asteroidInstance.Position = spawnOffset;
 
-			// Náhodná velikost
-			float randomScale = rng.RandfRange(minScale, maxScale);
+			float randomScale = rng.RandfRange(MinScale, MaxScale);
 			asteroidInstance.Scale = new Vector3(randomScale, randomScale, randomScale);
 
-			// Náhodná rotace
 			Vector3 rotation = new Vector3(
 				rng.RandfRange(0f, Mathf.Tau),
 				rng.RandfRange(0f, Mathf.Tau),

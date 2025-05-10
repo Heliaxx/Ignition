@@ -7,9 +7,9 @@ public partial class Menu : Control
 	private Button graphicsButton;
 	private Button audioButton;
 	// private Button playButton;
-	private Button FreeFlyButton;
-	private Button SkirmishButton;
-	private Button WavesButton;
+	private Button freeFlyButton;
+	private Button skirmishButton;
+	private Button wavesButton;
 	private Button exitButton;
 	
 	private AudioStreamPlayer hoverSound;
@@ -18,21 +18,19 @@ public partial class Menu : Control
 	public override void _Ready()
 	{
 		GetTree().Paused = false;
-		// Get button nodes
 		controlsButton = GetNode<Button>("PanelContainer/VBoxContainer/ControlsButton");
 		graphicsButton = GetNode<Button>("PanelContainer/VBoxContainer/GraphicsButton");
 		audioButton = GetNode<Button>("PanelContainer/VBoxContainer/AudioButton");
 		// playButton = GetNode<Button>("PanelContainer/VBoxContainer/PlayButton");
 		exitButton = GetNode<Button>("PanelContainer/VBoxContainer/ExitButton");
-		FreeFlyButton = GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/FreeFlyButton");
-		SkirmishButton = GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/SkirmishButton");
-		WavesButton = GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/WavesButton");
+		freeFlyButton = GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/FreeFlyButton");
+		skirmishButton = GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/SkirmishButton");
+		wavesButton = GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/WavesButton");
 
 		// Create and add audio players
 		hoverSound = new AudioStreamPlayer();
 		clickSound = new AudioStreamPlayer();
 
-		// AddChild(backgroundMusic);
 		AddChild(hoverSound);
 		AddChild(clickSound);
 
@@ -42,14 +40,14 @@ public partial class Menu : Control
 
 		var musicManager = GetNode<MusicManager>("/root/MusicManager");
 		var music = GD.Load<AudioStream>("res://Imports/Sounds/main_menu_2.mp3");
-    	if (!musicManager.IsPlaying())
-        	musicManager.PlayMusic(music);
+		if (!musicManager.IsPlaying())
+			musicManager.PlayMusic(music);
 
 		// Connect button signals
 		// playButton.Pressed += OnPlayButtonPressed;
-		FreeFlyButton.Pressed += OnPlayFreeFlyButtonPressed;
-		SkirmishButton.Pressed += OnPlaySkirmishButtonPressed;
-		WavesButton.Pressed += OnPlayWavesButtonPressed;
+		freeFlyButton.Pressed += OnPlayFreeFlyButtonPressed;
+		skirmishButton.Pressed += OnPlaySkirmishButtonPressed;
+		wavesButton.Pressed += OnPlayWavesButtonPressed;
 		exitButton.Pressed += OnExitButtonPressed;
 		controlsButton.Pressed += OnControlsPressed;
 		graphicsButton.Pressed += OnGraphicsPressed;
@@ -57,9 +55,9 @@ public partial class Menu : Control
 
 		// Connect hover sound effect
 		// playButton.MouseEntered += OnButtonHovered;
-		FreeFlyButton.MouseEntered += OnButtonHovered;
-		SkirmishButton.MouseEntered += OnButtonHovered;
-		WavesButton.MouseEntered += OnButtonHovered;
+		freeFlyButton.MouseEntered += OnButtonHovered;
+		skirmishButton.MouseEntered += OnButtonHovered;
+		wavesButton.MouseEntered += OnButtonHovered;
 		exitButton.MouseEntered += OnButtonHovered;
 		controlsButton.MouseEntered += OnButtonHovered;
 		graphicsButton.MouseEntered += OnButtonHovered;

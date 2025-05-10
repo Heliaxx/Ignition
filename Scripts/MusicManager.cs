@@ -3,71 +3,60 @@ using System;
 
 public partial class MusicManager : Node
 {
-    private AudioStreamPlayer _player;
+	private AudioStreamPlayer _player;
 
-    private float generalVolume = 1.0f; // Default volume
-    private float musicVolume = 1.0f; // Default volume
-    private float sfxVolume = 1.0f; // Default volume
+	private float generalVolume = 1.0f;
+	private float musicVolume = 1.0f;
+	private float sfxVolume = 1.0f;
 
-    public override void _Ready()
-    {
-        _player = GetNode<AudioStreamPlayer>("AudioStreamPlayer");
-        _player.Bus = "Music"; // Optional: route through Music bus
-        _player.Autoplay = false;
-        _player.StreamPaused = false;
+	public override void _Ready()
+	{
+		_player = GetNode<AudioStreamPlayer>("AudioStreamPlayer");
+		_player.Bus = "Music";
+		_player.Autoplay = false;
+		_player.StreamPaused = false;
 
-        _ApplyAudioSettings();
+		_ApplyAudioSettings();
+	}
 
-        // if (ConfigFileHandler.Instance.LoadAudioSettings().TryGetValue("music_volume", out Variant musicVol) &&
-        // ConfigFileHandler.Instance.LoadAudioSettings().TryGetValue("general_volume", out Variant generalVol))
-        //     {
-        //         float music = (float)(double)musicVol;
-        //         float general = (float)(double)generalVol;
-        //         volume = music;
-        //     }
-    }
+	public void PlayMusic(AudioStream stream, bool loop = true)
+	{
+		_player.Stream = stream;
+		_player.StreamPaused = false;
+		_player.Play();
 
-    public void PlayMusic(AudioStream stream, bool loop = true)
-    {
-        _player.Stream = stream;
-        _player.StreamPaused = false;
-        _player.Play();
+		if (stream is AudioStreamOggVorbis ogg)
+			ogg.Loop = loop;
+		else if (stream is AudioStreamMP3 mp3)
+			mp3.Loop = loop;
+	}
 
-        // _player.VolumeDb = LinearToDb(volume);
+	public void StopMusic()
+	{
+		_player.Stop();
+	}
 
-        // Set loop if the stream type supports it
-        if (stream is AudioStreamOggVorbis ogg)
-            ogg.Loop = loop;
-        else if (stream is AudioStreamMP3 mp3)
-            mp3.Loop = loop;
-    }
+	public bool IsPlaying() => _player.Playing;
 
-    public void StopMusic()
-    {
-        _player.Stop();
-    }
+	private void _ApplyAudioSettings()
+	{
+		ConfigFileHandler.Instance.LoadAudioSettings().TryGetValue("general_volume", out Variant generalVol);
+		ConfigFileHandler.Instance.LoadAudioSettings().TryGetValue("music_volume", out Variant musicVol);
+		ConfigFileHandler.Instance.LoadAudioSettings().TryGetValue("sfx_volume", out Variant sfxVol);
 
-    public bool IsPlaying() => _player.Playing;
+		generalVolume = (float)(double)generalVol;
+		musicVolume = (float)(double)musicVol;
+		sfxVolume = (float)(double)sfxVol;
 
-    private void _ApplyAudioSettings()
-    {
-        ConfigFileHandler.Instance.LoadAudioSettings().TryGetValue("general_volume", out Variant generalVol);
-        ConfigFileHandler.Instance.LoadAudioSettings().TryGetValue("music_volume", out Variant musicVol);
-        ConfigFileHandler.Instance.LoadAudioSettings().TryGetValue("sfx_volume", out Variant sfxVol);
+		AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Master"), LinearToDb(generalVolume));
+		AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Music"), LinearToDb(musicVolume));
+		AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("SFX"), LinearToDb(sfxVolume));
+	}
 
-        generalVolume = (float)(double)generalVol;
-        musicVolume = (float)(double)musicVol;
-        sfxVolume = (float)(double)sfxVol;
-
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Master"), LinearToDb(generalVolume));
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Music"), LinearToDb(musicVolume));
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("SFX"), LinearToDb(sfxVolume));
-    }
-
-    private float LinearToDb(float linear)
-    {
-        if (linear <= 0.0001f)
-            return -80f;
-        return 20f * (float)Math.Log10(linear);
-    }
+	private float LinearToDb(float linear)
+	{
+		if (linear <= 0.0001f)
+			return -80f;
+		return 20f * (float)Math.Log10(linear);
+	}
 }

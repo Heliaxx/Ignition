@@ -15,7 +15,7 @@ public partial class Laser : Node3D
 
 	public int DamageAmount = 5;
 	private double timeSinceLastShot = 0.0;
-	private double FireCooldown = 5.0; // seconds
+	private double fireCooldown = 5.0;
 
 	public override void _Process(double delta)
 	{
@@ -27,7 +27,7 @@ public partial class Laser : Node3D
 			distance = GlobalTransform.Origin.DistanceTo(hitPoint);
 			scaler.Scale = new Vector3(scaler.Scale.X, scaler.Scale.Y, distance / 2f);
 
-			if (timeSinceLastShot >= FireCooldown)
+			if (timeSinceLastShot >= fireCooldown)
 			{
 				Node collider = raycast.GetCollider() as Node;
 				if (collider is Kaito player)

@@ -1,32 +1,3 @@
-// using Godot;
-// using System;
-
-// public partial class Follow : State
-// {
-//     public override void Enter()
-//     {
-//         GD.Print("Entering Follow state");
-//     }
-
-//     public override void PhysicsUpdate(float delta)
-//     {
-//         Fighter fighter = stateMachine.GetParent<Fighter>();
-//         if (fighter == null || !fighter.HasTarget()) return;
-
-//         float distance = fighter.DistanceToPlayer();
-//         if (distance < fighter.ClosestDistance)
-//         {
-//             stateMachine.TransitionTo("Run");
-//             return;
-//         }
-
-//         fighter.MoveTowardPlayer((float)delta);
-//     }
-// }
-
-
-
-
 using Godot;
 using System;
 

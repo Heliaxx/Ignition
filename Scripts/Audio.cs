@@ -44,6 +44,19 @@ public partial class Audio : Control
         GetTree().ChangeSceneToFile("res://Scenes/Menu.tscn");
     }
 
+    private void _on_reset_btn_pressed()
+    {
+        generalVolumeSlider.Value = 100f;
+        musicVolumeSlider.Value = 100f;
+        sfxVolumeSlider.Value = 100f;
+
+        ConfigFileHandler.Instance.SaveAudioSettings("general_volume", 1.0f);
+        ConfigFileHandler.Instance.SaveAudioSettings("music_volume", 1.0f);
+        ConfigFileHandler.Instance.SaveAudioSettings("sfx_volume", 1.0f);
+
+        _ApplyAudioSettings();
+    }
+
     private void _on_vol_general_slider_drag_ended(bool valueChanged)
     {
         if (valueChanged)

@@ -24,7 +24,7 @@ public partial class ConfigFileHandler : Node
 			config.SetValue("keybinding", "boost", "tab");
 			config.SetValue("keybinding", "primary_fire", "mouse_1");
 			config.SetValue("keybinding", "secondary_fire", "mouse_2");
-			config.SetValue("keybinding", "light", "W");
+			config.SetValue("keybinding", "light", "L");
 
 			// Video
 			config.SetValue("video", "mode", "fullscreen");

@@ -3,158 +3,115 @@ using System;
 
 public partial class Fighter : CharacterBody3D
 {
-    private const int MAX_HEALTH = 100;
-    private int currentHealth = MAX_HEALTH;
+	private const int MAX_HEALTH = 100;
+	private int currentHealth = MAX_HEALTH;
 
-    [Signal]
-    public delegate void DiedEventHandler();
-    [Export]
-    public float Speed = 100.0f;
+	[Signal]
+	public delegate void DiedEventHandler();
+	[Export]
+	public float Speed = 100.0f;
 
-    [Export]
-    public float ClosestDistance = 100.0f;
+	[Export]
+	public float ClosestDistance = 100.0f;
 
-    [Export]
-    public float FarthestDistance = 500.0f;
+	[Export]
+	public float FarthestDistance = 500.0f;
 
-    [Export]
-    public float Acceleration = 10.0f;
+	[Export]
+	public float Acceleration = 10.0f;
 
-    [Export]
-    public float TurnSpeed = 2.0f; // For smooth rotation
+	[Export]
+	public float TurnSpeed = 2.0f;
 
-    private Node3D player;
+	private Node3D player;
 
-    public override void _Ready()
-    {
-        currentHealth = MAX_HEALTH;
-        player = GetNode<Node3D>("../Player"); // Adjust if player path changes
-        if (!HasTarget())
-        {
-            GD.PrintErr("Player not found in scene.");
-        }   
-    }
+	public override void _Ready()
+	{
+		currentHealth = MAX_HEALTH;
+		player = GetNode<Node3D>("../Player");
+		if (!HasTarget())
+		{
+			GD.PrintErr("Player not found in scene.");
+		}   
+	}
 
-    public bool HasTarget()
-    {
-        return player != null;
-    }
+	public bool HasTarget()
+	{
+		return player != null;
+	}
 
-    public float DistanceToPlayer()
-    {
-        return (player.GlobalPosition - GlobalPosition).Length();
-    }
+	public float DistanceToPlayer()
+	{
+		return (player.GlobalPosition - GlobalPosition).Length();
+	}
 
-    public void MoveTowardPlayer(float delta)
-    {
-        Vector3 toPlayer = player.GlobalPosition - GlobalPosition;
-        Vector3 desiredVelocity = toPlayer.Normalized() * Speed;
+	public void MoveTowardPlayer(float delta)
+	{
+		Vector3 toPlayer = player.GlobalPosition - GlobalPosition;
+		Vector3 desiredVelocity = toPlayer.Normalized() * Speed;
 
-        Velocity = Velocity.Lerp(desiredVelocity, Acceleration * delta);
-        MoveAndSlide();
-        FaceDirection(toPlayer, delta);
-        // FacePlayer(delta);
-    }
+		Velocity = Velocity.Lerp(desiredVelocity, Acceleration * delta);
+		MoveAndSlide();
+		FaceDirection(toPlayer, delta);
+	}
 
-    public void MoveAwayFromPlayer(float delta)
-    {
-    Vector3 awayFromPlayer = (GlobalPosition - player.GlobalPosition).Normalized();
-    Vector3 desiredVelocity = awayFromPlayer * Speed;
+	public void MoveAwayFromPlayer(float delta)
+	{
+	Vector3 awayFromPlayer = (GlobalPosition - player.GlobalPosition).Normalized();
+	Vector3 desiredVelocity = awayFromPlayer * Speed;
 
-    Velocity = Velocity.Lerp(desiredVelocity, Acceleration * delta);
-    MoveAndSlide();
+	Velocity = Velocity.Lerp(desiredVelocity, Acceleration * delta);
+	MoveAndSlide();
+	FaceDirection(awayFromPlayer, delta);
+	}
 
-    // FacePlayer(delta);
-    FaceDirection(awayFromPlayer, delta);
-    }
+	public void FacePlayer(float delta)
+	{
+		Vector3 toPlayer = player.GlobalPosition - GlobalPosition;
+		Vector3 targetDirection = toPlayer.Normalized();
+		Vector3 currentForward = -GlobalTransform.Basis.Z;
+		Vector3 newForward = currentForward.Lerp(targetDirection, TurnSpeed * delta).Normalized();
 
-    public void FacePlayer(float delta)
-    {
-        Vector3 toPlayer = player.GlobalPosition - GlobalPosition;
-        Vector3 targetDirection = toPlayer.Normalized();
-        Vector3 currentForward = -GlobalTransform.Basis.Z;
-        Vector3 newForward = currentForward.Lerp(targetDirection, TurnSpeed * delta).Normalized();
+		Basis newBasis = Basis.LookingAt(newForward, Vector3.Up);
+		GlobalTransform = new Transform3D(newBasis, GlobalTransform.Origin);
+	}
 
-        Basis newBasis = Basis.LookingAt(newForward, Vector3.Up);
-        GlobalTransform = new Transform3D(newBasis, GlobalTransform.Origin);
-    }
+	public void MoveInDirection(Vector3 direction, float delta)
+	{
+		Vector3 desiredVelocity = direction.Normalized() * Speed;
+		Velocity = Velocity.Lerp(desiredVelocity, Acceleration * delta);
+		MoveAndSlide();
+	}
 
-    public void MoveInDirection(Vector3 direction, float delta)
-    {
-        Vector3 desiredVelocity = direction.Normalized() * Speed;
-        Velocity = Velocity.Lerp(desiredVelocity, Acceleration * delta);
-        MoveAndSlide();
-    }
+	public void FaceDirection(Vector3 direction, float delta)
+	{
+		Vector3 currentForward = -GlobalTransform.Basis.Z;
+		Vector3 newForward = currentForward.Lerp(direction.Normalized(), TurnSpeed * delta).Normalized();
+		Basis newBasis = Basis.LookingAt(newForward, Vector3.Up);
+		GlobalTransform = new Transform3D(newBasis, GlobalTransform.Origin);
+	}
 
-    public void FaceDirection(Vector3 direction, float delta)
-    {
-        Vector3 currentForward = -GlobalTransform.Basis.Z;
-        Vector3 newForward = currentForward.Lerp(direction.Normalized(), TurnSpeed * delta).Normalized();
-        Basis newBasis = Basis.LookingAt(newForward, Vector3.Up);
-        GlobalTransform = new Transform3D(newBasis, GlobalTransform.Origin);
-    }
+	public void StopMoving()
+	{
+		Velocity = Vector3.Zero;
+		MoveAndSlide();
+	}
 
-    // public void OnExitedBoundary(Node3D body)
-    // {
-    //     if (body != this) return;
+	public void Hit(int damage = 10)
+	{
+		currentHealth -= damage;
+		GD.Print($"{Name} hit! Health: {currentHealth}");
 
-    //     GD.Print("Fighter exited boundary, returning to center");
-    //     var stateMachine = GetNode<StateMachine>("StateMachine");
-    //     stateMachine.TransitionTo("ReturnToCenter");
-    // }
+		if (currentHealth <= 0)
+		{
+			Die();
+		}
+	}
 
-    public void StopMoving()
-    {
-        Velocity = Vector3.Zero;
-        MoveAndSlide();
-    }
-
-    public void Hit(int damage = 10)
-    {
-        currentHealth -= damage;
-        GD.Print($"{Name} hit! Health: {currentHealth}");
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
-    private void Die()
-    {
-        GD.Print($"{Name} destroyed!");
-        EmitSignal(SignalName.Died);
-        QueueFree();
-    }
+	private void Die()
+	{
+		GD.Print($"{Name} destroyed!");
+		EmitSignal(SignalName.Died);
+		QueueFree();
+	}
 }
-
-
-
-
-
-    // public override void _PhysicsProcess(double delta)
-    // {
-    //     if (player != null)
-    //     {
-    //         Vector3 toPlayer = player.GlobalPosition - GlobalPosition;
-    //         float distance = toPlayer.Length();
-    //         Vector3 desiredVelocity = Vector3.Zero;
-
-    //         if (distance > ClosestDistance)
-    //         {
-    //             Vector3 direction = toPlayer.Normalized();
-    //             desiredVelocity = direction * Speed;
-    //         }
-
-    //         Velocity = Velocity.Lerp(desiredVelocity, (float)(Acceleration * delta));
-    //         MoveAndSlide();
-
-    //         // Gradual smooth rotation
-    //         Vector3 targetDirection = toPlayer.Normalized();
-    //         Vector3 currentForward = -GlobalTransform.Basis.Z;
-
-    //         Vector3 newForward = currentForward.Lerp(targetDirection, (float)(TurnSpeed * delta)).Normalized();
-    //         Basis newBasis = Basis.LookingAt(newForward, Vector3.Up);
-    //         GlobalTransform = new Transform3D(newBasis, GlobalTransform.Origin);
-    //     }
-    // }

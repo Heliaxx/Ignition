@@ -1,6 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://xknhpluncf0u"]
+[gd_scene load_steps=2 format=3 uid="uid://7d3j5pxs7cfw"]
 
-[ext_resource type="Script" path="res://Scripts/TraumaCauser.gd" id="1_n6qvx"]
+[sub_resource type="GDScript" id="GDScript_i6g5p"]
+script/source = "extends Area3D
+
+@onready var trauma_amount := 0.1
+
+#Calling this method will check for all shakeable cameras the \"trauma causer\" overlaps with, then increase the screenshake intensity.
+func cause_trauma():
+	var trauma_areas := get_overlapping_areas()
+	for area in trauma_areas:
+		if area.has_method(\"add_trauma\"):
+			area.add_trauma(trauma_amount)
+"
 
 [node name="TraumaCauser" type="Area3D"]
-script = ExtResource("1_n6qvx")
+script = SubResource("GDScript_i6g5p")

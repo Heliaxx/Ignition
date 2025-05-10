@@ -15,7 +15,6 @@ public partial class LevelSkirmish : Node3D
 		spawns = GetNode<Node3D>("SpawnLocations");
 		navigationRegion = GetNode<NavigationRegion3D>("NavigationRegion3D");
 		musicManager = GetNode<MusicManager>("/root/MusicManager");
-
 		musicManager.StopMusic();
 		SpawnEnemies();
 	}

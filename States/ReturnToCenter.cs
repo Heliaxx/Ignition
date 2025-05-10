@@ -25,11 +25,8 @@ public partial class ReturnToCenter : State
             return;
         }
 
-        // Move and face center
         Vector3 desiredVelocity = toCenter.Normalized() * fighter.Speed;
-        // fighter.Velocity = fighter.Velocity.Lerp(desiredVelocity, fighter.Acceleration * delta);
 		fighter.MoveInDirection(toCenter.Normalized(), delta);
-        // fighter.MoveAndSlide();
         fighter.FaceDirection(toCenter, delta);
     }
 }

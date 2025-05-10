@@ -17,7 +17,7 @@ public partial class StateMachine : Node
                 _states[node.Name] = s;
                 s.stateMachine = this;
                 s.Ready();
-                s.Exit(); // reset
+                s.Exit();
             }
         }
         _currentState = GetNode<State>(initialState);

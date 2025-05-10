@@ -1,13 +1,11 @@
-[gd_scene load_steps=26 format=4 uid="uid://drknsoaeuoqqh"]
+[gd_scene load_steps=23 format=4 uid="uid://drknsoaeuoqqh"]
 
 [ext_resource type="Script" path="res://Scripts/Kaito.cs" id="1_8p5tm"]
 [ext_resource type="PackedScene" uid="uid://c5r7xilp2j2yt" path="res://Scenes/shakeable_camera.tscn" id="1_ypk4o"]
 [ext_resource type="Texture2D" uid="uid://ce40wfy4nvtuk" path="res://Imports/Spaceships/Kaito/Kaito MCS-71 revised_albedo.png" id="2_nhkah"]
 [ext_resource type="PackedScene" uid="uid://e3boq8pccr15" path="res://Scenes/light.tscn" id="2_xwtgm"]
-[ext_resource type="PackedScene" uid="uid://xknhpluncf0u" path="res://Scenes/trauma_causer.tscn" id="3_mkm77"]
 [ext_resource type="PackedScene" uid="uid://cu2tlich0yrj7" path="res://Scenes/CockpitHUD.tscn" id="3_qcx3i"]
 [ext_resource type="AudioStream" uid="uid://c3fd06dncbffa" path="res://Imports/Sounds/shooting_start.mp3" id="5_0nka7"]
-[ext_resource type="Script" path="res://Scripts/TraumaCauser.cs" id="5_lt051"]
 [ext_resource type="AudioStream" uid="uid://csmb15gf7523j" path="res://Imports/Sounds/shooting.mp3" id="6_3f0po"]
 [ext_resource type="AudioStream" uid="uid://bmcmfve3xbpak" path="res://Imports/Sounds/shooting_end.mp3" id="7_op6vm"]
 [ext_resource type="PackedScene" uid="uid://bqttajb6waoy5" path="res://Scenes/dustParticles.tscn" id="8_l46sp"]
@@ -30,8 +28,6 @@ points = PackedVector3Array(3.35289, 1.31313, 2.58586, 3.07921, -0.0511238, -2.8
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ql4jj"]
 points = PackedVector3Array(3.07921, 1.04015, 3.13102, 2.80614, 1.04015, 3.40468, -3.46921, 2.13168, -1.77839, -0.466786, -0.0506698, -5.87188, -1.83147, -0.0506698, 6.40606, 3.07921, 1.58555, -1.77839, 2.75307, -0.201673, -1.84824, -3.46921, 2.13168, 1.76653, -3.19551, -0.0506698, -5.32583, -3.19551, -0.0506698, 5.31396, 3.07921, -0.0506698, 2.85863, -1.5584, 0.494978, -6.14427, 0.07742, -0.323975, 3.13102, 3.07921, 1.58555, 2.04018, -2.37696, 0.494978, 6.13241, 3.07921, 1.04015, -3.14289, 0.07742, -0.323975, -3.14289, -3.46921, 0.222154, 2.31258, 3.07921, -0.0506698, -2.87049, -2.65002, 2.13168, 1.76653, -0.466786, 0.494978, 5.86001, 1.98759, 1.04015, -3.96133, -2.37696, 0.494978, -6.14427, -3.46921, 0.222154, -2.32444, -0.466786, -0.0506698, 5.86001, -2.92244, 2.13168, -1.77839, -1.28534, -0.0506698, -6.41793, 1.98759, 1.04015, 3.94947, 2.76717, -0.206961, 1.84519, -3.19551, 0.494978, 5.31396, -3.19551, 0.494978, -5.32583, 2.53308, 0.222154, 3.67707)
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_iyapq"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jt7q2"]
 resource_name = "Material"
@@ -183,14 +179,6 @@ visible = false
 [node name="RightLight" parent="." instance=ExtResource("2_xwtgm")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2.2, 1.8, 3.5)
 visible = false
-
-[node name="TraumaCauser" parent="." instance=ExtResource("3_mkm77")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.16493, 1.90823, 2.69478e-07)
-script = ExtResource("5_lt051")
-TraumaAmount = 0.1
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TraumaCauser"]
-shape = SubResource("SphereShape3D_iyapq")
 
 [node name="BarrelRight" type="RayCast3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 3.9, 1.4, 2.65)

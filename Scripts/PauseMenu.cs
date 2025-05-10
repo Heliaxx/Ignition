@@ -13,7 +13,6 @@ public partial class PauseMenu : ColorRect
 	{
 		animator = GetNode<AnimationPlayer>("AnimationPlayer");
 
-		// Použití FindChild pro flexibilnější načítání
 		continueButton = FindChild("ContinueButton") as Button;
 		quitButton = FindChild("QuitButton") as Button;
 		mainMenuButton = FindChild("MainMenuButton") as Button;

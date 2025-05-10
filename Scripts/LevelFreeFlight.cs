@@ -7,7 +7,7 @@ public partial class LevelFreeFlight : Node3D
 
 	private MusicManager musicManager;
 	private NavigationRegion3D navigationRegion;
-	private PackedScene enemyShip = (PackedScene)GD.Load("res://Scenes/Fighter.tscn"); // Preload enemy ship scene
+	private PackedScene enemyShip = (PackedScene)GD.Load("res://Scenes/fighter.tscn"); // Preload enemy ship scene
 	private Node3D instance;
 
 	public override void _Ready()

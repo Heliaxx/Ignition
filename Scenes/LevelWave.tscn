@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://ryeq8kdxlj7o"]
+[gd_scene load_steps=14 format=3 uid="uid://ryeq8kdxlj7o"]
 
 [ext_resource type="Script" path="res://Scripts/LevelWave.cs" id="1_q8gjv"]
 [ext_resource type="Shader" path="res://SpaceShader.gdshader" id="2_qx2jm"]
@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://p8bmcn3ds03m" path="res://Scenes/fps_meter.tscn" id="7_xv4tn"]
 [ext_resource type="PackedScene" uid="uid://dmy55noj8bktd" path="res://Scenes/PauseMenu.tscn" id="8_1lsgi"]
 [ext_resource type="Script" path="res://Scripts/ProceduralAsteroids.cs" id="9_psghp"]
-[ext_resource type="Script" path="res://Scripts/BoundaryArea.cs" id="10_jbd7y"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
 shader = ExtResource("2_qx2jm")
@@ -52,9 +51,6 @@ volumetric_fog_temporal_reprojection_enabled = false
 volumetric_fog_temporal_reprojection_amount = 0.5
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_qi7iq"]
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_1eeh6"]
-radius = 765.591
 
 [node name="Level" type="Node3D"]
 script = ExtResource("1_q8gjv")
@@ -111,9 +107,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 50)
 [node name="ProceduralAsteroids" type="Node3D" parent="."]
 visible = false
 script = ExtResource("9_psghp")
-
-[node name="BoundaryArea" type="Area3D" parent="."]
-script = ExtResource("10_jbd7y")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BoundaryArea"]
-shape = SubResource("SphereShape3D_1eeh6")
