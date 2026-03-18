@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://co08ev0cd0af5"]
+
+[ext_resource type="Shader" uid="uid://32js2iuvtqx7" path="res://Shaders/CircleShader.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_circle"]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/color = Color(0.312658, 0.684219, 0.308503, 0.392157)
+shader_parameter/edge_softness = 0.04
+
+[sub_resource type="QuadMesh" id="QuadMesh_circle"]
+material = SubResource("ShaderMaterial_circle")
+
+[node name="ColorCircle" type="MeshInstance3D"]
+mesh = SubResource("QuadMesh_circle")

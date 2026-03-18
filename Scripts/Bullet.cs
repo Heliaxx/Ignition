@@ -1,0 +1,78 @@
+using Godot;
+using System;
+
+public partial class Bullet : Node3D
+{
+	public float Speed { get; set; } = 1600f;
+	[Export] public float Damage { get; set; } = 10f;
+	private const float LIFETIME = 3f;
+	private const float COLLISION_DESTROY_DELAY = 1f;
+
+	private Vector3 velocity = Vector3.Zero;
+	private bool _hasHit = false;
+
+	/// <summary>
+	/// Velocity inherited from the spawner (e.g., ship) in world space.
+	/// Set this before adding the bullet to the scene.
+	/// </summary>
+	public Vector3 InheritedVelocity { get; set; } = Vector3.Zero;
+
+	private MeshInstance3D mesh;
+	private RayCast3D ray;
+	private GpuParticles3D particles;
+
+	public override void _Ready()
+	{
+		mesh = GetNode<MeshInstance3D>("MeshInstance3D");
+		ray = GetNode<RayCast3D>("RayCast3D");
+		particles = GetNode<GpuParticles3D>("GPUParticles3D");
+		velocity = new Vector3(0, 0, -Speed);
+
+		// Automatic self-destruction after lifetime expiry
+		GetTree().CreateTimer(LIFETIME).Timeout += QueueFree;
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		// Force the RayCast to update before checking collision
+		ray.ForceRaycastUpdate();
+		if (!_hasHit && ray.IsColliding())
+		{
+			_hasHit = true;
+			mesh.Visible = false;
+			particles.Emitting = true;
+			velocity = Vector3.Zero;
+			ray.Enabled = false;
+
+			var collider = ray.GetCollider();
+
+			if (collider is IDamageable damageable)
+			{
+				damageable.TakeDamage(Damage);
+			}
+			else if (collider is Node colliderNode
+				&& colliderNode.IsInGroup("asteroids")
+				&& colliderNode is StaticBody3D body)
+			{
+				uint ownerId = body.ShapeFindOwner(ray.GetColliderShape());
+				var hitShape = body.ShapeOwnerGetOwner(ownerId) as CollisionShape3D;
+
+				if (hitShape != null && hitShape.HasMeta("asteroid_id"))
+				{
+					ulong asteroidId  = (ulong)(long)hitShape.GetMeta("asteroid_id");
+					int meshVariant   = (int)hitShape.GetMeta("mesh_variant");
+					int variantIndex  = (int)hitShape.GetMeta("variant_index");
+
+					var field = GetTree().GetFirstNodeInGroup("asteroid_field") as ChunkedAsteroidField;
+					field?.HitAsteroid(asteroidId, meshVariant, variantIndex, hitShape, (int)Damage);
+				}
+			}
+			GetTree().CreateTimer(COLLISION_DESTROY_DELAY).Timeout += QueueFree;
+		}
+		else
+		{
+			// Move bullet: local velocity (forward) + inherited world velocity from spawner
+			Position += (Transform.Basis * velocity + InheritedVelocity) * (float)delta;
+		}
+	}
+}

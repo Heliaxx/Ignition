@@ -1,0 +1,169 @@
+[gd_scene load_steps=6 format=3 uid="uid://e1m1ngajve62"]
+
+[ext_resource type="Script" uid="uid://cyn6mvstgjhoo" path="res://Scripts/Menu.cs" id="1_nvb0i"]
+[ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="2_afw1a"]
+[ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="3_nj5k7"]
+[ext_resource type="Texture2D" uid="uid://cn1btk5nakcdt" path="res://Imports/Logos/MenuScreen.png" id="4_s2c3o"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ydy06"]
+font = ExtResource("2_afw1a")
+font_size = 100
+outline_color = Color(0, 0, 0, 1)
+
+[node name="MainMenu" type="Control"]
+process_mode = 3
+custom_minimum_size = Vector2(1920, 1080)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+script = ExtResource("1_nvb0i")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 686.0
+offset_bottom = 121.0
+theme_override_fonts/font = ExtResource("2_afw1a")
+text = "IGNITION"
+label_settings = SubResource("LabelSettings_ydy06")
+vertical_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_right = 666.0
+offset_bottom = 1012.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_nj5k7")
+theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+text = "PLAY"
+
+[node name="PlayButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "PLAY"
+alignment = 0
+icon_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="FreeFlyButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "FREE FLIGHT"
+alignment = 0
+icon_alignment = 1
+
+[node name="RushButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "RUSH"
+alignment = 0
+icon_alignment = 1
+
+[node name="WavesButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "WAVES"
+alignment = 0
+icon_alignment = 1
+
+[node name="Space" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="OptionsButton" type="Button" parent="PanelContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+text = "OPTIONS"
+alignment = 0
+icon_alignment = 1
+
+[node name="Space5" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ControlsButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+text = "CONTROLS"
+alignment = 0
+
+[node name="Space3" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="GraphicsButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+text = "GRAPHICS"
+alignment = 0
+icon_alignment = 1
+
+[node name="Space4" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="AudioButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+text = "AUDIO"
+alignment = 0
+icon_alignment = 1
+
+[node name="Control3" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Control4" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ExitButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 50
+text = "EXIT"
+alignment = 0
+
+[node name="TextureRect" type="TextureRect" parent="."]
+show_behind_parent = true
+layout_mode = 0
+offset_right = 2560.0
+offset_bottom = 1440.0
+scale = Vector2(0.75, 0.75)
+mouse_filter = 2
+texture = ExtResource("4_s2c3o")

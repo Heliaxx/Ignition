@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://vqnqvndpsftt"]
+
+[sub_resource type="Resource" id="Resource_y7y43"]
+metadata/__load_path__ = "res://addons/sound_manager/module/internal_scripts/SoundManager.gd"
+
+[node name="SoundManager" type="Node"]
+script = SubResource("Resource_y7y43")
+preload_resources = true

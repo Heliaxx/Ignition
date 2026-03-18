@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://22kh3pwrifff"]
+
+[ext_resource type="PackedScene" uid="uid://cxj172qkelast" path="res://Scenes/Earth.tscn" id="2_wfs1n"]
+
+[sub_resource type="Resource" id="Resource_c8m3x"]
+metadata/__load_path__ = "res://Scripts/BackgroundCamera.gd"
+
+[node name="Background" type="Node3D"]
+
+[node name="BackgroundCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
+script = SubResource("Resource_c8m3x")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.6163)
+
+[node name="Sketchfab_Scene" parent="." instance=ExtResource("2_wfs1n")]

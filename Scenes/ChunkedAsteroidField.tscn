@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://spg46330gdmg"]
+
+[ext_resource type="Script" uid="uid://bwpdy447817x3" path="res://Scripts/ChunkedAsteroidField.cs" id="1_main"]
+
+[node name="ChunkedAsteroidField" type="Node3D" node_paths=PackedStringArray("SpawnExclusionZones")]
+script = ExtResource("1_main")
+LoadRadius = 40
+UnloadBuffer = 5
+SpawnExclusionZones = []

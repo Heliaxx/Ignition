@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://dau145nsjvc2l"]
+
+[ext_resource type="PackedScene" uid="uid://bocuadr6jdryw" path="res://Imports/Planets/Planet Acidic.glb" id="1_glck7"]
+
+[node name="Planet Acidic" instance=ExtResource("1_glck7")]
