@@ -4,9 +4,9 @@ using System.Collections.Generic;
 public partial class Kaito
 {
 	// Targeting
-	private Fighter _lockedTarget;
+	private GimbalTarget _lockedTarget;
 	private const float TARGET_MAX_RANGE = 2000f;
-	public Fighter LockedTarget => _lockedTarget;
+	public GimbalTarget LockedTarget => _lockedTarget;
 
 	// Target HUD elements
 	private Control _targetPanel;
@@ -33,22 +33,21 @@ public partial class Kaito
 
 		Vector2 screenCenter = GetViewport().GetVisibleRect().Size / 2f;
 
-		var enemies = GetTree().GetNodesInGroup("enemies");
-		var validTargets = new List<(Fighter fighter, float screenDist)>();
+		var gimbalTargets = GetTree().GetNodesInGroup("gimbal_targets");
+		var validTargets = new List<(GimbalTarget target, float screenDist)>();
 
-		foreach (var node in enemies)
+		foreach (var node in gimbalTargets)
 		{
-			if (node is Fighter fighter && fighter.Visible && fighter.ProcessMode != ProcessModeEnum.Disabled
-				&& fighter.CurrentHealthValue > 0)
-			{
-				float worldDist = GlobalPosition.DistanceTo(fighter.GlobalPosition);
-				if (worldDist > TARGET_MAX_RANGE) continue;
-				if (camera.IsPositionBehind(fighter.GlobalPosition)) continue;
+			if (node is not GimbalTarget gt || !gt.IsValid())
+				continue;
 
-				Vector2 screenPos = camera.UnprojectPosition(fighter.GlobalPosition);
-				float screenDist = screenPos.DistanceTo(screenCenter);
-				validTargets.Add((fighter, screenDist));
-			}
+			float worldDist = GlobalPosition.DistanceTo(gt.GlobalPosition);
+			if (worldDist > TARGET_MAX_RANGE) continue;
+			if (camera.IsPositionBehind(gt.GlobalPosition)) continue;
+
+			Vector2 screenPos = camera.UnprojectPosition(gt.GlobalPosition);
+			float screenDist = screenPos.DistanceTo(screenCenter);
+			validTargets.Add((gt, screenDist));
 		}
 
 		if (validTargets.Count == 0)
@@ -62,19 +61,18 @@ public partial class Kaito
 
 		if (_lockedTarget == null || !IsInstanceValid(_lockedTarget))
 		{
-			// No current target — pick closest to center
-			SetTarget(validTargets[0].fighter);
+			SetTarget(validTargets[0].target);
 		}
 		else
 		{
 			// Has a target — find a different one closer to center, or untarget
-			Fighter best = null;
-			foreach (var (fighter, screenDist) in validTargets)
+			GimbalTarget best = null;
+			foreach (var (gt, _) in validTargets)
 			{
-				if (fighter != _lockedTarget)
+				if (gt != _lockedTarget)
 				{
-					best = fighter;
-					break; // first non-current is closest to center
+					best = gt;
+					break;
 				}
 			}
 
@@ -85,11 +83,10 @@ public partial class Kaito
 		}
 	}
 
-	private void SetTarget(Fighter target)
+	private void SetTarget(GimbalTarget target)
 	{
 		if (_lockedTarget == target) return;
 
-		// Disconnect old signal
 		if (_lockedTarget != null && IsInstanceValid(_lockedTarget))
 			_lockedTarget.Died -= OnTargetDied;
 
@@ -103,6 +100,7 @@ public partial class Kaito
 	{
 		if (_lockedTarget != null && IsInstanceValid(_lockedTarget))
 			_lockedTarget.Died -= OnTargetDied;
+
 		_lockedTarget = null;
 	}
 
@@ -118,9 +116,7 @@ public partial class Kaito
 		// Validate target is still alive and in range
 		if (_lockedTarget != null)
 		{
-			if (!IsInstanceValid(_lockedTarget) || !_lockedTarget.Visible
-				|| _lockedTarget.ProcessMode == ProcessModeEnum.Disabled
-				|| _lockedTarget.CurrentHealthValue <= 0)
+			if (!IsInstanceValid(_lockedTarget) || !_lockedTarget.IsValid())
 			{
 				ClearTarget();
 			}
@@ -140,10 +136,15 @@ public partial class Kaito
 
 		_targetPanel.Visible = true;
 		float distance = GlobalPosition.DistanceTo(_lockedTarget.GlobalPosition);
-		_targetNameLabel.Text = _lockedTarget.DisplayName;
+		_targetNameLabel.Text = _lockedTarget.GetDisplayName();
 		_targetDistanceLabel.Text = $"{distance:F0}m";
-		_targetHealthBar.MaxValue = _lockedTarget.MaxHealthValue;
-		_targetHealthBar.Value = _lockedTarget.CurrentHealthValue;
+
+		_targetHealthBar.Visible = _lockedTarget.HasHealthData();
+		if (_lockedTarget.HasHealthData())
+		{
+			_targetHealthBar.MaxValue = _lockedTarget.GetMaxHealth();
+			_targetHealthBar.Value    = _lockedTarget.GetCurrentHealth();
+		}
 	}
 
 	public Vector2? GetLockedTargetScreenPos()
@@ -169,13 +170,11 @@ public partial class Kaito
 		if (camera == null) return null;
 
 		Vector3 targetPos = _lockedTarget.GlobalPosition;
-		Vector3 targetVel = _lockedTarget.Velocity;
+		Vector3 targetVel = _lockedTarget.GetVelocity();
 		Vector3 shooterPos = GlobalPosition;
 
-		// Effective bullet speed in world space (bullet local speed + ship forward speed)
 		float bulletWorldSpeed = BulletSpeed + Mathf.Max(0, Velocity.Dot((-GlobalTransform.Basis.Z).Normalized()));
 
-		// Iterative lead prediction (2 iterations for accuracy)
 		float dist = shooterPos.DistanceTo(targetPos);
 		Vector3 leadPos = targetPos;
 		for (int i = 0; i < 2; i++)

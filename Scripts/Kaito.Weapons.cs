@@ -82,7 +82,7 @@ public partial class Kaito
 
 		// Compute lead position
 		Vector3 targetPos = _lockedTarget.GlobalPosition;
-		Vector3 targetVel = _lockedTarget.Velocity;
+		Vector3 targetVel = _lockedTarget.GetVelocity();
 		Vector3 shooterPos = GlobalPosition;
 		float bulletWorldSpeed = BulletSpeed + Mathf.Max(0, Velocity.Dot((-GlobalTransform.Basis.Z).Normalized()));
 

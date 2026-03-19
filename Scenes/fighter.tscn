@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=4 uid="uid://dh4lr8e78uxub"]
+[gd_scene load_steps=34 format=4 uid="uid://dh4lr8e78uxub"]
 
 [ext_resource type="Texture2D" uid="uid://24qepqfa8elk" path="res://Imports/Spaceships/Fighter_01_Blender/textures/textures/Fighter_01_Body_BaseColor.png" id="1_2wmn3"]
 [ext_resource type="Script" uid="uid://c74nax228c5qi" path="res://Scripts/Fighter.cs" id="1_72v3j"]
@@ -25,6 +25,7 @@
 [ext_resource type="Script" uid="uid://cogr2wsp3j1ts" path="res://States/ReturnToCenter.cs" id="21_q3xub"]
 [ext_resource type="PackedScene" uid="uid://ddlwyobo7a3il" path="res://Scenes/Laser.tscn" id="22_y1n25"]
 [ext_resource type="PackedScene" uid="uid://bwpphn8333nc7" path="res://Scenes/ThrusterFlame.tscn" id="23_thruster"]
+[ext_resource type="Script" uid="uid://iuhcmmfkmh3" path="res://Scripts/GimbalTarget.cs" id="26_0ufmu"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v2edl"]
 resource_name = "Body"
@@ -224,3 +225,7 @@ script = ExtResource("19_flee")
 
 [node name="ReturnToCenter" type="Node" parent="StateMachine"]
 script = ExtResource("21_q3xub")
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.292839, 1.38584)
+script = ExtResource("26_0ufmu")
