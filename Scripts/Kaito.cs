@@ -71,6 +71,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	private Node3D dustParticles;
 	private GpuParticles3D dustParticlesGpu;
 	private CanvasLayer canvasLayer;
+	private CanvasLayer _scoreHud;
 	private Camera3D _cockpitCamera;
 	private Camera3D _externalCamera;
 	private bool _isExternalView = false;
@@ -109,6 +110,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		}
 
 		canvasLayer = GetNode<CanvasLayer>("HUD");
+		_scoreHud = GetParent().GetParent().GetNodeOrNull<CanvasLayer>("ScoreHUD");
 		speedBar = canvasLayer.GetNode<ProgressBar>("Panel/MarginContainer/VBoxContainer/HBoxContainer2/SpeedBar");
 		healthBar = canvasLayer.GetNode<ProgressBar>("Panel/MarginContainer/VBoxContainer/HBoxContainer/HealthBar");
 		health = GetNode<HealthComponent>("HealthComponent");
@@ -121,6 +123,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		InitBoost();
 		InitTargeting();
 		InitThrusters();
+		_cockpitCamera.MakeCurrent();
 	}
 
 	private void InitThrusters()
@@ -446,6 +449,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		{
 			_externalCamera.MakeCurrent();
 			canvasLayer.Visible = false;
+			if (_scoreHud != null) _scoreHud.Visible = false;
 			if (dustParticles != null)
 				dustParticles.Visible = false;
 		}
@@ -453,6 +457,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		{
 			_cockpitCamera.MakeCurrent();
 			canvasLayer.Visible = true;
+			if (_scoreHud != null) _scoreHud.Visible = true;
 			if (dustParticles != null)
 				dustParticles.Visible = true;
 		}

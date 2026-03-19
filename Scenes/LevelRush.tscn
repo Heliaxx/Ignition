@@ -111,7 +111,11 @@ sky_mode = 1
 [node name="FPSMeter" parent="." instance=ExtResource("7_6pirs")]
 mouse_filter = 2
 
-[node name="PauseMenu" parent="." instance=ExtResource("8_63mkt")]
+[node name="PauseMenuLayer" type="CanvasLayer" parent="."]
+layer = 3
+process_mode = 3
+
+[node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_63mkt")]
 
 [node name="ScoreHUD" type="CanvasLayer" parent="."]
 layer = 2

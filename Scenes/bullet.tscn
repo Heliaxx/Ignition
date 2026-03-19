@@ -7,8 +7,6 @@ albedo_color = Color(1, 0.832649, 0.481108, 1)
 emission_enabled = true
 emission = Color(1, 0.744473, 0.339482, 1)
 emission_energy_multiplier = 50.0
-anisotropy_enabled = true
-backlight = Color(1, 1, 1, 1)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_feq03"]
 lightmap_size_hint = Vector2i(4, 8)
@@ -43,7 +41,6 @@ damping_max = 10.0
 damping_curve = SubResource("CurveTexture_efs6y")
 scale_min = 0.2
 scale_max = 0.5
-collision_mode = 2
 
 [sub_resource type="SphereMesh" id="SphereMesh_ulyuc"]
 radius = 0.2

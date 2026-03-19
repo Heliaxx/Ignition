@@ -1,15 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://dtvm5xitooxu5"]
+[gd_scene load_steps=9 format=3 uid="uid://h1mhhr2d2v7j"]
 
 [ext_resource type="Script" uid="uid://cfabqj87i6w7l" path="res://Scripts/Graphics.cs" id="1_script"]
 [ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="2_ii5nb"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pcutd"]
-bg_color = Color(1, 0.588235, 0.156863, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_icu7h"]
-bg_color = Color(1, 0.588235, 0.156863, 1)
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mhp6s"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ivqh8"]
 bg_color = Color(1, 0.588235, 0.156863, 1)
@@ -46,9 +38,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -300.0
-offset_top = -100.0
+offset_top = -176.0
 offset_right = 300.0
-offset_bottom = 100.0
+offset_bottom = 176.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -110,6 +102,14 @@ theme_override_fonts/font = ExtResource("2_ii5nb")
 theme_override_font_sizes/font_size = 30
 text = "Resolution"
 
+[node name="FPSMeter" type="Label" parent="Menu/Labels"]
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_fonts/font = ExtResource("2_ii5nb")
+theme_override_font_sizes/font_size = 30
+text = "FPS Meter"
+
 [node name="Options" type="VBoxContainer" parent="Menu"]
 layout_mode = 2
 size_flags_horizontal = 6
@@ -149,10 +149,6 @@ theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 1
 theme_override_fonts/font = ExtResource("2_ii5nb")
 theme_override_font_sizes/font_size = 30
-theme_override_styles/disabled = SubResource("StyleBoxFlat_pcutd")
-theme_override_styles/hover = SubResource("StyleBoxFlat_icu7h")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_pcutd")
-theme_override_styles/normal = SubResource("StyleBoxEmpty_mhp6s")
 
 [node name="FXAACheck" type="CheckBox" parent="Menu/Options"]
 layout_mode = 2
@@ -167,10 +163,6 @@ theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 1
 theme_override_fonts/font = ExtResource("2_ii5nb")
 theme_override_font_sizes/font_size = 30
-theme_override_styles/disabled = SubResource("StyleBoxFlat_pcutd")
-theme_override_styles/hover = SubResource("StyleBoxFlat_icu7h")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_pcutd")
-theme_override_styles/normal = SubResource("StyleBoxEmpty_mhp6s")
 
 [node name="TAACheck" type="CheckBox" parent="Menu/Options"]
 layout_mode = 2
@@ -186,10 +178,6 @@ theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 1
 theme_override_fonts/font = ExtResource("2_ii5nb")
 theme_override_font_sizes/font_size = 30
-theme_override_styles/disabled = SubResource("StyleBoxFlat_pcutd")
-theme_override_styles/hover = SubResource("StyleBoxFlat_icu7h")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_pcutd")
-theme_override_styles/normal = SubResource("StyleBoxEmpty_mhp6s")
 
 [node name="MSAADropdown" type="OptionButton" parent="Menu/Options"]
 layout_mode = 2
@@ -208,6 +196,20 @@ theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
 theme_override_colors/font_focus_color = Color(1, 0.588235, 0.156863, 1)
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_ii5nb")
+theme_override_font_sizes/font_size = 30
+
+[node name="FPSMeterCheck" type="CheckBox" parent="Menu/Options"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+mouse_default_cursor_shape = 2
+theme_override_colors/font_disabled_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_focus_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 1
 theme_override_fonts/font = ExtResource("2_ii5nb")
 theme_override_font_sizes/font_size = 30
 
@@ -298,5 +300,6 @@ text = "RESET"
 [connection signal="toggled" from="Menu/Options/TAACheck" to="." method="_on_taa_check_toggled"]
 [connection signal="item_selected" from="Menu/Options/MSAADropdown" to="." method="_on_msaa_dropdown_item_selected"]
 [connection signal="item_selected" from="Menu/Options/ResolutionDropdown" to="." method="_on_resolution_dropdown_item_selected"]
+[connection signal="toggled" from="Menu/Options/FPSMeterCheck" to="." method="_on_fps_meter_check_toggled"]
 [connection signal="pressed" from="HBoxContainer/BackBtn" to="." method="_on_back_btn_pressed"]
 [connection signal="pressed" from="HBoxContainer/ResetBtn" to="." method="_on_reset_btn_pressed"]

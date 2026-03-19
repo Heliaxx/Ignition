@@ -11,6 +11,7 @@ public partial class Graphics : Control
 	[Export] private CheckBox taaCheck;
 	[Export] private OptionButton msaaDropdown;
 	[Export] private OptionButton resolutionDropdown;
+	[Export] private CheckBox fpsMeterCheck;
 	[Export] private Button backBtn;
 
 	private ConfigFileHandler configHandler;
@@ -25,6 +26,7 @@ public partial class Graphics : Control
 		taaCheck ??= GetNode<CheckBox>("Menu/Options/TAACheck");
 		msaaDropdown ??= GetNode<OptionButton>("Menu/Options/MSAADropdown");
 		resolutionDropdown ??= GetNode<OptionButton>("Menu/Options/ResolutionDropdown");
+		fpsMeterCheck ??= GetNode<CheckBox>("Menu/Options/FPSMeterCheck");
 		backBtn ??= GetNode<Button>("HBoxContainer/BackBtn");
 
 		configHandler = GetTree().Root.GetNode<ConfigFileHandler>("/root/ConfigFileHandler");
@@ -138,6 +140,8 @@ public partial class Graphics : Control
 			"3840x2160" => 4,
 			_           => 2
 		};
+
+		fpsMeterCheck.ButtonPressed = configHandler.GetShowFpsMeter();
 	}
 
 	private void _on_fps_dropdown_item_selected(int index)
@@ -198,6 +202,11 @@ public partial class Graphics : Control
 			_ => "disabled"
 		};
 		configHandler.SaveVideoSettings("msaa", msaaStr);
+	}
+
+	private void _on_fps_meter_check_toggled(bool toggled)
+	{
+		configHandler.SaveVideoSettings("show_fps_meter", toggled);
 	}
 
 	private void _on_resolution_dropdown_item_selected(int index)

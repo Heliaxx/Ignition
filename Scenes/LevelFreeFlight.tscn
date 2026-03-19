@@ -325,7 +325,11 @@ mouse_filter = 2
 
 [node name="Scenery" type="Node3D" parent="."]
 
-[node name="PauseMenu" parent="." instance=ExtResource("8_63mkt")]
+[node name="PauseMenuLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = 3
+
+[node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_63mkt")]
 
 [node name="ChunkedAsteroidField" type="Node3D" parent="." node_paths=PackedStringArray("SpawnExclusionZones")]
 script = ExtResource("9_6rtd5")

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 
 public partial class ConfigFileHandler
 {
-	private const int    DefaultFps        = 90;
-	private const string DefaultMode       = "fullscreen";
-	private const bool   DefaultVsync      = false;
-	private const bool   DefaultFxaa       = true;
-	private const bool   DefaultTaa        = false;
-	private const string DefaultMsaa       = "4x";
-	private const string DefaultResolution = "1920x1080";
+	private const int    DefaultFps           = 90;
+	private const string DefaultMode          = "fullscreen";
+	private const bool   DefaultVsync         = false;
+	private const bool   DefaultFxaa          = true;
+	private const bool   DefaultTaa           = false;
+	private const string DefaultMsaa          = "4x";
+	private const string DefaultResolution    = "1920x1080";
+	private const bool   DefaultShowFpsMeter  = true;
 
 	public void SaveVideoSettings(string key, Variant value)
 	{
@@ -23,15 +24,23 @@ public partial class ConfigFileHandler
 
 	public void ResetVideoSettings()
 	{
-		config.SetValue("video", "fps",        DefaultFps);
-		config.SetValue("video", "mode",       DefaultMode);
-		config.SetValue("video", "vsync",      DefaultVsync);
-		config.SetValue("video", "fxaa",       DefaultFxaa);
-		config.SetValue("video", "taa",        DefaultTaa);
-		config.SetValue("video", "msaa",       DefaultMsaa);
-		config.SetValue("video", "resolution", DefaultResolution);
+		config.SetValue("video", "fps",             DefaultFps);
+		config.SetValue("video", "mode",            DefaultMode);
+		config.SetValue("video", "vsync",           DefaultVsync);
+		config.SetValue("video", "fxaa",            DefaultFxaa);
+		config.SetValue("video", "taa",             DefaultTaa);
+		config.SetValue("video", "msaa",            DefaultMsaa);
+		config.SetValue("video", "resolution",      DefaultResolution);
+		config.SetValue("video", "show_fps_meter",  DefaultShowFpsMeter);
 		config.Save(SETTINGS_FILE_PATH);
 		ApplyVideoSettings();
+	}
+
+	public bool GetShowFpsMeter()
+	{
+		return config.HasSectionKey("video", "show_fps_meter")
+			? (bool)config.GetValue("video", "show_fps_meter")
+			: DefaultShowFpsMeter;
 	}
 
 	private void EnsureVideoDefaults()
@@ -43,13 +52,14 @@ public partial class ConfigFileHandler
 			config.SetValue("video", key, value);
 			changed = true;
 		}
-		Ensure("fps",        DefaultFps);
-		Ensure("mode",       DefaultMode);
-		Ensure("vsync",      DefaultVsync);
-		Ensure("fxaa",       DefaultFxaa);
-		Ensure("taa",        DefaultTaa);
-		Ensure("msaa",       DefaultMsaa);
-		Ensure("resolution", DefaultResolution);
+		Ensure("fps",            DefaultFps);
+		Ensure("mode",           DefaultMode);
+		Ensure("vsync",          DefaultVsync);
+		Ensure("fxaa",           DefaultFxaa);
+		Ensure("taa",            DefaultTaa);
+		Ensure("msaa",           DefaultMsaa);
+		Ensure("resolution",     DefaultResolution);
+		Ensure("show_fps_meter", DefaultShowFpsMeter);
 		if (changed) config.Save(SETTINGS_FILE_PATH);
 	}
 

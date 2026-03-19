@@ -39,13 +39,14 @@ public partial class ConfigFileHandler : Node
 
 	private void SetDefaultVideoSettings()
 	{
-		config.SetValue("video", "fps",        DefaultFps);
-		config.SetValue("video", "mode",       DefaultMode);
-		config.SetValue("video", "vsync",      DefaultVsync);
-		config.SetValue("video", "fxaa",       DefaultFxaa);
-		config.SetValue("video", "taa",        DefaultTaa);
-		config.SetValue("video", "msaa",       DefaultMsaa);
-		config.SetValue("video", "resolution", DefaultResolution);
+		config.SetValue("video", "fps",             DefaultFps);
+		config.SetValue("video", "mode",            DefaultMode);
+		config.SetValue("video", "vsync",           DefaultVsync);
+		config.SetValue("video", "fxaa",            DefaultFxaa);
+		config.SetValue("video", "taa",             DefaultTaa);
+		config.SetValue("video", "msaa",            DefaultMsaa);
+		config.SetValue("video", "resolution",      DefaultResolution);
+		config.SetValue("video", "show_fps_meter",  DefaultShowFpsMeter);
 	}
 
 	private void SetDefaultAudioSettings()

@@ -101,7 +101,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 50)
 [node name="4" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 50)
 
-[node name="PauseMenu" parent="." instance=ExtResource("8_3dypt")]
+[node name="PauseMenuLayer" type="CanvasLayer" parent="."]
+layer = 3
+process_mode = 3
+
+[node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_3dypt")]
 
 [node name="Area3D" type="Area3D" parent="."]
 

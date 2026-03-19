@@ -76,7 +76,7 @@ glow_hdr_luminance_cap = 41.19
 [sub_resource type="SphereShape3D" id="SphereShape3D_1eeh6"]
 radius = 765.591
 
-[node name="Level" type="Node3D"]
+[node name="Level2" type="Node3D"]
 script = ExtResource("1_q8gjv")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -101,7 +101,11 @@ sky_mode = 1
 [node name="FPSMeter" parent="." instance=ExtResource("7_xv4tn")]
 mouse_filter = 2
 
-[node name="PauseMenu" parent="." instance=ExtResource("8_1lsgi")]
+[node name="PauseMenuLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = 3
+
+[node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_1lsgi")]
 
 [node name="ChunkedAsteroidField" type="Node3D" parent="." node_paths=PackedStringArray("SpawnExclusionZones")]
 script = ExtResource("9_psghp")
