@@ -299,3 +299,4 @@ text = "RESET"
 [connection signal="item_selected" from="Menu/Options/MSAADropdown" to="." method="_on_msaa_dropdown_item_selected"]
 [connection signal="item_selected" from="Menu/Options/ResolutionDropdown" to="." method="_on_resolution_dropdown_item_selected"]
 [connection signal="pressed" from="HBoxContainer/BackBtn" to="." method="_on_back_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/ResetBtn" to="." method="_on_reset_btn_pressed"]

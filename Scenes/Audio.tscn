@@ -104,7 +104,7 @@ size_flags_vertical = 3
 theme_override_styles/slider = SubResource("StyleBoxLine_17e28")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_y7hs6")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_p7rhv")
-value = 100.0
+value = 40.0
 
 [node name="VolMusicSlider" type="HSlider" parent="Menu/Options"]
 custom_minimum_size = Vector2(200, 0)
@@ -113,7 +113,7 @@ size_flags_vertical = 3
 theme_override_styles/slider = SubResource("StyleBoxLine_qmla4")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_1mweh")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_1mweh")
-value = 50.0
+value = 20.0
 
 [node name="VolSFXSlider" type="HSlider" parent="Menu/Options"]
 custom_minimum_size = Vector2(200, 0)
@@ -122,7 +122,7 @@ size_flags_vertical = 3
 theme_override_styles/slider = SubResource("StyleBoxLine_qmla4")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_1mweh")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_1mweh")
-value = 50.0
+value = 40.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 0
@@ -208,3 +208,4 @@ texture = SubResource("GradientTexture2D_ub052")
 [connection signal="drag_ended" from="Menu/Options/VolMusicSlider" to="." method="_on_vol_music_slider_drag_ended"]
 [connection signal="drag_ended" from="Menu/Options/VolSFXSlider" to="." method="_on_vol_sfx_slider_drag_ended"]
 [connection signal="pressed" from="HBoxContainer/BackBtn" to="." method="_on_back_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/ResetBtn" to="." method="_on_reset_btn_pressed"]

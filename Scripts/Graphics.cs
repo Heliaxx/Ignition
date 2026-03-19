@@ -228,4 +228,10 @@ public partial class Graphics : Control
 	{
 		GetTree().ChangeSceneToFile("res://Scenes/Menu.tscn");
 	}
+
+	private void _on_reset_btn_pressed()
+	{
+		configHandler.ResetVideoSettings();
+		LoadCurrentSettings();
+	}
 }

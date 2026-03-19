@@ -208,4 +208,12 @@ public partial class Controls : Control
 	{
 		GetTree().ChangeSceneToFile("res://Scenes/Menu.tscn");
 	}
+
+	private void _on_apply_btn_pressed()
+	{
+		ConfigFileHandler.Instance.ResetControlSettings();
+		LoadKeybindingsFromSettings();
+		LoadMouseSettings();
+		CreateActionList();
+	}
 }

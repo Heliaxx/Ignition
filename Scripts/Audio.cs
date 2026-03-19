@@ -9,21 +9,26 @@ public partial class Audio : Control
     private Slider sfxVolumeSlider;
 
     public override void _Ready()
-{
-    generalVolumeSlider = GetNode<Slider>("Menu/Options/VolGeneralSlider");
-    musicVolumeSlider = GetNode<Slider>("Menu/Options/VolMusicSlider");
-    sfxVolumeSlider = GetNode<Slider>("Menu/Options/VolSFXSlider");
+    {
+        generalVolumeSlider = GetNode<Slider>("Menu/Options/VolGeneralSlider");
+        musicVolumeSlider = GetNode<Slider>("Menu/Options/VolMusicSlider");
+        sfxVolumeSlider = GetNode<Slider>("Menu/Options/VolSFXSlider");
 
-    Dictionary<string, Variant> audioSettings = ConfigFileHandler.Instance.LoadAudioSettings();
+        LoadSettingsIntoUi();
+        _ApplyAudioSettings();
+    }
 
-    if (audioSettings.TryGetValue("general_volume", out Variant generalVol))
-        generalVolumeSlider.Value = Math.Min(generalVol.As<float>(), 1.0f) * 100.0f;
-    if (audioSettings.TryGetValue("music_volume", out Variant musicVol))
-        musicVolumeSlider.Value = Math.Min(musicVol.As<float>(), 1.0f) * 100.0f;
-    if (audioSettings.TryGetValue("sfx_volume", out Variant sfxVol))
-        sfxVolumeSlider.Value = Math.Min(sfxVol.As<float>(), 1.0f) * 100.0f;
-    _ApplyAudioSettings();
-}
+    private void LoadSettingsIntoUi()
+    {
+        var audioSettings = ConfigFileHandler.Instance.LoadAudioSettings();
+
+        if (audioSettings.TryGetValue("general_volume", out Variant generalVol))
+            generalVolumeSlider.Value = Math.Min(generalVol.As<float>(), 1.0f) * 100.0f;
+        if (audioSettings.TryGetValue("music_volume", out Variant musicVol))
+            musicVolumeSlider.Value = Math.Min(musicVol.As<float>(), 1.0f) * 100.0f;
+        if (audioSettings.TryGetValue("sfx_volume", out Variant sfxVol))
+            sfxVolumeSlider.Value = Math.Min(sfxVol.As<float>(), 1.0f) * 100.0f;
+    }
 
     private void _ApplyAudioSettings()
     {
@@ -42,6 +47,13 @@ public partial class Audio : Control
     private void _on_back_btn_pressed()
     {
         GetTree().ChangeSceneToFile("res://Scenes/Menu.tscn");
+    }
+
+    private void _on_reset_btn_pressed()
+    {
+        ConfigFileHandler.Instance.ResetAudioSettings();
+        LoadSettingsIntoUi();
+        _ApplyAudioSettings();
     }
 
     private void _on_vol_general_slider_drag_ended(bool valueChanged)
