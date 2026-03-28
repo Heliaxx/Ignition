@@ -100,7 +100,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		lightRight = GetNode<Light3D>("RightLight");
 		dustParticles = GetNode<Node3D>("dustParticles");
 		dustParticlesGpu = dustParticles.GetNodeOrNull<GpuParticles3D>("GPUParticles3D");
-		_cockpitCamera = GetNode<Camera3D>("ShakeableCamera/Camera3D");
+		_cockpitCamera = GetNode<Camera3D>("ShakeableCamera");
 		_externalCamera = GetNode<Camera3D>("ExternalCamera");
 		LoadControlSettings();
 		if (dustParticlesGpu != null)
@@ -264,7 +264,6 @@ public partial class Kaito : CharacterBody3D, IDamageable
 			return;
 		}
 
-		// update firing timer
 		timeSinceLastShot += delta;
 		if (Input.IsActionJustPressed("light"))
 		{
@@ -274,7 +273,6 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		if (Input.IsActionPressed("primary_fire"))
 		{
-			GetNode("TraumaCauser").Call("CauseTrauma");
 			if (timeSinceLastShot >= fireCooldown)
 			{
 				Shoot();
@@ -387,7 +385,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		torque.Z = pitchInput * _currentPitchAcceleration;
 
 		// Stop key: precision stop assist
-		if (Input.IsActionPressed("stop") && !_isBoosting && Velocity.Length() <= MAX_SPEED * 0.25f && Velocity.Length() > 0.1f)
+		if (Input.IsActionPressed("stop") && !_isBoosting && Velocity.Length() <= MAX_SPEED * 0.5f && Velocity.Length() > 0.1f)
 		{
 			thrust = Vector3.Zero;
 			Velocity = Velocity.MoveToward(Vector3.Zero, ACCELERATION * delta);

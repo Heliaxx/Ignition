@@ -16,7 +16,7 @@ public partial class Evade : CombatState
     {
         if (Fighter == null || !Fighter.HasTarget()) return;
 
-        // Flee check — even while evading, if health is critical, flee
+        // Flee check - even while evading, if health is critical, flee
         if (Fighter.GetHealthPercent() <= Fighter.FleeHealthThreshold)
         {
             stateMachine.TransitionTo("Flee");

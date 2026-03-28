@@ -47,7 +47,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
     [Export] public float DetectionRange = 600f;
     [Export] public float WeaponRange = 300f;
     [Export] public float CloseRange = 80f;
-    [Export] public float FiringArc = 30f; // degrees — nose cone for firing
+    [Export] public float FiringArc = 30f; // degrees - nose cone for firing
     [Export] public float FleeHealthThreshold = 0.3f;
     [Export] public float EvadeDamageCooldown = 1.5f; // seconds after hit before evade can trigger again
 
@@ -121,7 +121,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
         // Cache space state for obstacle avoidance raycasts
         _spaceState = GetWorld3D()?.DirectSpaceState;
 
-        // Staggered obstacle avoidance — only raycast every Nth frame
+        // Staggered obstacle avoidance - only raycast every Nth frame
         _avoidanceFrameCounter++;
         if (_avoidanceFrameCounter >= AVOIDANCE_FRAME_INTERVAL)
         {

@@ -65,7 +65,7 @@ public partial class Kaito
 		}
 		else
 		{
-			// Has a target — find a different one closer to center, or untarget
+			// Has a target - find a different one closer to center, or untarget
 			GimbalTarget best = null;
 			foreach (var (gt, _) in validTargets)
 			{

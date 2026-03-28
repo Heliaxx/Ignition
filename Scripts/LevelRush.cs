@@ -56,7 +56,7 @@ public partial class LevelRush : BaseLevel
 		float dt = (float)delta;
 		_gameTime += dt;
 
-		// Health drain: rate increases linearly with time
+		// Health drain: rate linearly increases with time
 		float drainRate = DrainStartRate + DrainGrowthRate * (_gameTime / 60f);
 		_playerHealth.TakeDamage(drainRate * dt);
 

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Fast 3D Poisson Disk Sampling - guarantees minimum distance between points
+/// 3D Poisson Disk Sampling - guarantees minimum distance between points
 /// </summary>
 public static class PoissonDiskSampler
 {
@@ -118,7 +118,7 @@ public static class PoissonDiskSampler
         
         float minDistSq = minDistance * minDistance;
 
-        // Check 3x3x3 neighborhood
+        // Check 3x3x3 neighbourhood
         for (int dx = -2; dx <= 2; dx++)
         {
             for (int dy = -2; dy <= 2; dy++)

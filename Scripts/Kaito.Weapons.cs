@@ -7,7 +7,7 @@ public partial class Kaito
 	[Export] public int MaxAmmo = 30;
 	[Export] public float BulletSpeed = 1600f;
 	[Export] public float FireRate = 10f; // shots per second
-	[Export] public float GimbalAngle = 10.0f; // degrees — max weapon deflection from ship forward
+	[Export] public float GimbalAngle = 10.0f; // degrees - max weapon deflection from ship forward
 	[Export] public float GimbalTrackingSpeed = 5.0f; // How fast the gimbal converges on target (deg/s-like factor)
 
 	private int _currentAmmo;
@@ -19,7 +19,7 @@ public partial class Kaito
 	private AudioStreamPlayer3D endShooting;
 	private PackedScene bullet;
 	private double timeSinceLastShot = 0.0;
-	private double fireCooldown; // seconds — computed from FireRate in _Ready()
+	private double fireCooldown; // seconds - computed from FireRate in _Ready()
 	private Label _ammoLabel;
 	private Vector3 _currentGimbalDir = Vector3.Forward; // smoothed gimbal aim direction (local space)
 
@@ -129,7 +129,7 @@ public partial class Kaito
 		}
 		else
 		{
-			// No target — return to forward
+			// No target - return to forward
 			targetDir = forward;
 		}
 

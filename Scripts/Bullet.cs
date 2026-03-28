@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class Bullet : Node3D
 {
@@ -12,8 +11,8 @@ public partial class Bullet : Node3D
 	private bool _hasHit = false;
 
 	/// <summary>
-	/// Velocity inherited from the spawner (e.g., ship) in world space.
-	/// Set this before adding the bullet to the scene.
+	/// Velocity inherited from the spawner.
+	/// Set before adding the bullet to the scene.
 	/// </summary>
 	public Vector3 InheritedVelocity { get; set; } = Vector3.Zero;
 
@@ -34,8 +33,6 @@ public partial class Bullet : Node3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// Force the RayCast to update before checking collision
-		ray.ForceRaycastUpdate();
 		if (!_hasHit && ray.IsColliding())
 		{
 			_hasHit = true;

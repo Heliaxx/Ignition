@@ -34,7 +34,7 @@ public partial class Pursue : CombatState
             return;
         }
 
-        // Chase the player — skipFacing since FaceTarget handles rotation
+        // Chase the player - skipFacing since FaceTarget handles rotation
         Fighter.PursuePlayer(delta, skipFacing: true);
         Fighter.FaceTarget(delta);
     }

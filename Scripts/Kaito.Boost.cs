@@ -58,13 +58,12 @@ public partial class Kaito
 		{
 			_boostTimer -= delta;
 
-			// Spool up: boost power ramps up quickly at start
+			// Gradual spool up
 			if (_currentBoostPower < 1.0f)
 			{
 				_currentBoostPower = Mathf.MoveToward(_currentBoostPower, 1.0f, delta / BoostSpoolUpTime);
 			}
 
-			// Check if boost duration ended
 			if (_boostTimer <= 0.0f)
 			{
 				_isBoosting = false;
@@ -74,7 +73,8 @@ public partial class Kaito
 				_speedAtBoostEnd = Velocity.Length();
 			}
 		}
-		// Handle decay phase - boost power gradually fades
+
+		// Handle decay phase - boost power fade out
 		else if (_isBoostDecaying)
 		{
 			_boostDecayTimer -= delta;

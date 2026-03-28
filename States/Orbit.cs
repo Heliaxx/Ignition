@@ -68,7 +68,7 @@ public partial class Orbit : CombatState
             playerForward, localOffset
         );
 
-        // Apply movement — skipFacing since FaceTarget handles rotation
+        // Apply movement - skipFacing since FaceTarget handles rotation
         Fighter.MoveInDirection(steering.Normalized(), delta, skipFacing: true);
         Fighter.FaceTarget(delta);
 

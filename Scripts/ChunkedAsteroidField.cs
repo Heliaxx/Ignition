@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -27,7 +26,7 @@ public partial class ChunkedAsteroidField : Node3D
     public int UnloadBuffer = 1; // Extra distance before unloading
 
     [Export]
-    public int CollisionRadius = 2; // Chunks with collision shapes (should be <= LoadRadius)
+    public int CollisionRadius = 2; // Radius of chunks with collision shapes (should be <= LoadRadius)
 
     [Export]
     public int ChunksPerFrame = 1; // Chunks loaded per _Process frame (Optimization)
@@ -37,26 +36,23 @@ public partial class ChunkedAsteroidField : Node3D
     public bool LimitUpward = false; // Limit chunk generation above Y=0
 
     [Export]
-    public int MaxChunksUp = 2; // Max chunks above Y=0 (when LimitUpward is true)
+    public int MaxChunksUp = 2; // Max chunks above Y=0 (if LimitUpward is true)
 
     [Export]
     public bool LimitDownward = false; // Limit chunk generation below Y=0
 
     [Export]
-    public int MaxChunksDown = 2; // Max chunks below Y=0 (when LimitDownward is true)
+    public int MaxChunksDown = 2; // Max chunks below Y=0 (if LimitDownward is true)
 
     [ExportGroup("Asteroid Settings")]
     [Export]
-    public float MinSpacing = 400f; // Minimum distance between asteroids (Poisson)
+    public float MinSpacing = 400f; // Minimum distance between asteroids for Poisson sampling
 
     [Export]
     public float MinScale = 25f; // Minimum asteroid scale
 
     [Export]
     public float MaxScale = 50f; // Maximum asteroid scale
-
-    [Export]
-    public float VerticalScale = 1.0f; // Flatten the field vertically (0-1)
 
     [Export]
     public bool AsteroidsDestroyable = true;
@@ -69,7 +65,7 @@ public partial class ChunkedAsteroidField : Node3D
     public Node3D[] SpawnExclusionZones; // Asteroids will not spawn within SpawnExclusionRadius of these nodes
 
     [Export]
-    public float SpawnExclusionRadius = 200f; // Minimum asteroid spawn distance from player and exclusion zones
+    public float SpawnExclusionRadius = 200f; // Minimum spawn distance from exclusion zones
 
     [ExportGroup("Performance")]
     [Export]
@@ -82,7 +78,7 @@ public partial class ChunkedAsteroidField : Node3D
 
     #endregion
 
-    // Asteroid mesh variants for visual variety
+    // Multiple asteroid variants
     private Mesh[] _asteroidMeshes;
     private Material[] _asteroidMaterials;
     private Shape3D[] _collisionShapes;
@@ -105,7 +101,6 @@ public partial class ChunkedAsteroidField : Node3D
 
     private class ChunkData
     {
-        public Vector3I Coord;
         public List<MultiMeshInstance3D> MultiMeshInstances = new();
         public Dictionary<int, MultiMeshInstance3D> MmiByVariant = new();
         public List<AsteroidInstance> Asteroids;
@@ -263,41 +258,43 @@ public partial class ChunkedAsteroidField : Node3D
     {
         Vector3I playerChunk = _lastPlayerChunk;
 
-        // Determine which chunks should be loaded
+        // Build the set of chunks that should be loaded: all coords within a spherical
+        // radius of LoadRadius chunks around the player, respecting optional Y clamping.
         HashSet<Vector3I> shouldBeLoaded = new();
-        
+
         for (int x = -LoadRadius; x <= LoadRadius; x++)
         {
             for (int y = -LoadRadius; y <= LoadRadius; y++)
             {
                 for (int z = -LoadRadius; z <= LoadRadius; z++)
                 {
-                    // Optional: use sphere instead of cube for load radius
+                    // Sphere check: skip corners of the cube that exceed LoadRadius
                     if (x * x + y * y + z * z <= LoadRadius * LoadRadius + 1)
                     {
                         int chunkY = playerChunk.Y + y;
-                        
-                        // Skip chunks outside vertical limits
+
+                        // Vertical limits check: skip chunks exceeding upward/downward limits, if enabled
                         if (LimitUpward && chunkY > MaxChunksUp)
                             continue;
                         if (LimitDownward && chunkY < -MaxChunksDown)
                             continue;
-                        
+
                         shouldBeLoaded.Add(playerChunk + new Vector3I(x, y, z));
                     }
                 }
             }
         }
 
-        // Unload chunks that are too far
+        // Unload any chunks that have gone beyond LoadRadius + UnloadBuffer.
+        // The buffer prevents thrashing when the player hovers near a chunk boundary.
         List<Vector3I> toUnload = new();
         int unloadDist = LoadRadius + UnloadBuffer;
-        
+
         foreach (var kvp in _loadedChunks)
         {
             Vector3I diff = kvp.Key - playerChunk;
-            if (Mathf.Abs(diff.X) > unloadDist || 
-                Mathf.Abs(diff.Y) > unloadDist || 
+            if (Mathf.Abs(diff.X) > unloadDist ||
+                Mathf.Abs(diff.Y) > unloadDist ||
                 Mathf.Abs(diff.Z) > unloadDist)
             {
                 toUnload.Add(kvp.Key);
@@ -309,7 +306,8 @@ public partial class ChunkedAsteroidField : Node3D
             UnloadChunk(coord);
         }
 
-        // Queue new chunks sorted by distance so inner chunks load first
+        // Enqueue not-yet-loaded chunks, nearest first, so the area immediately
+        // around the player always populates before distant chunks.
         _loadQueue.Clear();
         var pending = new List<Vector3I>();
         foreach (var coord in shouldBeLoaded)
@@ -327,17 +325,17 @@ public partial class ChunkedAsteroidField : Node3D
         foreach (var coord in pending)
             _loadQueue.Enqueue(coord);
 
-        // Update collision bodies for already-loaded chunks
+        // Add/remove collision bodies on chunks based on CollisionRadius
         UpdateCollisionBodies();
     }
 
     private void LoadChunk(Vector3I coord)
     {
-        // Generate deterministic seed for this chunk
+        // Generate deterministic seed for the chunk
         ulong chunkSeed = GenerateChunkSeed(coord);
 
         // Generate asteroid positions using Poisson disk sampling
-        Vector3 regionSize = new Vector3(ChunkSize, ChunkSize * VerticalScale, ChunkSize);
+        Vector3 regionSize = new Vector3(ChunkSize, ChunkSize, ChunkSize);
         var points = PoissonDiskSampler.GeneratePoints(regionSize, MinSpacing, chunkSeed);
 
         // Limit points per chunk
@@ -404,8 +402,6 @@ public partial class ChunkedAsteroidField : Node3D
                 for (int i = 0; i < variantAsteroids.Count; i++)
                 {
                     var a = variantAsteroids[i];
-                    // Use chunk-local position so the MMI node can live at chunkOrigin.
-                    // This keeps instance transforms small and gives Godot a tight, accurate
                     var localPos = a.Position - chunkOrigin;
                     var transform = new Transform3D(Basis.Identity, localPos);
                     transform.Basis = transform.Basis.Rotated(Vector3.Right, a.Rotation.X);
@@ -415,18 +411,6 @@ public partial class ChunkedAsteroidField : Node3D
 
                     multiMesh.SetInstanceTransform(i, transform);
                 }
-
-                // Explicitly set the AABB in local space (relative to chunkOrigin).
-                // This bypasses Godot 4's lazy AABB recomputation, which can produce a
-                // near-origin result on the first frame (computed before transforms are set)
-                // and cause the entire MMI to be frustum-culled incorrectly.
-                float halfX = regionSize.X * 0.5f + MaxScale;
-                float halfY = regionSize.Y * 0.5f + MaxScale;
-                float halfZ = regionSize.Z * 0.5f + MaxScale;
-                multiMesh.CustomAabb = new Aabb(
-                    new Vector3(-halfX, -halfY, -halfZ),
-                    new Vector3(halfX * 2f, halfY * 2f, halfZ * 2f)
-                );
 
                 mmi.Multimesh = multiMesh;
                 mmi.CastShadow = GeometryInstance3D.ShadowCastingSetting.On;
@@ -446,7 +430,6 @@ public partial class ChunkedAsteroidField : Node3D
 
         var chunkData = new ChunkData
         {
-            Coord = coord,
             MultiMeshInstances = mmis,
             MmiByVariant = mmiByVariant,
             Asteroids = asteroids,
@@ -455,7 +438,7 @@ public partial class ChunkedAsteroidField : Node3D
 
         _loadedChunks[coord] = chunkData;
 
-        // Add collision body immediately if within collision radius (Option A + B)
+        // Add collision body immediately if within collision radius
         if (IsWithinCollisionRadius(coord))
             CreateCollisionBody(chunkData);
     }
@@ -497,19 +480,12 @@ public partial class ChunkedAsteroidField : Node3D
     {
         return new Vector3I(
             Mathf.FloorToInt(worldPos.X / ChunkSize),
-            Mathf.FloorToInt(worldPos.Y / (ChunkSize * VerticalScale)),
+            Mathf.FloorToInt(worldPos.Y / ChunkSize),
             Mathf.FloorToInt(worldPos.Z / ChunkSize)
         );
     }
 
-    private Vector3 ChunkToWorld(Vector3I chunkCoord)
-    {
-        return new Vector3(
-            chunkCoord.X * ChunkSize,
-            chunkCoord.Y * ChunkSize * VerticalScale,
-            chunkCoord.Z * ChunkSize
-        );
-    }
+    private Vector3 ChunkToWorld(Vector3I chunkCoord) => (Vector3)chunkCoord * ChunkSize;
 
     private ulong GenerateChunkSeed(Vector3I coord)
     {
@@ -596,39 +572,6 @@ public partial class ChunkedAsteroidField : Node3D
         }
     }
 
-    /// <summary>
-    /// Get asteroid ID at a world position (for destruction tracking)
-    /// </summary>
-    public ulong? GetAsteroidIdAtPosition(Vector3 worldPos, float tolerance = 5f)
-    {
-        Vector3I chunk = WorldToChunk(worldPos);
-        
-        if (_loadedChunks.TryGetValue(chunk, out var chunkData))
-        {
-            float toleranceSq = tolerance * tolerance;
-            foreach (var asteroid in chunkData.Asteroids)
-            {
-                if (asteroid.Position.DistanceSquaredTo(worldPos) < toleranceSq)
-                {
-                    return asteroid.Id;
-                }
-            }
-        }
-        return null;
-    }
-
-    /// <summary>
-    /// Force reload all chunks (e.g., after changing settings)
-    /// </summary>
-    public void ReloadAllChunks()
-    {
-        var coords = new List<Vector3I>(_loadedChunks.Keys);
-        foreach (var coord in coords)
-        {
-            UnloadChunk(coord);
-        }
-        UpdateChunks();
-    }
 
     private bool IsWithinCollisionRadius(Vector3I coord)
     {
@@ -639,8 +582,7 @@ public partial class ChunkedAsteroidField : Node3D
 
     /// <summary>
     /// Builds a StaticBody3D with one CollisionShape3D per live asteroid and
-    /// adds it to the scene tree in one batch.
-    /// Safe to call on a chunk that already has a collision body (no-op).
+    /// adds it to the scene tree. Does nothing if the chunk already has a collision body.
     /// </summary>
     private void CreateCollisionBody(ChunkData chunk)
     {
@@ -687,7 +629,7 @@ public partial class ChunkedAsteroidField : Node3D
             collisionBody.AddChild(collisionShape);
         }
 
-        // Add after all shapes — single physics-server notification
+        // Add after all shapes - single physics-server notification
         AddChild(collisionBody);
         chunk.CollisionBody = collisionBody;
     }
@@ -713,9 +655,7 @@ public partial class ChunkedAsteroidField : Node3D
         }
     }
 
-    // -------------------------------------------------------------------------
     // Gradual chunk loading
-    // -------------------------------------------------------------------------
 
     /// <summary>
     /// Dequeues and loads up to ChunksPerFrame chunks per game frame.

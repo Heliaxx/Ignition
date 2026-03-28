@@ -1,15 +1,14 @@
 using System;
 
 /// <summary>
-/// Lightweight static event bus for cross-system communication.
-/// Use for events where the publisher and subscriber don't have direct node references.
+/// Static event bus for events where the publisher and subscriber don't have direct node references.
 /// </summary>
 public static class EventBus
 {
 	/// <summary>Fired when audio settings change (volume sliders, etc.).</summary>
 	public static event Action AudioSettingsChanged;
 
-	/// <summary>Fired when an enemy is killed. Subscribers receive the kill count delta (usually 1).</summary>
+	/// <summary>Fired when an enemy is killed. Subscribers receive the kill count delta.</summary>
 	public static event Action<int> EnemyKilled;
 
 	/// <summary>Fired when the player dies.</summary>
@@ -20,7 +19,7 @@ public static class EventBus
 	public static void EmitPlayerDied() => PlayerDied?.Invoke();
 
 	/// <summary>
-	/// Call when changing scenes to prevent stale subscriptions from freed nodes.
+	/// Fired when changing scenes to prevent stale subscriptions from freed nodes.
 	/// </summary>
 	public static void ClearAll()
 	{

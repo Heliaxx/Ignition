@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 /// <summary>
-/// Visualizes the Elite-style aiming widget on the HUD.
+/// Visualizes aiming widget on the HUD.
 /// Displays aiming radius circle, deadzone, and cursor position.
 /// </summary>
 public partial class AimWidgetVisualizer : Control
@@ -82,7 +82,7 @@ public partial class AimWidgetVisualizer : Control
 			DrawTextureAtCenter(_gimbalIndicator, center, 128f, CrosshairColor);
 		}
 
-		// Draw cursor indicator — fades in as it moves away from center
+		// Draw cursor indicator - fades in as it moves away from center
 		Vector2 cursorPos = playerShip.GetWidgetCursorPos();
 		float cursorDist = cursorPos.DistanceTo(center);
 		float cursorAlpha = Mathf.Clamp(cursorDist / radius, 0f, 1f);
@@ -96,7 +96,7 @@ public partial class AimWidgetVisualizer : Control
 			DrawTextureAtCenter(_targetReticle, targetScreenPos.Value, TargetReticleSize, TargetIndicatorColor);
 		}
 
-		// Draw lead reticle (where to aim)
+		// Draw target lead reticle
 		Vector2? leadScreenPos = playerShip.GetLeadTargetScreenPos();
 		if (leadScreenPos.HasValue && _leadReticle != null)
 		{

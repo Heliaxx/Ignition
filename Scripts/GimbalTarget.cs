@@ -5,7 +5,7 @@ public enum GimbalTargetType { Enemy, Ally, Powerup }
 /// <summary>
 /// Place this node anywhere in a scene to make that point targetable by the player's gimbal system.
 /// Registers itself in the "gimbal_targets" group on _Ready.
-/// Automatically links to its parent node as the owner — no Fighter reference needed.
+/// Automatically links to its parent node as the owner - no Fighter reference needed.
 /// If the parent has a "Died" signal, it is forwarded as GimbalTarget.Died.
 /// </summary>
 public partial class GimbalTarget : Node3D
@@ -39,19 +39,19 @@ public partial class GimbalTarget : Node3D
 		return Vector3.Zero;
 	}
 
-	/// <summary>Returns true if this target is still worth locking onto.</summary>
+	/// <summary>Returns true if target is valid.</summary>
 	public bool IsValid()
 	{
 		if (!IsInstanceValid(this) || !Visible)
 			return false;
 
 		if (_owner == null || !IsInstanceValid(_owner))
-			return true; // standalone — valid while this node is visible
+			return true; 
 
 		if (!_owner.Visible || _owner.ProcessMode == ProcessModeEnum.Disabled)
 			return false;
 
-		// Health check — works with any node that exposes CurrentHealthValue
+		// Health check - works with any node that exposes CurrentHealthValue
 		if (_owner is Fighter fighter)
 			return fighter.CurrentHealthValue > 0;
 

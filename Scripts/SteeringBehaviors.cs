@@ -2,8 +2,8 @@ using Godot;
 using System;
 
 /// <summary>
-/// Static class implementing Craig Reynolds' steering behaviors for natural AI movement.
-/// All methods return a steering force (desired velocity change), not final velocity.
+/// Static class implementing Craig Reynolds' steering behaviors for autonomous agent movement.
+/// Methods return a steering force (desired velocity change), not final velocity.
 /// </summary>
 public static class SteeringBehaviors
 {
@@ -49,7 +49,7 @@ public static class SteeringBehaviors
     }
 
     /// <summary>
-    /// Evade: Flee from where a moving target will be, not where it is now.
+    /// Evade: Flee from where a moving target will be
     /// </summary>
     public static Vector3 Evade(Vector3 position, Vector3 currentVelocity, float maxSpeed,
                                   Vector3 targetPosition, Vector3 targetVelocity)
@@ -67,8 +67,8 @@ public static class SteeringBehaviors
     }
 
     /// <summary>
-    /// Arrive: Move toward target but decelerate smoothly as you approach.
-    /// Prevents the "overshoot and oscillate" problem.
+    /// Arrive: Move toward target but decelerate getting closer.
+    /// Prevents the overshooting and oscillation when near the target.
     /// </summary>
     public static Vector3 Arrive(Vector3 position, Vector3 targetPosition, float maxSpeed, float slowingRadius)
     {
@@ -78,7 +78,7 @@ public static class SteeringBehaviors
         if (distance < 0.1f)
             return Vector3.Zero;
         
-        // Ramp down speed as we enter the slowing radius
+        // Ramp down speed when entering the slowing radius
         float rampedSpeed = maxSpeed * (distance / slowingRadius);
         float clippedSpeed = Mathf.Min(rampedSpeed, maxSpeed);
         
@@ -114,7 +114,7 @@ public static class SteeringBehaviors
 
     /// <summary>
     /// MaintainDistance: Steering force to stay at a preferred range from target.
-    /// Returns pursue if too far, evade if too close, zero if in sweet spot.
+    /// Returns pursue if too far, evade if too close, zero if just right.
     /// </summary>
     public static Vector3 MaintainDistance(Vector3 position, Vector3 currentVelocity, float maxSpeed,
                                              Vector3 targetPosition, Vector3 targetVelocity,
@@ -135,13 +135,13 @@ public static class SteeringBehaviors
             return Evade(position, currentVelocity, maxSpeed, targetPosition, targetVelocity);
         }
         
-        // In sweet spot - just maintain heading toward target
+        // Within range - just maintain heading toward target 
         return Vector3.Zero;
     }
 
     /// <summary>
     /// OffsetPursuit: Pursue to a position offset from the target (e.g., stay behind them).
-    /// Great for flanking or tailing maneuvers.
+    /// Tailing or strafing maneuvers.
     /// </summary>
     public static Vector3 OffsetPursuit(Vector3 position, Vector3 currentVelocity, float maxSpeed,
                                           Vector3 targetPosition, Vector3 targetVelocity, Vector3 targetForward,
@@ -173,7 +173,7 @@ public static class SteeringBehaviors
     }
 
     /// <summary>
-    /// ObstacleAvoidance: Cast rays ahead and to the sides, steer away from detected obstacles.
+    /// ObstacleAvoidance: raycast ahead and to the sides, steer away from detected obstacles.
     /// Returns a steering force away from the nearest obstacle, or zero if path is clear.
     /// Also outputs an avoidance weight (0-1) for blending with other steering.
     /// </summary>
