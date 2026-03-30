@@ -1,0 +1,144 @@
+using Godot;
+
+public partial class Missile : Node3D
+{
+	[Export] public float MaxSpeed = 400f;
+	[Export] public float Acceleration = 200f; // speed increase per second
+	[Export] public float MaxTurnRate = 45f; // degrees per second
+	[Export] public float Damage = 80f;
+	[Export] public float BurnTime = 5f; // seconds of guided flight
+	[Export] public float Lifetime = 10f;
+	[Export] public float ProximityRadius = 10f; // detonate if within this distance of target
+
+	/// <summary>Set before adding to the scene.</summary>
+	public GimbalTarget Target { get; set; }
+	public Vector3 InheritedVelocity { get; set; } = Vector3.Zero;
+
+	private float _currentSpeed;
+	private float _burnTimer = 0f;
+	private bool _hasDetonated = false;
+
+	private RayCast3D _ray;
+	private GpuParticles3D _exhaustParticles;
+	private GpuParticles3D _trailParticles;
+	private GpuParticles3D _explosionParticles;
+	private MeshInstance3D _mesh;
+
+	private bool IsGuided =>
+		_burnTimer < BurnTime && Target != null && IsInstanceValid(Target) && Target.IsValid();
+
+	public override void _Ready()
+	{
+		_ray = GetNodeOrNull<RayCast3D>("RayCast3D");
+		_exhaustParticles = GetNodeOrNull<GpuParticles3D>("ExhaustParticles");
+		_trailParticles = GetNodeOrNull<GpuParticles3D>("TrailParticles");
+		_explosionParticles = GetNodeOrNull<GpuParticles3D>("ExplosionParticles");
+		_mesh = GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
+
+		_currentSpeed = InheritedVelocity.Length();
+
+		GetTree().CreateTimer(Lifetime).Timeout += QueueFree;
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		if (_hasDetonated) return;
+
+		float dt = (float)delta;
+		_burnTimer += dt;
+
+		_currentSpeed = Mathf.MoveToward(_currentSpeed, MaxSpeed, Acceleration * dt);
+
+		if (IsGuided)
+			SteerTowardTarget(dt);
+
+		// Proximity detonation
+		if (Target != null && IsInstanceValid(Target) && Target.IsValid())
+		{
+			if (GlobalPosition.DistanceTo(Target.GlobalPosition) < ProximityRadius)
+			{
+				Detonate(Target.TargetOwner as IDamageable);
+				return;
+			}
+		}
+
+		// Raycast collision
+		if (_ray != null && _ray.IsColliding())
+		{
+			var collider = _ray.GetCollider();
+			CollisionShape3D hitShape = null;
+			if (collider is StaticBody3D body)
+			{
+				uint ownerId = body.ShapeFindOwner(_ray.GetColliderShape());
+				hitShape = body.ShapeOwnerGetOwner(ownerId) as CollisionShape3D;
+			}
+			Detonate(collider as IDamageable, hitShape);
+			return;
+		}
+
+		GlobalPosition += (-GlobalTransform.Basis.Z).Normalized() * _currentSpeed * dt;
+	}
+
+	private void SteerTowardTarget(float dt)
+	{
+		// Compute intercept point using target position, velocity, and missile speed
+		Vector3 targetPos = Target.GlobalPosition;
+		Vector3 targetVel = Target.GetVelocity();
+		float dist = GlobalPosition.DistanceTo(targetPos);
+		Vector3 interceptPos = targetPos;
+		for (int i = 0; i < 2; i++)
+		{
+			float tof = dist / Mathf.Max(_currentSpeed, 1f);
+			interceptPos = targetPos + targetVel * tof;
+			dist = GlobalPosition.DistanceTo(interceptPos);
+		}
+
+		Vector3 desiredDir = (interceptPos - GlobalPosition).Normalized();
+		Vector3 currentForward = (-GlobalTransform.Basis.Z).Normalized();
+
+		float angleToDesired = currentForward.AngleTo(desiredDir);
+		if (angleToDesired < 0.001f) return;
+
+		Vector3 steerAxis = currentForward.Cross(desiredDir);
+		if (steerAxis.LengthSquared() < 0.0001f) return;
+		steerAxis = steerAxis.Normalized();
+
+		float rotAmount = Mathf.Min(angleToDesired, Mathf.DegToRad(MaxTurnRate) * dt);
+		Vector3 newForward = currentForward.Rotated(steerAxis, rotAmount);
+
+		Vector3 up = GlobalTransform.Basis.Y;
+		if (Mathf.Abs(newForward.Dot(up)) > 0.99f)
+			up = GlobalTransform.Basis.X;
+
+		GlobalTransform = new Transform3D(Basis.LookingAt(newForward, up), GlobalTransform.Origin);
+	}
+
+	private void Detonate(IDamageable target = null, CollisionShape3D hitShape = null)
+	{
+		if (_hasDetonated) return;
+		_hasDetonated = true;
+
+		target?.TakeDamage(Damage, hitShape);
+
+		if (_mesh != null) _mesh.Visible = false;
+		if (_exhaustParticles != null) _exhaustParticles.Emitting = false;
+		if (_explosionParticles != null) _explosionParticles.Emitting = true;
+		if (_ray != null) _ray.Enabled = false;
+
+		// Detach trail so it lingers even after the missile is gone
+		if (_trailParticles != null)
+		{
+			_trailParticles.Emitting = false;
+			var parent = GetParent();
+			if (parent != null)
+			{
+				RemoveChild(_trailParticles);
+				parent.AddChild(_trailParticles);
+				_trailParticles.GlobalPosition = GlobalPosition;
+				GetTree().CreateTimer(_trailParticles.Lifetime).Timeout += _trailParticles.QueueFree;
+			}
+		}
+
+		GetTree().CreateTimer(2f).Timeout += QueueFree;
+	}
+}

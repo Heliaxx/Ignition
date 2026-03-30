@@ -1,36 +1,43 @@
 shader_type sky;
 
+group_uniforms Sky;
 uniform sampler2D sky_tex: source_color, filter_linear, hint_default_black;
+
+group_uniforms Star;
+uniform bool star_enabled = true;
+uniform vec3 star_pos = vec3(0.0);
+uniform vec3 star_color: source_color = vec3(1.0, 0.62, 0.28);
+uniform vec3 star_core_color: source_color = vec3(1.0, 0.95, 0.86);
+uniform float star_disc_size: hint_range(0.0005, 0.08, 0.0001) = 0.008;
+uniform float star_disc_softness: hint_range(0.05, 2.0, 0.01) = 0.45;
+uniform float star_halo_strength: hint_range(0.0, 8.0, 0.01) = 1.4;
+uniform float star_halo_falloff: hint_range(2.0, 256.0, 0.1) = 18.0;
+uniform float star_glare_strength: hint_range(0.0, 4.0, 0.01) = 0.22;
+
+group_uniforms Planet;
+uniform bool planet_enabled = true;
 uniform sampler2D planet_albedo_tex: source_color, filter_linear, hint_default_black;
 uniform sampler2D planet_night_tex: source_color, filter_linear, hint_default_black;
-uniform vec3 sun_pos =  vec3(0.0);
-uniform bool planet_enabled = true;
 uniform vec3 planet_direction = vec3(-0.55, 0.12, -0.82);
 uniform float planet_distance = 24.0;
 uniform float planet_radius = 6.2;
 uniform float planet_rotation = 0.0;
-uniform float planet_night_strength: hint_range(0.0, 4.0, 0.01) = 0.75;
 uniform vec3 planet_tint: source_color = vec3(1.0);
+uniform float planet_night_strength: hint_range(0.0, 4.0, 0.01) = 0.75;
+
+group_uniforms Planet.Atmosphere;
 uniform vec3 atmosphere_color: source_color = vec3(0.24, 0.48, 1.0);
 uniform float atmosphere_strength: hint_range(0.0, 4.0, 0.01) = 0.9;
 uniform float atmosphere_falloff: hint_range(0.5, 16.0, 0.01) = 5.2;
-uniform bool sun_enabled = true;
-uniform vec3 sun_color: source_color = vec3(1.0, 0.62, 0.28);
-uniform vec3 sun_core_color: source_color = vec3(1.0, 0.95, 0.86);
-uniform float sun_disc_size: hint_range(0.0005, 0.08, 0.0001) = 0.008;
-uniform float sun_disc_softness: hint_range(0.05, 2.0, 0.01) = 0.45;
-uniform float sun_halo_strength: hint_range(0.0, 8.0, 0.01) = 1.4;
-uniform float sun_halo_falloff: hint_range(2.0, 256.0, 0.1) = 18.0;
-uniform float sun_glare_strength: hint_range(0.0, 4.0, 0.01) = 0.22;
 
-// Ring system
+group_uniforms Rings;
 uniform bool ring_enabled = false;
+uniform sampler2D ring_texture: filter_linear, hint_default_white;
+uniform vec3 ring_normal = vec3(0.0, 1.0, 0.0);
 uniform float ring_inner_radius: hint_range(0.1, 20.0, 0.1) = 7.0;
 uniform float ring_outer_radius: hint_range(0.1, 30.0, 0.1) = 12.0;
 uniform vec3 ring_color: source_color = vec3(0.7, 0.65, 0.55);
 uniform float ring_opacity: hint_range(0.0, 1.0, 0.01) = 0.6;
-uniform vec3 ring_normal = vec3(0.0, 1.0, 0.0); // Ring plane normal (up = horizontal ring)
-uniform sampler2D ring_texture: filter_linear, hint_default_white;
 
 struct RayHit {
 	bool is_hit;
@@ -119,7 +126,7 @@ void sky() {
 		COLOR = texture(sky_tex, SKY_COORDS).rgb;
 	} else {
 		COLOR = texture(sky_tex, SKY_COORDS).rgb;
-		vec3 light_dir = normalize(sun_pos);
+		vec3 light_dir = normalize(star_pos);
 		bool hit_planet = false;
 		float planet_t = 1e10; // Distance to planet hit
 		vec3 planet_color_result = vec3(0.0);
@@ -194,16 +201,16 @@ void sky() {
 			COLOR = mix(COLOR, ring_color_result, ring_alpha);
 		}
 
-		if (sun_enabled && !hit_planet) {
+		if (star_enabled && !hit_planet) {
 			vec3 view_dir = normalize(EYEDIR);
 			float to_sun = max(dot(view_dir, -light_dir), 0.0);
-			float disc_edge = 1.0 - sun_disc_size;
-			float disc = smoothstep(disc_edge, min(1.0, disc_edge + sun_disc_size * max(sun_disc_softness, 0.001)), to_sun);
+			float disc_edge = 1.0 - star_disc_size;
+			float disc = smoothstep(disc_edge, min(1.0, disc_edge + star_disc_size * max(star_disc_softness, 0.001)), to_sun);
 			float core = pow(disc, 2.2);
-			float halo = pow(to_sun, sun_halo_falloff) * sun_halo_strength;
-			float glare = pow(to_sun, max(2.0, sun_halo_falloff * 0.35)) * sun_glare_strength;
-			vec3 sun_render = halo * sun_color + core * sun_core_color + glare * sun_color;
-			COLOR += sun_render;
+			float halo = pow(to_sun, star_halo_falloff) * star_halo_strength;
+			float glare = pow(to_sun, max(2.0, star_halo_falloff * 0.35)) * star_glare_strength;
+			vec3 star_render = halo * star_color + core * star_core_color + glare * star_color;
+			COLOR += star_render;
 		}
 	}
 }

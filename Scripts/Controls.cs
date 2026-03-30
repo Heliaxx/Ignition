@@ -19,7 +19,7 @@ public partial class Controls : Control
 	private Label autoCenterSpeedValue;
 	private const int KeybindRowBaseLeftMargin = 0;
 	private const int KeybindRowHoverLeftMargin = 20;
-	private static readonly Color KeybindRowNormalTextColor = new Color(1f, 0.588235f, 0.156863f, 1f);
+	private static readonly Color KeybindRowNormalTextColor = new Color(0.894f, 0.718f, 0.337f, 1f);
 	private static readonly Color KeybindRowHoverTextColor = new Color(0f, 0f, 0f, 1f);
 
 	private Dictionary<string, string> InputActions = new()

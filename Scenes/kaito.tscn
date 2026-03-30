@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=4 uid="uid://bkmrv7xhowrhy"]
+[gd_scene load_steps=26 format=4 uid="uid://bkmrv7xhowrhy"]
 
 [ext_resource type="Script" uid="uid://c1w0c47owcnfl" path="res://Scripts/Kaito.cs" id="1_8p5tm"]
 [ext_resource type="PackedScene" uid="uid://c5r7xilp2j2yt" path="res://Scenes/ShakeableCamera.tscn" id="1_ypk4o"]
@@ -9,8 +9,9 @@
 [ext_resource type="AudioStream" uid="uid://csmb15gf7523j" path="res://Imports/Sounds/shooting.mp3" id="6_3f0po"]
 [ext_resource type="AudioStream" uid="uid://bmcmfve3xbpak" path="res://Imports/Sounds/shooting_end.mp3" id="7_op6vm"]
 [ext_resource type="PackedScene" uid="uid://b31csx7lnt5jb" path="res://Scenes/dustParticles.tscn" id="8_l46sp"]
+[ext_resource type="FontFile" uid="uid://64qnj4inssje" path="res://Imports/Fonts/Montserrat-Medium.ttf" id="9_di0tu"]
 [ext_resource type="Script" uid="uid://bdgluvaq1xpbk" path="res://Scripts/HealthComponent.cs" id="12_e2hpg"]
-[ext_resource type="PackedScene" path="res://Scenes/DeathScreen.tscn" id="13_death"]
+[ext_resource type="PackedScene" uid="uid://086mbplltvr6" path="res://Scenes/DeathScreen.tscn" id="13_death"]
 [ext_resource type="PackedScene" uid="uid://bwpphn8333nc7" path="res://Scenes/ThrusterFlame.tscn" id="14_thruster"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ow3ph"]
@@ -173,11 +174,6 @@ transform = Transform3D(8.16872, 0, 0, 0, 8.16872, 0, 0, 0, 8.16872, 1.08101, 1.
 
 [node name="ShakeableCamera" parent="." instance=ExtResource("1_ypk4o")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 6.3, 2.10041, 0)
-TraumaReductionRate = null
-MaxX = null
-MaxY = null
-MaxZ = null
-NoiseSpeed = null
 
 [node name="LeftLight" parent="." instance=ExtResource("2_xwtgm")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2.2, 1.8, -3.5)
@@ -202,20 +198,10 @@ stream = ExtResource("7_op6vm")
 [node name="ShakeableCameraRight" parent="." instance=ExtResource("1_ypk4o")]
 transform = Transform3D(-0.866026, 0.0868241, -0.492404, 0, 0.984808, 0.173648, 0.5, 0.150384, -0.852869, 6.134, 2.029, 0)
 visible = false
-TraumaReductionRate = null
-MaxX = null
-MaxY = null
-MaxZ = null
-NoiseSpeed = null
 
 [node name="ShakeableCameraLeft" parent="." instance=ExtResource("1_ypk4o")]
 transform = Transform3D(0.866025, 0.0868241, -0.492404, 0, 0.984808, 0.173648, 0.5, -0.150384, 0.852868, 6.13417, 2.02926, 2.68133e-07)
 visible = false
-TraumaReductionRate = null
-MaxX = null
-MaxY = null
-MaxZ = null
-NoiseSpeed = null
 
 [node name="dustParticles" parent="." instance=ExtResource("8_l46sp")]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 20, 0, 0)
@@ -225,6 +211,102 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.17198, 0)
 mesh = SubResource("ArrayMesh_4x5pv")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_8pr0y")
+
+[node name="HP" type="Label3D" parent="."]
+transform = Transform3D(-6.55671e-09, 0.0400858, -0.144545, 0, 0.144545, 0.0400858, 0.15, 1.7522e-09, -6.31824e-09, 7.17041, 1.81987, -0.264977)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "HEALTH"
+font = ExtResource("9_di0tu")
+outline_size = 2
+
+[node name="HealthDisplay" type="Label3D" parent="."]
+transform = Transform3D(-6.55671e-09, 0.0400858, -0.144545, 0, 0.144545, 0.0400858, 0.15, 1.7522e-09, -6.31824e-09, 7.155, 1.76957, -0.265)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "100"
+font = ExtResource("9_di0tu")
+outline_size = 2
+
+[node name="Speed" type="Label3D" parent="."]
+transform = Transform3D(-6.55671e-09, 0.0398334, -0.144614, 0, 0.144614, 0.0398334, 0.15, 1.74117e-09, -6.32129e-09, 7.17, 1.82, 0.265)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "SPEED"
+font = ExtResource("9_di0tu")
+outline_size = 2
+
+[node name="SpeedDisplay" type="Label3D" parent="."]
+transform = Transform3D(-6.55671e-09, 0.0400858, -0.144545, 0, 0.144545, 0.0400858, 0.15, 1.7522e-09, -6.31824e-09, 7.15522, 1.77, 0.265)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "100"
+font = ExtResource("9_di0tu")
+outline_size = 2
+
+[node name="Ammo" type="Label3D" parent="."]
+transform = Transform3D(-8.74228e-09, 0.0534476, -0.192726, 0, 0.192726, 0.0534476, 0.2, 2.33627e-09, -8.42433e-09, 7.115, 1.64, 0.100462)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "GATLING"
+font = ExtResource("9_di0tu")
+outline_size = 4
+
+[node name="AmmoDisplay" type="Label3D" parent="."]
+transform = Transform3D(-8.74228e-09, 0.0534476, -0.192726, 0, 0.192726, 0.0534476, 0.2, 2.33627e-09, -8.42433e-09, 7.105, 1.572, 0.1)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "---"
+font = ExtResource("9_di0tu")
+outline_size = 4
+
+[node name="Missiles" type="Label3D" parent="."]
+transform = Transform3D(-8.74228e-09, 0.0534476, -0.192726, 0, 0.192726, 0.0534476, 0.2, 2.33627e-09, -8.42433e-09, 7.115, 1.64, 0.279656)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "MISSILES"
+font = ExtResource("9_di0tu")
+outline_size = 4
+
+[node name="MissilesDisplay" type="Label3D" parent="."]
+transform = Transform3D(-8.74228e-09, 0.0534476, -0.192726, 0, 0.192726, 0.0534476, 0.2, 2.33627e-09, -8.42433e-09, 7.105, 1.572, 0.284653)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "---"
+font = ExtResource("9_di0tu")
+outline_size = 4
+
+[node name="TargetName" type="Label3D" parent="."]
+transform = Transform3D(-8.74228e-09, 0.0534477, -0.192726, 0, 0.192726, 0.0534477, 0.2, 2.33627e-09, -8.42433e-09, 7.115, 1.64, -0.285134)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "TARGET"
+font = ExtResource("9_di0tu")
+outline_size = 4
+
+[node name="TargetNameDisplay" type="Label3D" parent="."]
+transform = Transform3D(-8.74228e-09, 0.0534477, -0.192726, 0, 0.192726, 0.0534477, 0.2, 2.33627e-09, -8.42433e-09, 7.10464, 1.57212, -0.284804)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "---"
+font = ExtResource("9_di0tu")
+outline_size = 4
+
+[node name="TargetDist" type="Label3D" parent="."]
+transform = Transform3D(-8.74228e-09, 0.0534476, -0.192726, 0, 0.192726, 0.0534476, 0.2, 2.33627e-09, -8.42433e-09, 7.115, 1.64, -0.11)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "DISTANCE"
+font = ExtResource("9_di0tu")
+outline_size = 4
+
+[node name="TargetDistDisplay" type="Label3D" parent="."]
+transform = Transform3D(-8.74228e-09, 0.0534476, -0.192726, 0, 0.192726, 0.0534476, 0.2, 2.33627e-09, -8.42433e-09, 7.105, 1.572, -0.11)
+double_sided = false
+modulate = Color(0.894118, 0.717647, 0.337255, 1)
+text = "---"
+font = ExtResource("9_di0tu")
+outline_size = 4
 
 [node name="HUD" parent="." instance=ExtResource("3_qcx3i")]
 

@@ -13,9 +13,9 @@ public partial class Laser : Node3D
 		scaler = GetNode<Node3D>("Scaler");
 	}
 
-	[Export] public float DamageAmount = 10f;
+	[Export] public float DamageAmount = 5f;
 	private double timeSinceLastShot = 0.0;
-	[Export] public double FireCooldown = 5.0;
+	[Export] public double FireCooldown = 1.0;
 
 	public override void _Process(double delta)
 	{

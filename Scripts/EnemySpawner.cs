@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class EnemySpawner
 {
 	public PackedScene EnemyScene { get; set; }
+	public PackedScene PortalScene { get; set; }
 	public int PoolSize { get; set; } = 10;
 
 	public event Action<Fighter> EnemyDied;
@@ -42,6 +43,73 @@ public class EnemySpawner
 		).Normalized();
 		float dist = _rng.RandfRange(minDist, maxDist);
 		return SpawnAt(target.GlobalPosition + dir * dist);
+	}
+
+	/// <summary>
+	/// Opens a portal at an explicit position facing the given target, then spawns the enemy.
+	/// </summary>
+	// Builds a transform where +Z faces toward faceToward and +Y stays upright.
+	private static Transform3D PortalTransform(Vector3 pos, Node3D faceToward)
+	{
+		Vector3 z = (faceToward.GlobalPosition - pos).Normalized();
+		Vector3 up = Mathf.Abs(z.Dot(Vector3.Up)) < 0.99f ? Vector3.Up : Vector3.Forward;
+		Vector3 x = up.Cross(z).Normalized();
+		Vector3 y = z.Cross(x).Normalized();
+		return new Transform3D(new Basis(x, y, z), pos);
+	}
+
+	public void SpawnViaPortal(Vector3 pos, Node3D faceToward)
+	{
+		if (PortalScene == null) { SpawnAt(pos); return; }
+
+		var portal = PortalScene.Instantiate<Portal>();
+		portal.GlobalTransform = PortalTransform(pos, faceToward);
+		_spawnParent.AddChild(portal);
+
+		var enemy = GetOrCreate();
+		portal.OpenThenClose(() =>
+		{
+			enemy.GlobalPosition = pos;
+			Activate(enemy);
+			Vector3 toTarget = (faceToward.GlobalPosition - pos).Normalized();
+			Vector3 up = Mathf.Abs(toTarget.Dot(Vector3.Up)) < 0.99f ? Vector3.Up : Vector3.Forward;
+			enemy.LookAt(faceToward.GlobalPosition, up);
+		});
+	}
+
+	/// <summary>
+	/// Opens a portal near the target, then spawns the enemy from it once fully open.
+	/// Falls back to SpawnNear if no PortalScene is set.
+	/// </summary>
+	public void SpawnNearViaPortal(Node3D target, float minDist, float maxDist)
+	{
+		Vector3 dir = new Vector3(
+			_rng.RandfRange(-1f, 1f),
+			_rng.RandfRange(-1f, 1f),
+			_rng.RandfRange(-1f, 1f)
+		).Normalized();
+		float dist = _rng.RandfRange(minDist, maxDist);
+		Vector3 pos = target.GlobalPosition + dir * dist;
+
+		if (PortalScene == null)
+		{
+			SpawnAt(pos);
+			return;
+		}
+
+		var portal = PortalScene.Instantiate<Portal>();
+		portal.GlobalTransform = PortalTransform(pos, target);
+		_spawnParent.AddChild(portal);
+
+		var enemy = GetOrCreate();
+		portal.OpenThenClose(() =>
+		{
+			enemy.GlobalPosition = pos;
+			Activate(enemy);
+			Vector3 toTarget = (target.GlobalPosition - pos).Normalized();
+			Vector3 up = Mathf.Abs(toTarget.Dot(Vector3.Up)) < 0.99f ? Vector3.Up : Vector3.Forward;
+			enemy.LookAt(target.GlobalPosition, up);
+		});
 	}
 
 	public void Recycle(Fighter enemy)

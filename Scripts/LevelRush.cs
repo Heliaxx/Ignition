@@ -40,12 +40,12 @@ public partial class LevelRush : BaseLevel
 		_multiplierLabel = GetNodeOrNull<Label>("ScoreHUD/MultiplierLabel");
 
 		_highScore = ConfigFileHandler.Instance?.LoadRushHighScore() ?? 0;
-		UpdateHUD();
 
 		_playerHealth = PlayerKaito.GetNode<HealthComponent>("HealthComponent");
 
 		_ringScene = GD.Load<PackedScene>("res://Scenes/Ring.tscn");
 		SpawnRing();
+		UpdateHUD();
 	}
 
 	public override void _Process(double delta)

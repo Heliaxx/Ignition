@@ -25,7 +25,7 @@ public partial class BaseLevel : Node3D
 
 		if (worldEnv?.Environment?.Sky?.SkyMaterial is ShaderMaterial skyMat)
 		{
-			var sunPos = (Vector3)skyMat.GetShaderParameter("sun_pos");
+			var sunPos = (Vector3)skyMat.GetShaderParameter("star_pos");
 			var sunDir = sunPos.Normalized();
 			light.LookAtFromPosition(Vector3.Zero, -sunDir, Vector3.Up);
 		}

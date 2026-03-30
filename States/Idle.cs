@@ -1,14 +1,19 @@
 using Godot;
-using System;
 
 public partial class Idle : CombatState
 {
+    [Export] public float MaxWanderRadius = 1000f;
+
     private float detectionRangeSquared;
+    private float maxWanderRadiusSquared;
+    private ReturnToCenter _returnToCenter;
 
     public override void Enter()
     {
         float range = Fighter?.DetectionRange ?? 600f;
         detectionRangeSquared = range * range;
+        maxWanderRadiusSquared = MaxWanderRadius * MaxWanderRadius;
+        _returnToCenter = stateMachine.GetNodeOrNull<ReturnToCenter>("ReturnToCenter");
         Fighter?.SetLaserFiring(false);
     }
 
@@ -16,14 +21,19 @@ public partial class Idle : CombatState
     {
         if (Fighter == null || !Fighter.HasTarget()) return;
 
-        // Use steering-based wander for organic movement
         Fighter.Wander(delta);
 
-        // If player enters detection range, pursue
-        float distanceSquared = Fighter.DistanceSquaredToPlayer();
-        if (distanceSquared < detectionRangeSquared)
+        if (_returnToCenter != null)
         {
-            stateMachine.TransitionTo("Pursue");
+            float distSquared = Fighter.GlobalPosition.DistanceSquaredTo(_returnToCenter.CenterPoint);
+            if (distSquared > maxWanderRadiusSquared)
+            {
+                stateMachine.TransitionTo("ReturnToCenter");
+                return;
+            }
         }
+
+        if (Fighter.DistanceSquaredToPlayer() < detectionRangeSquared)
+            stateMachine.TransitionTo("Pursue");
     }
 }

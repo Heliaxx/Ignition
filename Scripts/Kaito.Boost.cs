@@ -101,11 +101,5 @@ public partial class Kaito
 		_currentMaxPitchSpeed = MAX_PITCH_SPEED * boostRotMult;
 		_currentMaxYawSpeed = MAX_YAW_SPEED * boostRotMult;
 
-		// Update speed bar
-		if (speedBar != null)
-		{
-			speedBar.MaxValue = MAX_SPEED * BoostSpeedMultiplier;
-			speedBar.Value = Velocity.Length();
-		}
 	}
 }

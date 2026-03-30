@@ -17,34 +17,34 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
 shader = ExtResource("2_qx2jm")
 shader_parameter/sky_tex = ExtResource("3_vnf37")
+shader_parameter/star_enabled = true
+shader_parameter/star_pos = Vector3(2000, 500, 1000)
+shader_parameter/star_color = Color(1, 0.62, 0.28, 1)
+shader_parameter/star_core_color = Color(1, 0.95, 0.86, 1)
+shader_parameter/star_disc_size = 0.008
+shader_parameter/star_disc_softness = 0.45
+shader_parameter/star_halo_strength = 1.4
+shader_parameter/star_halo_falloff = 18.0
+shader_parameter/star_glare_strength = 0.22
+shader_parameter/planet_enabled = true
 shader_parameter/planet_albedo_tex = ExtResource("11_nyx84")
 shader_parameter/planet_night_tex = ExtResource("12_hhpn1")
-shader_parameter/sun_pos = Vector3(1000, 200, 0)
-shader_parameter/planet_enabled = true
 shader_parameter/planet_direction = Vector3(-0.55, 0.29, -0.86)
 shader_parameter/planet_distance = 16.0
 shader_parameter/planet_radius = 6.2
 shader_parameter/planet_rotation = 0.15
-shader_parameter/planet_night_strength = 0.85
 shader_parameter/planet_tint = Color(1, 1, 1, 1)
+shader_parameter/planet_night_strength = 0.85
 shader_parameter/atmosphere_color = Color(0.24, 0.48, 1, 1)
 shader_parameter/atmosphere_strength = 0.9
 shader_parameter/atmosphere_falloff = 5.6
-shader_parameter/sun_enabled = true
-shader_parameter/sun_color = Color(1, 0.62, 0.28, 1)
-shader_parameter/sun_core_color = Color(1, 0.95, 0.86, 1)
-shader_parameter/sun_disc_size = 0.005
-shader_parameter/sun_disc_softness = 0.6
-shader_parameter/sun_halo_strength = 1.4
-shader_parameter/sun_halo_falloff = 18.0
-shader_parameter/sun_glare_strength = 0.22
 shader_parameter/ring_enabled = true
+shader_parameter/ring_texture = ExtResource("13_ringt")
+shader_parameter/ring_normal = Vector3(0.2, 1, 0.35)
 shader_parameter/ring_inner_radius = 6.0
 shader_parameter/ring_outer_radius = 20.1
 shader_parameter/ring_color = Color(0.65, 0.6, 0.5, 1)
 shader_parameter/ring_opacity = 0.7
-shader_parameter/ring_normal = Vector3(0.2, 1, 0.35)
-shader_parameter/ring_texture = ExtResource("13_ringt")
 
 [sub_resource type="Sky" id="Sky_w7017"]
 sky_material = SubResource("ShaderMaterial_7645s")
@@ -87,14 +87,14 @@ navigation_mesh = SubResource("NavigationMesh_qi7iq")
 
 [node name="Player" parent="NavigationRegion3D" instance=ExtResource("5_d2lja")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-MaxAmmo = 500
+MaxAmmo = 400
+MaxMissiles = 8
 
 [node name="Fighter_01" parent="NavigationRegion3D" instance=ExtResource("6_53gw7")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 visible = false
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.573577, 0, -0.819152, 0, 1, 0, 0.819152, 0, -0.573577, 0, 0, -20)
 light_bake_mode = 0
 sky_mode = 1
 

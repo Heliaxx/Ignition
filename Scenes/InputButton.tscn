@@ -26,7 +26,7 @@ layout_mode = 2
 [node name="LabelAction" type="Label" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2
 mouse_filter = 1
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_fonts/font = ExtResource("1_tkuei")
 theme_override_font_sizes/font_size = 30
 text = "LabelAction"
@@ -39,7 +39,7 @@ mouse_filter = 1
 [node name="LabelInput" type="Label" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2
 mouse_filter = 1
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_fonts/font = ExtResource("1_tkuei")
 theme_override_font_sizes/font_size = 30
 text = "LabelInput"

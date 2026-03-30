@@ -3,7 +3,7 @@ using System;
 
 public partial class Fighter : CharacterBody3D, IDamageable
 {
-    private const int MAX_HEALTH = 50;
+    private const int MAX_HEALTH = 100;
     private int currentHealth = MAX_HEALTH;
     public int CurrentHealthValue => currentHealth;
     public int MaxHealthValue => MAX_HEALTH;
@@ -367,7 +367,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
         return Mathf.Sqrt(_cachedDistanceSquared);
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, CollisionShape3D hitShape = null)
     {
         currentHealth -= (int)amount;
         _tookRecentDamage = true;

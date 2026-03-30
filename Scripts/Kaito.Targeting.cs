@@ -8,22 +8,27 @@ public partial class Kaito
 	private const float TARGET_MAX_RANGE = 2000f;
 	public GimbalTarget LockedTarget => _lockedTarget;
 
+	public const float MissileLockTime = 2f;
+	private float _missileLockTimer = 0f;
+	public float MissileLockProgress => _lockedTarget != null ? Mathf.Clamp(_missileLockTimer / MissileLockTime, 0f, 1f) : 0f;
+	public bool IsMissileLocked => _lockedTarget != null && _missileLockTimer >= MissileLockTime;
+
 	// Target HUD elements
 	private Control _targetPanel;
-	private Label _targetNameLabel;
-	private Label _targetDistanceLabel;
 	private ProgressBar _targetHealthBar;
+	private Label3D _targetNameDisplay3D;
+	private Label3D _targetDistDisplay3D;
 
 	private void InitTargeting()
 	{
 		_targetPanel = canvasLayer.GetNodeOrNull<Control>("TargetPanel");
 		if (_targetPanel != null)
 		{
-			_targetNameLabel = _targetPanel.GetNode<Label>("MarginContainer/VBoxContainer/TargetName");
-			_targetDistanceLabel = _targetPanel.GetNode<Label>("MarginContainer/VBoxContainer/DistanceLabel");
 			_targetHealthBar = _targetPanel.GetNode<ProgressBar>("MarginContainer/VBoxContainer/TargetHealthBar");
 			_targetPanel.Visible = false;
 		}
+		_targetNameDisplay3D = GetNodeOrNull<Label3D>("TargetNameDisplay");
+		_targetDistDisplay3D = GetNodeOrNull<Label3D>("TargetDistDisplay");
 	}
 
 	private void CycleTarget()
@@ -91,6 +96,7 @@ public partial class Kaito
 			_lockedTarget.Died -= OnTargetDied;
 
 		_lockedTarget = target;
+		_missileLockTimer = 0f;
 
 		if (_lockedTarget != null)
 			_lockedTarget.Died += OnTargetDied;
@@ -102,14 +108,16 @@ public partial class Kaito
 			_lockedTarget.Died -= OnTargetDied;
 
 		_lockedTarget = null;
+		_missileLockTimer = 0f;
 	}
 
 	private void OnTargetDied()
 	{
 		_lockedTarget = null;
+		_missileLockTimer = 0f;
 	}
 
-	private void UpdateTargetHUD()
+	private void UpdateTargetHUD(float delta)
 	{
 		if (_targetPanel == null) return;
 
@@ -130,14 +138,24 @@ public partial class Kaito
 
 		if (_lockedTarget == null)
 		{
-			_targetPanel.Visible = false;
+			if (_targetPanel != null) _targetPanel.Visible = false;
+			if (_targetNameDisplay3D != null) _targetNameDisplay3D.Text = "---";
+			if (_targetDistDisplay3D != null) _targetDistDisplay3D.Text = "---";
 			return;
 		}
 
-		_targetPanel.Visible = true;
+		if (_missileLockTimer < MissileLockTime)
+		{
+			if (IsTargetInGimbalCone())
+				_missileLockTimer += delta;
+			else
+				_missileLockTimer = 0f;
+		}
+
+		if (_targetPanel != null) _targetPanel.Visible = true;
 		float distance = GlobalPosition.DistanceTo(_lockedTarget.GlobalPosition);
-		_targetNameLabel.Text = _lockedTarget.GetDisplayName();
-		_targetDistanceLabel.Text = $"{distance:F0}m";
+		if (_targetNameDisplay3D != null) _targetNameDisplay3D.Text = _lockedTarget.GetDisplayName();
+		if (_targetDistDisplay3D != null) _targetDistDisplay3D.Text = $"{distance:F0}m";
 
 		_targetHealthBar.Visible = _lockedTarget.HasHealthData();
 		if (_lockedTarget.HasHealthData())
@@ -145,6 +163,14 @@ public partial class Kaito
 			_targetHealthBar.MaxValue = _lockedTarget.GetMaxHealth();
 			_targetHealthBar.Value    = _lockedTarget.GetCurrentHealth();
 		}
+	}
+
+	private bool IsTargetInGimbalCone()
+	{
+		if (_lockedTarget == null || barrel == null) return false;
+		Vector3 toTarget = (_lockedTarget.GlobalPosition - barrel.GlobalPosition).Normalized();
+		Vector3 forward = (-barrel.GlobalTransform.Basis.Z).Normalized();
+		return forward.AngleTo(toTarget) <= Mathf.DegToRad(GimbalAngle);
 	}
 
 	public Vector2? GetLockedTargetScreenPos()

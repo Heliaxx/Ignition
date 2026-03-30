@@ -10,12 +10,12 @@ public partial class AimWidgetVisualizer : Control
 	private Kaito playerShip;
 
 	[Export] public Color RadiusColor = new Color(0f, 0.7f, 1.0f, 0.4f); // light blue, semi-transparent
-	[Export] public Color DeadzoneColor = new Color(1.0f, 0.588235f, 0.156863f, 0.6f); // orange, more transparent
-	[Export] public Color CursorColor = new Color(1.0f, 0.588235f, 0.156863f, 0.8f); // theme orange, opaque
-	[Export] public Color CrosshairColor = new Color(1.0f, 0.588235f, 0.156863f, 0.9f);
-	[Export] public Color TargetIndicatorColor = new Color(1.0f, 0.588235f, 0.156863f, 0.9f); // theme orange
-	[Export] public Color LeadIndicatorColor = new Color(1.0f, 0.588235f, 0.156863f, 0.9f); // theme orange
-	[Export] public Color GimbalColor = new Color(1.0f, 0.588235f, 0.156863f, 0.7f); // theme orange
+	[Export] public Color DeadzoneColor = new Color(0.894f, 0.718f, 0.337f, 0.6f); // orange, more transparent
+	[Export] public Color CursorColor = new Color(0.894f, 0.718f, 0.337f, 0.8f); // theme orange, opaque
+	[Export] public Color CrosshairColor = new Color(0.894f, 0.718f, 0.337f, 0.9f);
+	[Export] public Color TargetIndicatorColor = new Color(0.894f, 0.718f, 0.337f, 0.9f); // theme orange
+	[Export] public Color LeadIndicatorColor = new Color(0.894f, 0.718f, 0.337f, 0.9f); // theme orange
+	[Export] public Color GimbalColor = new Color(0.894f, 0.718f, 0.337f, 0.7f); // theme orange
 	[Export] public float LineWidth = 2.0f;
 	[Export] public float CursorSize = 6.0f;
 	[Export] public float TargetReticleSize = 64f;
@@ -26,6 +26,8 @@ public partial class AimWidgetVisualizer : Control
 	private Texture2D _gimbalReticle;
 	private Texture2D _centerCrosshair;
 	private Texture2D _gimbalIndicator;
+
+	private float _flickerTimer = 0f;
 
 	public override void _Ready()
 	{
@@ -46,10 +48,9 @@ public partial class AimWidgetVisualizer : Control
 
 	public override void _Process(double delta)
 	{
-		if (playerShip != null)
-		{
-			QueueRedraw();
-		}
+		if (playerShip == null) return;
+		_flickerTimer += (float)delta;
+		QueueRedraw();
 	}
 
 	public override void _Draw()
@@ -89,11 +90,15 @@ public partial class AimWidgetVisualizer : Control
 		Color fadedCursorColor = new Color(CursorColor.R, CursorColor.G, CursorColor.B, CursorColor.A * cursorAlpha);
 		DrawCircle(cursorPos, CursorSize, fadedCursorColor);
 
-		// Draw target reticle on locked target
+		// Draw target reticle — flickers during lock acquisition, solid when locked
 		Vector2? targetScreenPos = playerShip.GetLockedTargetScreenPos();
 		if (targetScreenPos.HasValue && _targetReticle != null)
 		{
-			DrawTextureAtCenter(_targetReticle, targetScreenPos.Value, TargetReticleSize, TargetIndicatorColor);
+			float alpha = TargetIndicatorColor.A;
+			if (!playerShip.IsMissileLocked)
+				alpha *= 0.5f + 0.5f * Mathf.Abs(Mathf.Sin(_flickerTimer * 12f));
+
+			DrawTextureAtCenter(_targetReticle, targetScreenPos.Value, TargetReticleSize, TargetIndicatorColor with { A = alpha });
 		}
 
 		// Draw target lead reticle
@@ -104,7 +109,7 @@ public partial class AimWidgetVisualizer : Control
 		}
 	}
 
-	private void DrawTextureAtCenter(Texture2D texture, Vector2 pos, float size, Color color)
+private void DrawTextureAtCenter(Texture2D texture, Vector2 pos, float size, Color color)
 	{
 		Vector2 texSize = texture.GetSize();
 		float scale = size / Mathf.Max(texSize.X, texSize.Y);

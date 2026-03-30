@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://086mbplltvr6"]
 
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="1_theme"]
 
@@ -33,10 +33,11 @@ alignment = 1
 [node name="DeathLabel" type="Label" parent="DeathScreen/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "YOU DIED"
+text = "YOU DIED!"
 horizontal_alignment = 1
 
 [node name="MainMenuButton" type="Button" parent="DeathScreen/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 text = "Return to Main Menu"

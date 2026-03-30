@@ -1,0 +1,46 @@
+[gd_scene load_steps=8 format=3 uid="uid://dyf3s0nconycc"]
+
+[ext_resource type="Script" uid="uid://bt02fuakv5r43" path="res://Scripts/Portal.cs" id="1_script"]
+[ext_resource type="Shader" uid="uid://bkbjluihwrlv8" path="res://Shaders/PortalSurface.gdshader" id="2_shader"]
+[ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="3_mdgx6"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_noise"]
+noise_type = 0
+frequency = 0.4
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_noise"]
+width = 40
+height = 500
+seamless = true
+noise = SubResource("FastNoiseLite_noise")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_portal"]
+render_priority = 0
+shader = ExtResource("2_shader")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_noise")
+shader_parameter/background_texture = ExtResource("3_mdgx6")
+shader_parameter/layer_color = Color(0.14954, 0.188143, 0.25763, 1)
+shader_parameter/opacity = 1.0
+shader_parameter/brightness = 2.5
+shader_parameter/edge_softness = 0.25
+shader_parameter/inner_ring = 0.4
+shader_parameter/edge_width = 0.5
+shader_parameter/layers = 20
+shader_parameter/depth_amount = 0.4
+shader_parameter/fade_amount = 1.5
+
+[sub_resource type="QuadMesh" id="QuadMesh_portal"]
+material = SubResource("ShaderMaterial_portal")
+size = Vector2(30, 30)
+
+[node name="Portal" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="PortalSurface" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_portal")
+
+[node name="PortalLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.5)
+visible = false
+light_energy = 5.0
+omni_range = 15.0

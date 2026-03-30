@@ -10,6 +10,7 @@ public partial class Menu : Control
 	[Export] private Button FreeFlyButton;
 	[Export] private Button WavesButton;
 	[Export] private Button RushButton;
+	[Export] private Button SkirmishButton;
 	[Export] private Button exitButton;
 
 	private AudioStreamPlayer hoverSound;
@@ -27,6 +28,7 @@ public partial class Menu : Control
 		FreeFlyButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/FreeFlyButton");
 		RushButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/RushButton");
 		WavesButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/WavesButton");
+		SkirmishButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/SkirmishButton");
 
 		hoverSound = new AudioStreamPlayer();
 		clickSound = new AudioStreamPlayer();
@@ -45,6 +47,7 @@ public partial class Menu : Control
 		FreeFlyButton.Pressed += OnPlayFreeFlyButtonPressed;
 		RushButton.Pressed += OnPlayRushButtonPressed;
 		WavesButton.Pressed += OnPlayWavesButtonPressed;
+		SkirmishButton.Pressed += OnPlaySkirmishButtonPressed;
 		exitButton.Pressed += OnExitButtonPressed;
 		controlsButton.Pressed += OnControlsPressed;
 		graphicsButton.Pressed += OnGraphicsPressed;
@@ -53,6 +56,7 @@ public partial class Menu : Control
 		FreeFlyButton.MouseEntered += OnButtonHovered;
 		RushButton.MouseEntered += OnButtonHovered;
 		WavesButton.MouseEntered += OnButtonHovered;
+		SkirmishButton.MouseEntered += OnButtonHovered;
 		exitButton.MouseEntered += OnButtonHovered;
 		controlsButton.MouseEntered += OnButtonHovered;
 		graphicsButton.MouseEntered += OnButtonHovered;
@@ -67,6 +71,11 @@ public partial class Menu : Control
 	private void OnPlayWavesButtonPressed()
 	{
 		GetTree().ChangeSceneToFile("res://Scenes/LevelWave.tscn");
+	}
+
+	private void OnPlaySkirmishButtonPressed()
+	{
+		GetTree().ChangeSceneToFile("res://Scenes/LevelSkirmish.tscn");
 	}
 
 	private void OnPlayRushButtonPressed()

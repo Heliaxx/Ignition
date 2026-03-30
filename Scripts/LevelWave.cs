@@ -28,6 +28,7 @@ public partial class LevelWave : BaseLevel
 		_spawner = new EnemySpawner
 		{
 			EnemyScene = GD.Load<PackedScene>("res://Scenes/fighter.tscn"),
+			PortalScene = GD.Load<PackedScene>("res://Scenes/Portal.tscn"),
 			PoolSize = POOL_SIZE
 		};
 		_spawner.Initialize(NavigationRegion);
@@ -36,9 +37,22 @@ public partial class LevelWave : BaseLevel
 		SpawnEnemy();
 	}
 
+	private Vector3 GetRandomDirectionInSphere()
+	{
+		Vector3 randomDir = new Vector3(
+			(float)GD.Randf() * 2f - 1f,
+			(float)GD.Randf() * 2f - 1f,
+			(float)GD.Randf() * 2f - 1f
+		);
+		return randomDir.Normalized();
+	}
+
 	private void SpawnEnemy()
 	{
-		_spawner.SpawnNear(Player, SPAWN_MIN_DISTANCE, SPAWN_MAX_DISTANCE);
+		Vector3 spawnDir = GetRandomDirectionInSphere();
+		float distance = (float)GD.RandRange(SPAWN_MIN_DISTANCE, SPAWN_MAX_DISTANCE);
+		Vector3 spawnPos = Player.GlobalPosition + spawnDir * distance;
+		_spawner.SpawnViaPortal(spawnPos, Player);
 	}
 
 	private void OnEnemyDied(Fighter enemy)

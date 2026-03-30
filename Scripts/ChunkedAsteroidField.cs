@@ -104,7 +104,7 @@ public partial class ChunkedAsteroidField : Node3D
         public List<MultiMeshInstance3D> MultiMeshInstances = new();
         public Dictionary<int, MultiMeshInstance3D> MmiByVariant = new();
         public List<AsteroidInstance> Asteroids;
-        public StaticBody3D CollisionBody;
+        public AsteroidBody CollisionBody;
     }
 
     private struct AsteroidInstance
@@ -589,7 +589,7 @@ public partial class ChunkedAsteroidField : Node3D
         if (_collisionShapes == null || _collisionShapes.Length == 0) return;
         if (chunk.CollisionBody != null) return;
 
-        var collisionBody = new StaticBody3D();
+        var collisionBody = new AsteroidBody { Field = this };
         collisionBody.AddToGroup("asteroids");
 
         var variantCounts = new int[_asteroidMeshes.Length];

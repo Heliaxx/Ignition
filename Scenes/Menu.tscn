@@ -49,7 +49,7 @@ layout_mode = 2
 [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("3_nj5k7")
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 text = "PLAY"
 
 [node name="PlayButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
@@ -89,6 +89,15 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 mouse_default_cursor_shape = 2
 text = "WAVES"
+alignment = 0
+icon_alignment = 1
+
+[node name="SkirmishButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "SKIRMISH"
 alignment = 0
 icon_alignment = 1
 

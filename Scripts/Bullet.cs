@@ -45,24 +45,13 @@ public partial class Bullet : Node3D
 
 			if (collider is IDamageable damageable)
 			{
-				damageable.TakeDamage(Damage);
-			}
-			else if (collider is Node colliderNode
-				&& colliderNode.IsInGroup("asteroids")
-				&& colliderNode is StaticBody3D body)
-			{
-				uint ownerId = body.ShapeFindOwner(ray.GetColliderShape());
-				var hitShape = body.ShapeOwnerGetOwner(ownerId) as CollisionShape3D;
-
-				if (hitShape != null && hitShape.HasMeta("asteroid_id"))
+				CollisionShape3D hitShape = null;
+				if (collider is StaticBody3D body)
 				{
-					ulong asteroidId  = (ulong)(long)hitShape.GetMeta("asteroid_id");
-					int meshVariant   = (int)hitShape.GetMeta("mesh_variant");
-					int variantIndex  = (int)hitShape.GetMeta("variant_index");
-
-					var field = GetTree().GetFirstNodeInGroup("asteroid_field") as ChunkedAsteroidField;
-					field?.HitAsteroid(asteroidId, meshVariant, variantIndex, hitShape, (int)Damage);
+					uint ownerId = body.ShapeFindOwner(ray.GetColliderShape());
+					hitShape = body.ShapeOwnerGetOwner(ownerId) as CollisionShape3D;
 				}
+				damageable.TakeDamage(Damage, hitShape);
 			}
 			GetTree().CreateTimer(COLLISION_DESTROY_DELAY).Timeout += QueueFree;
 		}

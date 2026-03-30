@@ -1,10 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://cu2tlich0yrj7"]
+[gd_scene load_steps=5 format=3 uid="uid://cu2tlich0yrj7"]
 
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="1_vtaiv"]
 [ext_resource type="Script" uid="uid://c5kwjwacsisj8" path="res://Scripts/AimWidgetVisualizer.cs" id="2_aim"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_80qt6"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_target_hp"]
-bg_color = Color(0.8, 0.15, 0.15, 1)
+bg_color = Color(0.894118, 0.717647, 0.337255, 1)
 
 [node name="CanvasLayer" type="CanvasLayer"]
 
@@ -18,93 +21,20 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_aim")
 
-[node name="Panel" type="Panel" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -360.0
-offset_top = 360.0
-offset_right = 40.0
-offset_bottom = 560.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme = ExtResource("1_vtaiv")
-
-[node name="MarginContainer" type="MarginContainer" parent="Panel"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -161.0
-offset_top = -88.0
-offset_right = 161.0
-offset_bottom = 88.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 4
-
-[node name="HealthLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "HP:"
-
-[node name="HealthBar" type="ProgressBar" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(150, 40)
-layout_mode = 2
-size_flags_horizontal = 10
-size_flags_vertical = 4
-show_percentage = false
-
-[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="SpeedLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer2"]
-layout_mode = 2
-text = "Speed:"
-
-[node name="SpeedBar" type="ProgressBar" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer2"]
-custom_minimum_size = Vector2(150, 40)
-layout_mode = 2
-size_flags_horizontal = 10
-size_flags_vertical = 4
-show_percentage = false
-
-[node name="HBoxContainer3" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="AmmoLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer3"]
-layout_mode = 2
-text = "Ammo:"
-
-[node name="AmmoCount" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer3"]
-layout_mode = 2
-text = "30/30"
-
 [node name="TargetPanel" type="Panel" parent="."]
-visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 320.0
-offset_top = 360.0
-offset_right = 720.0
-offset_bottom = 520.0
+offset_left = -310.0
+offset_top = 490.0
+offset_right = -10.0
+offset_bottom = 530.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_vtaiv")
+theme_override_styles/panel = SubResource("StyleBoxFlat_80qt6")
 
 [node name="MarginContainer" type="MarginContainer" parent="TargetPanel"]
 layout_mode = 1
@@ -121,17 +51,8 @@ theme_override_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="TargetPanel/MarginContainer"]
 layout_mode = 2
 
-[node name="TargetName" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "TARGET"
-
-[node name="DistanceLabel" type="Label" parent="TargetPanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "0m"
-
 [node name="TargetHealthBar" type="ProgressBar" parent="TargetPanel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(150, 30)
 layout_mode = 2
-size_flags_horizontal = 10
 theme_override_styles/fill = SubResource("StyleBoxFlat_target_hp")
 show_percentage = false

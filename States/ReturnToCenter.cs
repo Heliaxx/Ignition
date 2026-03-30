@@ -16,16 +16,20 @@ public partial class ReturnToCenter : CombatState
     {
         if (Fighter == null) return;
 
-        Vector3 toCenter = CenterPoint - Fighter.GlobalPosition;
-        float distanceSquared = toCenter.LengthSquared();
+        float detectionSq = Fighter.DetectionRange * Fighter.DetectionRange;
+        if (Fighter.DistanceSquaredToPlayer() < detectionSq)
+        {
+            stateMachine.TransitionTo("Pursue");
+            return;
+        }
 
-        if (distanceSquared < acceptableRadiusSquared)
+        Vector3 toCenter = CenterPoint - Fighter.GlobalPosition;
+        if (toCenter.LengthSquared() < acceptableRadiusSquared)
         {
             stateMachine.TransitionTo("Idle");
             return;
         }
 
-        // Move and face center
         Fighter.MoveInDirection(toCenter.Normalized(), delta);
         Fighter.FaceDirection(toCenter, delta);
     }

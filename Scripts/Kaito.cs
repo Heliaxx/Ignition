@@ -75,8 +75,8 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	private Camera3D _cockpitCamera;
 	private Camera3D _externalCamera;
 	private bool _isExternalView = false;
-	private ProgressBar speedBar;
-	private ProgressBar healthBar;
+	private Label3D _healthDisplay;
+	private Label3D _speedDisplay;
 	private HealthComponent health;
 	private bool _isDead = false;
 
@@ -111,13 +111,12 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		canvasLayer = GetNode<CanvasLayer>("HUD");
 		_scoreHud = GetParent().GetParent().GetNodeOrNull<CanvasLayer>("ScoreHUD");
-		speedBar = canvasLayer.GetNode<ProgressBar>("Panel/MarginContainer/VBoxContainer/HBoxContainer2/SpeedBar");
-		healthBar = canvasLayer.GetNode<ProgressBar>("Panel/MarginContainer/VBoxContainer/HBoxContainer/HealthBar");
+		_healthDisplay = GetNodeOrNull<Label3D>("HealthDisplay");
+		_speedDisplay = GetNodeOrNull<Label3D>("SpeedDisplay");
 		health = GetNode<HealthComponent>("HealthComponent");
-		healthBar.MaxValue = health.MaxHealth;
-		healthBar.Value = health.CurrentHealth;
 		health.HealthChanged += OnHealthChanged;
 		health.Died += OnDied;
+		if (_healthDisplay != null) _healthDisplay.Text = $"{health.CurrentHealth:F0}";
 
 		InitWeapons();
 		InitBoost();
@@ -186,7 +185,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 			_justUnpaused = true;
 	}
 
-	public void TakeDamage(float amount)
+	public void TakeDamage(float amount, CollisionShape3D hitShape = null)
 	{
 		health.TakeDamage(amount);
 	}
@@ -198,6 +197,12 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		SetProcess(false);
 		SetPhysicsProcess(false);
 		SetProcessInput(false);
+
+		if (dustParticlesGpu != null)
+		{
+			dustParticlesGpu.Emitting = false;
+			dustParticlesGpu.AmountRatio = 0.0f;
+		}
 		Input.MouseMode = Input.MouseModeEnum.Visible;
 		shooting.Stop();
 		startShooting.Stop();
@@ -212,7 +217,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 	private void OnHealthChanged(float current, float max)
 	{
-		healthBar.Value = current;
+		if (_healthDisplay != null) _healthDisplay.Text = $"{current:F0}";
 	}
 
 	public override void _Input(InputEvent @event)
@@ -242,9 +247,9 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		AlignDustSpawnToVelocity((float)delta);
 		UpdateAutoCenterCursor((float)delta);
 		UpdateThrusterFlame((float)delta);
-		speedBar.MaxValue = MAX_SPEED * BoostSpeedMultiplier;
-		speedBar.Value = CurrentSpeed;
-		UpdateTargetHUD();
+		if (_speedDisplay != null)
+			_speedDisplay.Text = $"{CurrentSpeed:F0}";
+		UpdateTargetHUD((float)delta);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -265,6 +270,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		}
 
 		timeSinceLastShot += delta;
+		_timeSinceLastMissile += delta;
 		if (Input.IsActionJustPressed("light"))
 		{
 			lightLeft.Visible = !lightLeft.Visible;
@@ -303,6 +309,10 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		// Target cycling
 		if (Input.IsActionJustPressed("target_cycle"))
 			CycleTarget();
+
+		// Missiles
+		if (Input.IsActionJustPressed("secondary_fire"))
+			FireMissile();
 	}
 
 	private void ApplyInputs(float delta)

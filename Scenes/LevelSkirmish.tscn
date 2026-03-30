@@ -1,32 +1,220 @@
-[gd_scene load_steps=14 format=3 uid="uid://f8fa15xgmwqp"]
+[gd_scene load_steps=18 format=3 uid="uid://f8fa15xgmwqp"]
 
 [ext_resource type="Script" uid="uid://cncma7ah1d55k" path="res://Scripts/LevelSkirmish.cs" id="1_mrvn6"]
-[ext_resource type="Shader" uid="uid://vxoc6h16dya7" path="res://Shaders/SpaceShader.gdshader" id="2_ak2k7"]
 [ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="3_fqnir"]
-[ext_resource type="Texture2D" path="res://Imports/Planets/earth/textures/Material_62_baseColor.png" id="9_kl4x0"]
-[ext_resource type="Texture2D" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="10_h6ymf"]
-[ext_resource type="PackedScene" uid="uid://ddgevdqt1br2k" path="res://Scenes/Station4.tscn" id="4_x01r7"]
-[ext_resource type="PackedScene" uid="uid://bkmrv7xhowrhy" path="res://Scenes/Kaito.tscn" id="5_6u5s5"]
-[ext_resource type="PackedScene" uid="uid://dh4lr8e78uxub" path="res://Scenes/Fighter.tscn" id="6_1k0l1"]
+[ext_resource type="PackedScene" uid="uid://bkmrv7xhowrhy" path="res://Scenes/kaito.tscn" id="5_6u5s5"]
 [ext_resource type="PackedScene" uid="uid://p8bmcn3ds03m" path="res://Scenes/FpsMeter.tscn" id="7_n8v0p"]
 [ext_resource type="PackedScene" uid="uid://dmy55noj8bktd" path="res://Scenes/PauseMenu.tscn" id="8_3dypt"]
+[ext_resource type="PackedScene" uid="uid://00enhsw64eas" path="res://Scenes/BigStation.tscn" id="9_dgv10"]
+[ext_resource type="Texture2D" uid="uid://eqbd7lweaw6q" path="res://Imports/Planets/earth/textures/Material_62_baseColor.png" id="9_kl4x0"]
+[ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="10_h6ymf"]
+[ext_resource type="PackedScene" path="res://Scenes/ChunkedAsteroidField.tscn" id="10_ky1rl"]
+[ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="11_ringt"]
+[ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="12_theme"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_spawn"]
+height = 200.0
+radius = 800.0
+
+[sub_resource type="Shader" id="Shader_6tkp5"]
+code = "shader_type sky;
+
+group_uniforms Sky;
+uniform sampler2D sky_tex: source_color, filter_linear, hint_default_black;
+
+group_uniforms Star;
+uniform bool star_enabled = true;
+uniform vec3 star_pos = vec3(0.0);
+uniform vec3 star_color: source_color = vec3(1.0, 0.62, 0.28);
+uniform vec3 star_core_color: source_color = vec3(1.0, 0.95, 0.86);
+uniform float star_disc_size: hint_range(0.0005, 0.08, 0.0001) = 0.008;
+uniform float star_disc_softness: hint_range(0.05, 2.0, 0.01) = 0.45;
+uniform float star_halo_strength: hint_range(0.0, 8.0, 0.01) = 1.4;
+uniform float star_halo_falloff: hint_range(2.0, 256.0, 0.1) = 18.0;
+uniform float star_glare_strength: hint_range(0.0, 4.0, 0.01) = 0.22;
+
+group_uniforms Planet;
+uniform bool planet_enabled = true;
+uniform sampler2D planet_albedo_tex: source_color, filter_linear, hint_default_black;
+uniform sampler2D planet_night_tex: source_color, filter_linear, hint_default_black;
+uniform vec3 planet_direction = vec3(-0.55, 0.12, -0.82);
+uniform float planet_distance = 24.0;
+uniform float planet_radius = 6.2;
+uniform float planet_rotation = 0.0;
+uniform vec3 planet_tint: source_color = vec3(1.0);
+uniform float planet_night_strength: hint_range(0.0, 4.0, 0.01) = 0.75;
+
+group_uniforms Planet.Atmosphere;
+uniform vec3 atmosphere_color: source_color = vec3(0.24, 0.48, 1.0);
+uniform float atmosphere_strength: hint_range(0.0, 4.0, 0.01) = 0.9;
+uniform float atmosphere_falloff: hint_range(0.5, 16.0, 0.01) = 5.2;
+group_uniforms Rings;
+uniform bool ring_enabled = false;
+uniform sampler2D ring_texture: filter_linear, hint_default_white;
+uniform vec3 ring_normal = vec3(0.0, 1.0, 0.0);
+uniform float ring_inner_radius: hint_range(0.1, 20.0, 0.1) = 7.0;
+uniform float ring_outer_radius: hint_range(0.1, 30.0, 0.1) = 12.0;
+uniform vec3 ring_color: source_color = vec3(0.7, 0.65, 0.55);
+uniform float ring_opacity: hint_range(0.0, 1.0, 0.01) = 0.6;
+
+struct RayHit {
+	bool is_hit;
+	vec3 normal;
+	vec3 hit_point;
+};
+
+RayHit hit_sphere(vec3 ray_origin, vec3 ray_dir, vec3 sphere_center, float sphere_radius) {
+	RayHit ray_hit;
+	ray_hit.is_hit = false;
+	vec3 oc = ray_origin - sphere_center;
+	float a =  dot(ray_dir, ray_dir);
+	float b = 2.0 * dot(oc, ray_dir);
+	float c = dot (oc, oc) - sphere_radius * sphere_radius;
+	float delta = b * b - 4.0 * a * c;
+	if (delta < 0.0) { return ray_hit; }
+	float root = sqrt(delta);
+	float t1 = (-b - root) / (2.0 * a);
+	float t2 = (-b + root) / (2.0 * a);
+	float t_near = min(t1, t2);
+	float t_far = max(t1, t2);
+	if (t_near < 0.0) {
+		if (t_far >= 0.0) { t_near = 0.0; } else { return ray_hit; }
+	}
+	ray_hit.hit_point = fma(ray_dir, vec3(t_near), ray_origin);
+	ray_hit.normal = normalize(ray_hit.hit_point - sphere_center);
+	ray_hit.is_hit = true;
+	return ray_hit;
+}
+
+struct RingHit {
+	bool is_hit;
+	vec3 hit_point;
+	float ring_u;
+};
+
+RingHit hit_ring(vec3 ray_origin, vec3 ray_dir, vec3 ring_center, vec3 ring_normal_dir, float inner_r, float outer_r) {
+	RingHit ring_hit;
+	ring_hit.is_hit = false;
+	float denom = dot(ring_normal_dir, ray_dir);
+	if (abs(denom) < 0.0001) { return ring_hit; }
+	float t = dot(ring_center - ray_origin, ring_normal_dir) / denom;
+	if (t < 0.0) { return ring_hit; }
+	vec3 hit_point = ray_origin + ray_dir * t;
+	float dist = length(hit_point - ring_center);
+	if (dist >= inner_r && dist <= outer_r) {
+		ring_hit.is_hit = true;
+		ring_hit.hit_point = hit_point;
+		ring_hit.ring_u = (dist - inner_r) / (outer_r - inner_r);
+	}
+	return ring_hit;
+}
+
+vec2 get_spherical_uv(vec3 point_on_sphere, float rotation) {
+	vec3 n = normalize(point_on_sphere);
+	float theta = atan(n.z, n.x) + rotation;
+	float phi = acos(n.y);
+	return vec2((theta + PI) / TAU, phi / PI);
+}
+
+void sky() {
+	if(AT_CUBEMAP_PASS) {
+		COLOR = texture(sky_tex, SKY_COORDS).rgb;
+	} else {
+		COLOR = texture(sky_tex, SKY_COORDS).rgb;
+		vec3 light_dir = normalize(star_pos);
+		bool hit_planet = false;
+		float planet_t = 1e10;
+		vec3 planet_color_result = vec3(0.0);
+		if (planet_enabled) {
+			vec3 planet_dir = normalize(planet_direction);
+			vec3 planet_center = planet_dir * planet_distance;
+			RayHit planet_hit = hit_sphere(vec3(0.0), normalize(EYEDIR), planet_center, planet_radius);
+			if (planet_hit.is_hit) {
+				hit_planet = true;
+				planet_t = length(planet_hit.hit_point);
+				vec2 planet_uv = get_spherical_uv(planet_hit.normal, planet_rotation);
+				vec3 albedo = texture(planet_albedo_tex, planet_uv).rgb * planet_tint;
+				float ndotl = max(dot(planet_hit.normal, -light_dir), 0.0);
+				vec3 day_color = albedo * (0.07 + ndotl * 1.25);
+				vec3 night_mask = texture(planet_night_tex, planet_uv).rgb;
+				vec3 night_color = night_mask * (1.0 - ndotl) * planet_night_strength;
+				float rim = pow(1.0 - max(dot(planet_hit.normal, -EYEDIR), 0.0), atmosphere_falloff);
+				vec3 atmosphere = atmosphere_color * rim * atmosphere_strength;
+				planet_color_result = day_color + night_color + atmosphere;
+			}
+		}
+		bool hit_ring_result = false;
+		float ring_t = 1e10;
+		vec3 ring_color_result = vec3(0.0);
+		float ring_alpha = 0.0;
+		if (ring_enabled && planet_enabled) {
+			vec3 planet_dir = normalize(planet_direction);
+			vec3 planet_center = planet_dir * planet_distance;
+			vec3 norm_ring_normal = normalize(ring_normal);
+			RingHit r_hit = hit_ring(vec3(0.0), normalize(EYEDIR), planet_center, norm_ring_normal, ring_inner_radius, ring_outer_radius);
+			if (r_hit.is_hit) {
+				hit_ring_result = true;
+				ring_t = length(r_hit.hit_point);
+				vec4 ring_tex = texture(ring_texture, vec2(r_hit.ring_u, 0.5));
+				float ring_ndotl = abs(dot(norm_ring_normal, -light_dir)) * 0.6 + 0.4;
+				ring_color_result = ring_color * ring_tex.rgb * ring_ndotl;
+				ring_alpha = ring_opacity * ring_tex.a;
+				vec3 ring_to_planet = planet_center - r_hit.hit_point;
+				float shadow_check = dot(normalize(ring_to_planet), -light_dir);
+				if (shadow_check > 0.0 && length(ring_to_planet) < planet_radius * 1.1) { ring_color_result *= 0.3; }
+			}
+		}
+		if (hit_planet && hit_ring_result) {
+			COLOR = ring_t < planet_t ? mix(planet_color_result, ring_color_result, ring_alpha) : planet_color_result;
+		} else if (hit_planet) {
+			COLOR = planet_color_result;
+		} else if (hit_ring_result) {
+			COLOR = mix(COLOR, ring_color_result, ring_alpha);
+		}
+		if (star_enabled && !hit_planet) {
+			vec3 view_dir = normalize(EYEDIR);
+			float to_sun = max(dot(view_dir, -light_dir), 0.0);
+			float disc_edge = 1.0 - star_disc_size;
+			float disc = smoothstep(disc_edge, min(1.0, disc_edge + star_disc_size * max(star_disc_softness, 0.001)), to_sun);
+			float core = pow(disc, 2.2);
+			float halo = pow(to_sun, star_halo_falloff) * star_halo_strength;
+			float glare = pow(to_sun, max(2.0, star_halo_falloff * 0.35)) * star_glare_strength;
+			COLOR += halo * star_color + core * star_core_color + glare * star_color;
+		}
+	}
+}"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
-shader = ExtResource("2_ak2k7")
+shader = SubResource("Shader_6tkp5")
 shader_parameter/sky_tex = ExtResource("3_fqnir")
+shader_parameter/star_enabled = true
+shader_parameter/star_pos = Vector3(40, 6, 100)
+shader_parameter/star_color = Color(1, 0.649088, 0.349364, 1)
+shader_parameter/star_core_color = Color(1, 0.933333, 0.933333, 1)
+shader_parameter/star_disc_size = 0.002
+shader_parameter/star_disc_softness = 0.5
+shader_parameter/star_halo_strength = 1.4
+shader_parameter/star_halo_falloff = 22.0
+shader_parameter/star_glare_strength = 0.22
+shader_parameter/planet_enabled = true
 shader_parameter/planet_albedo_tex = ExtResource("9_kl4x0")
 shader_parameter/planet_night_tex = ExtResource("10_h6ymf")
-shader_parameter/sun_pos = Vector3(1000, 1400, -600)
-shader_parameter/planet_enabled = true
-shader_parameter/planet_direction = Vector3(-0.56, 0.16, -0.81)
-shader_parameter/planet_distance = 24.0
-shader_parameter/planet_radius = 6.2
+shader_parameter/planet_direction = Vector3(5, 1, -10)
+shader_parameter/planet_distance = 14.0
+shader_parameter/planet_radius = 6.0
 shader_parameter/planet_rotation = 0.15
-shader_parameter/planet_night_strength = 0.85
-shader_parameter/planet_tint = Vector3(0.93, 0.96, 1)
-shader_parameter/atmosphere_color = Vector3(0.34, 0.56, 0.97)
-shader_parameter/atmosphere_strength = 1.05
-shader_parameter/atmosphere_falloff = 5.6
+shader_parameter/planet_tint = Color(1, 1, 1, 1)
+shader_parameter/planet_night_strength = 0.75
+shader_parameter/atmosphere_color = Color(0.561713, 0.710745, 1, 1)
+shader_parameter/atmosphere_strength = 0.7
+shader_parameter/atmosphere_falloff = 5.0
+shader_parameter/ring_enabled = true
+shader_parameter/ring_texture = ExtResource("11_ringt")
+shader_parameter/ring_normal = Vector3(0, 1.5, -0.2)
+shader_parameter/ring_inner_radius = 6.9
+shader_parameter/ring_outer_radius = 20.1
+shader_parameter/ring_color = Color(0.733005, 0.733005, 0.733005, 1)
+shader_parameter/ring_opacity = 0.8
 
 [sub_resource type="Sky" id="Sky_w7017"]
 sky_material = SubResource("ShaderMaterial_7645s")
@@ -52,62 +240,134 @@ glow_levels/7 = 6.85
 glow_normalized = true
 glow_mix = 0.113
 glow_hdr_luminance_cap = 41.19
+fog_mode = 1
+fog_light_color = Color(0.337255, 0.584314, 0.72549, 1)
+fog_light_energy = 3.2
+fog_sun_scatter = 0.45
+fog_density = 0.0
+fog_aerial_perspective = 0.19
+fog_sky_affect = 0.0
+fog_height = 300.0
+fog_height_density = 0.002
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0002
+volumetric_fog_albedo = Color(1, 0.866047, 0.715673, 1)
+volumetric_fog_emission_energy = 0.0
+volumetric_fog_gi_inject = 0.5
+volumetric_fog_anisotropy = 0.5
+volumetric_fog_length = 1000.0
+volumetric_fog_sky_affect = 0.412
+volumetric_fog_temporal_reprojection_enabled = false
+volumetric_fog_temporal_reprojection_amount = 0.5
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_qi7iq"]
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_nmcw4"]
-radius = 2026.12
 
 [node name="Level" type="Node3D"]
 script = ExtResource("1_mrvn6")
 
+[node name="SpawnArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpawnArea"]
+shape = SubResource("CylinderShape3D_spawn")
+debug_fill = false
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_r05y7")
 
-[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavigationMesh_qi7iq")
-
-[node name="Station" parent="NavigationRegion3D" instance=ExtResource("4_x01r7")]
-
-[node name="Player" parent="NavigationRegion3D" instance=ExtResource("5_6u5s5")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 500)
-
-[node name="Fighter_01" parent="NavigationRegion3D" instance=ExtResource("6_1k0l1")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
-visible = false
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.573577, 0, -0.819152, 0, 1, 0, 0.819152, 0, -0.573577, 0, 0, -20)
 light_bake_mode = 0
 sky_mode = 1
 
 [node name="FPSMeter" parent="." instance=ExtResource("7_n8v0p")]
 mouse_filter = 2
 
-[node name="Scenery" type="Node3D" parent="."]
-
-[node name="SpawnLocations" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 152.846, 0)
-
-[node name="1" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 50)
-
-[node name="2" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 50)
-
-[node name="3" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 50)
-
-[node name="4" type="Node3D" parent="SpawnLocations" groups=["PlayerSpawnPoint"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 50)
-
 [node name="PauseMenuLayer" type="CanvasLayer" parent="."]
-layer = 3
 process_mode = 3
+layer = 3
 
 [node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_3dypt")]
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_qi7iq")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
-shape = SubResource("SphereShape3D_nmcw4")
+[node name="Player" parent="NavigationRegion3D" instance=ExtResource("5_6u5s5")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 150, -1500)
+MaxAmmo = 400
+MaxMissiles = 8
+
+[node name="BigStation" parent="NavigationRegion3D" instance=ExtResource("9_dgv10")]
+transform = Transform3D(27.9176, 8.02256, 7.50001, -9.911, 27.2302, 7.76458, -4.73117, -9.70334, 27.9904, 0, 0, 0)
+
+[node name="ChunkedAsteroidField" parent="." node_paths=PackedStringArray("SpawnExclusionZones") instance=ExtResource("10_ky1rl")]
+ChunkSize = 1000.0
+LoadRadius = 6
+MinScale = 30.0
+MaxScale = 90.0
+SpawnExclusionZones = [NodePath("../NavigationRegion3D/BigStation"), NodePath("../NavigationRegion3D/Player")]
+SpawnExclusionRadius = 1000.0
+MaxInstancesPerChunk = 4
+LodBias = 40.1
+
+[node name="ScoreHUD" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="KillLabel" type="Label" parent="ScoreHUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 60.0
+grow_horizontal = 0
+theme = ExtResource("12_theme")
+text = "Targets: 5"
+horizontal_alignment = 2
+
+[node name="EndScreenLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = 10
+
+[node name="EndScreen" type="ColorRect" parent="EndScreenLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.75)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="EndScreenLayer/EndScreen"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("12_theme")
+alignment = 1
+
+[node name="CompletionLabel" type="Label" parent="EndScreenLayer/EndScreen/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "LEVEL COMPLETE!"
+horizontal_alignment = 1
+
+[node name="MainMenuButton" type="Button" parent="EndScreenLayer/EndScreen/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+text = "Return to Main Menu"
+
+[node name="FreeRoamButton" type="Button" parent="EndScreenLayer/EndScreen/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+text = "Continue Free Roam"

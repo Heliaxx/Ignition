@@ -7,20 +7,33 @@ public partial class Kaito
 	[Export] public int MaxAmmo = 30;
 	[Export] public float BulletSpeed = 1600f;
 	[Export] public float FireRate = 10f; // shots per second
-	[Export] public float GimbalAngle = 10.0f; // degrees - max weapon deflection from ship forward
-	[Export] public float GimbalTrackingSpeed = 5.0f; // How fast the gimbal converges on target (deg/s-like factor)
+	[Export] public float GimbalAngle = 10.0f; // degrees
+	[Export] public float GimbalTrackingSpeed = 5.0f;
+
+	[ExportGroup("Missiles")]
+	[Export] public bool UnlimitedMissiles = false;
+	[Export] public int MaxMissiles = 6;
+	[Export] public float MissileCooldown = 1f; // seconds
+	[Export] public float MissileDamageMin = 50f;
+	[Export] public float MissileDamageMax = 70f;
 
 	private int _currentAmmo;
 	public int CurrentAmmo => _currentAmmo;
+
+	private int _currentMissiles;
+	public int CurrentMissiles => _currentMissiles;
+	private double _timeSinceLastMissile = 0.0;
 
 	private Node3D barrel;
 	private AudioStreamPlayer3D startShooting;
 	private AudioStreamPlayer3D shooting;
 	private AudioStreamPlayer3D endShooting;
 	private PackedScene bullet;
+	private PackedScene _missileScene;
 	private double timeSinceLastShot = 0.0;
 	private double fireCooldown; // seconds - computed from FireRate in _Ready()
-	private Label _ammoLabel;
+	private Label3D _ammoDisplay3D;
+	private Label3D _missilesDisplay3D;
 	private Vector3 _currentGimbalDir = Vector3.Forward; // smoothed gimbal aim direction (local space)
 
 	private void InitWeapons()
@@ -30,17 +43,47 @@ public partial class Kaito
 		shooting = GetNode<AudioStreamPlayer3D>("Shooting");
 		endShooting = GetNode<AudioStreamPlayer3D>("ShootingEnd");
 		bullet = GD.Load<PackedScene>("res://Scenes/bullet.tscn");
+		_missileScene = GD.Load<PackedScene>("res://Scenes/Missile.tscn");
 		fireCooldown = 1.0 / FireRate;
 		timeSinceLastShot = fireCooldown; // allow immediate first shot
+		_timeSinceLastMissile = MissileCooldown;
 		_currentAmmo = MaxAmmo;
-		_ammoLabel = canvasLayer.GetNode<Label>("Panel/MarginContainer/VBoxContainer/HBoxContainer3/AmmoCount");
+		_currentMissiles = MaxMissiles;
+		_ammoDisplay3D = GetNodeOrNull<Label3D>("AmmoDisplay");
+		_missilesDisplay3D = GetNodeOrNull<Label3D>("MissilesDisplay");
 		UpdateAmmoHUD();
+		UpdateMissileHUD();
 	}
 
 	private void UpdateAmmoHUD()
 	{
-		if (_ammoLabel == null) return;
-		_ammoLabel.Text = UnlimitedAmmo ? "∞" : $"{_currentAmmo}/{MaxAmmo}";
+		if (_ammoDisplay3D != null)
+			_ammoDisplay3D.Text = UnlimitedAmmo ? "∞" : $"{_currentAmmo}/{MaxAmmo}";
+	}
+
+	private void UpdateMissileHUD()
+	{
+		if (_missilesDisplay3D != null)
+			_missilesDisplay3D.Text = UnlimitedMissiles ? "∞" : $"{_currentMissiles}/{MaxMissiles}";
+	}
+
+	private void FireMissile()
+	{
+		if (_missileScene == null) return;
+		if (!UnlimitedMissiles && _currentMissiles <= 0) return;
+		if (_timeSinceLastMissile < MissileCooldown) return;
+		if (_lockedTarget != null && IsInstanceValid(_lockedTarget) && !IsMissileLocked) return;
+
+		var instance = _missileScene.Instantiate<Missile>();
+		instance.GlobalTransform = GetGimbaledBarrelTransform();
+		instance.InheritedVelocity = Velocity;
+		instance.Target = (_lockedTarget != null && IsInstanceValid(_lockedTarget)) ? _lockedTarget : null;
+		instance.Damage = (float)GD.RandRange(MissileDamageMin, MissileDamageMax);
+		GetParent().AddChild(instance);
+
+		if (!UnlimitedMissiles) _currentMissiles--;
+		_timeSinceLastMissile = 0.0;
+		UpdateMissileHUD();
 	}
 
 	private void Shoot()
@@ -144,7 +187,7 @@ public partial class Kaito
 		}
 		else
 		{
-			// Spherical lerp via angle-axis rotation
+			// Spherical lerp
 			Vector3 axis = currentWorld.Cross(targetDir);
 			if (axis.LengthSquared() < 0.0001f)
 			{

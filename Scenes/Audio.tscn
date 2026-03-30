@@ -8,11 +8,11 @@ color = Color(0.313726, 0.313726, 0.313726, 1)
 thickness = 4
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_y7hs6"]
-color = Color(1, 0.588235, 0.156863, 1)
+color = Color(0.894118, 0.717647, 0.337255, 1)
 thickness = 4
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_p7rhv"]
-color = Color(1, 0.588235, 0.156863, 1)
+color = Color(0.894118, 0.717647, 0.337255, 1)
 thickness = 4
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_qmla4"]
@@ -20,17 +20,17 @@ color = Color(0.314316, 0.314316, 0.314316, 1)
 thickness = 4
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_1mweh"]
-color = Color(1, 0.588235, 0.156863, 1)
+color = Color(0.894118, 0.717647, 0.337255, 1)
 thickness = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nm8ox"]
-bg_color = Color(1, 0.588235, 0.156863, 1)
+bg_color = Color(0.894118, 0.717647, 0.337255, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3l8o0"]
-bg_color = Color(1, 0.588235, 0.156863, 1)
+bg_color = Color(0.894118, 0.717647, 0.337255, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ubbwp"]
-bg_color = Color(1, 0.588235, 0.156863, 1)
+bg_color = Color(0.894118, 0.717647, 0.337255, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2mrpe"]
 
@@ -72,7 +72,7 @@ size_flags_horizontal = 4
 [node name="VolGeneral" type="Label" parent="Menu/Labels"]
 layout_mode = 2
 size_flags_vertical = 6
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_fonts/font = ExtResource("2_fwt72")
 theme_override_font_sizes/font_size = 30
 text = "General Volume"
@@ -80,7 +80,7 @@ text = "General Volume"
 [node name="VolMusic" type="Label" parent="Menu/Labels"]
 layout_mode = 2
 size_flags_vertical = 6
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_fonts/font = ExtResource("2_fwt72")
 theme_override_font_sizes/font_size = 30
 text = "Music Volume"
@@ -88,7 +88,7 @@ text = "Music Volume"
 [node name="VolSFX" type="Label" parent="Menu/Labels"]
 layout_mode = 2
 size_flags_vertical = 6
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_fonts/font = ExtResource("2_fwt72")
 theme_override_font_sizes/font_size = 30
 text = "Sound Effects Volume"
@@ -131,7 +131,7 @@ offset_bottom = 40.0
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_fonts/font = ExtResource("2_fwt72")
 theme_override_font_sizes/font_size = 40
 text = "OPTIONS"
@@ -145,7 +145,7 @@ theme_override_styles/separator = SubResource("StyleBoxFlat_nm8ox")
 
 [node name="Label2" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_fonts/font = ExtResource("2_fwt72")
 theme_override_font_sizes/font_size = 30
 text = "AUDIO"
@@ -168,8 +168,8 @@ size_flags_vertical = 4
 mouse_default_cursor_shape = 2
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(1, 0.588235, 0.156863, 1)
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_focus_color = Color(0.894118, 0.717647, 0.337255, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_fonts/font = ExtResource("2_fwt72")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/hover = SubResource("StyleBoxFlat_3l8o0")
@@ -184,8 +184,8 @@ size_flags_vertical = 4
 mouse_default_cursor_shape = 2
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(1, 0.588235, 0.156863, 1)
-theme_override_colors/font_color = Color(1, 0.588235, 0.156863, 1)
+theme_override_colors/font_focus_color = Color(0.894118, 0.717647, 0.337255, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_fonts/font = ExtResource("2_fwt72")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/hover = SubResource("StyleBoxFlat_3l8o0")

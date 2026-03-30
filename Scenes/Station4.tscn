@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=4 uid="uid://cq6babyj8gpiw"]
+[gd_scene load_steps=21 format=4 uid="uid://cjfg34mqkaxxp"]
 
 [ext_resource type="Texture2D" uid="uid://yubxfxdkidr4" path="res://Imports/Structures/station4/textures/spacestation_main_baseColor.jpeg" id="9_obagv"]
 [ext_resource type="Texture2D" uid="uid://1ljf4xx0t4vk" path="res://Imports/Structures/station4/textures/spacestation_main_metallicRoughness.png" id="10_aicvx"]
