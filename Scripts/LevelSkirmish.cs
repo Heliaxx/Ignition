@@ -2,7 +2,7 @@ using Godot;
 
 public partial class LevelSkirmish : BaseLevel
 {
-	[Export] public int SpawnCount = 1;
+	[Export] public int SpawnCount = 8;
 
 	private PackedScene enemyShip = GD.Load<PackedScene>("res://Scenes/fighter.tscn");
 	private PackedScene portalScene = GD.Load<PackedScene>("res://Scenes/Portal.tscn");

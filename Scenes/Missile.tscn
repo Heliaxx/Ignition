@@ -85,7 +85,6 @@ process_material = SubResource("ParticleProcessMaterial_trail")
 draw_pass_1 = SubResource("SphereMesh_trail")
 
 [node name="ExplosionParticles" type="GPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 material_override = SubResource("StandardMaterial3D_explosion")
 emitting = false
 amount = 40
