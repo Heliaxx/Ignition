@@ -321,6 +321,7 @@ navigation_mesh = SubResource("NavigationMesh_qi7iq")
 [node name="Player" parent="NavigationRegion3D" instance=ExtResource("5_3qx6a")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -500, 0, 0)
 UnlimitedAmmo = true
+UnlimitedMissiles = true
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 light_bake_mode = 0
