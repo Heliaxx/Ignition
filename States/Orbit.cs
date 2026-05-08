@@ -20,34 +20,16 @@ public partial class Orbit : CombatState
         Fighter?.SetLaserFiring(false);
     }
 
-    public override void PhysicsUpdate(float delta)
+    protected override void CombatUpdate(float delta)
     {
-        if (Fighter == null || !Fighter.HasTarget()) return;
-
-        // Flee check
-        if (Fighter.GetHealthPercent() <= Fighter.FleeHealthThreshold)
-        {
-            stateMachine.TransitionTo("Flee");
-            return;
-        }
-
-        // Evade check
-        if (Fighter.TookRecentDamage)
-        {
-            stateMachine.TransitionTo("Evade");
-            return;
-        }
-
         float distance = Fighter.DistanceToPlayer();
 
-        // If range opens up, go back to jousting
         if (distance > Fighter.CloseRange * 2.5f)
         {
             stateMachine.TransitionTo("Joust");
             return;
         }
 
-        // Periodically change orbit direction for unpredictability
         _directionChangeTimer -= delta;
         if (_directionChangeTimer <= 0f)
         {
@@ -55,7 +37,6 @@ public partial class Orbit : CombatState
             _directionChangeTimer = (float)GD.RandRange(MIN_DIRECTION_CHANGE, MAX_DIRECTION_CHANGE);
         }
 
-        // Circle-strafe using OffsetPursuit with lateral offset
         Vector3 playerForward = (Fighter.GetPlayerVelocity().LengthSquared() > 1f)
             ? Fighter.GetPlayerVelocity().Normalized()
             : (Fighter.GlobalPosition - Fighter.GetPlayerPosition()).Normalized();
@@ -68,11 +49,8 @@ public partial class Orbit : CombatState
             playerForward, localOffset
         );
 
-        // Apply movement - skipFacing since FaceTarget handles rotation
         Fighter.MoveInDirection(steering.Normalized(), delta, skipFacing: true);
         Fighter.FaceTarget(delta);
-
-        // Fire when in arc
         Fighter.SetLaserFiring(Fighter.IsPlayerInFiringArc());
     }
 }
