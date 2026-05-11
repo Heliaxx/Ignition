@@ -138,6 +138,8 @@ public class EnemySpawner
 	{
 		enemy.Reset();
 		enemy.Visible = true;
+		enemy.CollisionLayer = 1;
+		enemy.CollisionMask = 1;
 		enemy.ProcessMode = Node.ProcessModeEnum.Inherit;
 		enemy.SetPhysicsProcess(true);
 		enemy.SetProcess(true);
@@ -146,6 +148,8 @@ public class EnemySpawner
 	private static void Deactivate(Fighter enemy)
 	{
 		enemy.Visible = false;
+		enemy.CollisionLayer = 0;
+		enemy.CollisionMask = 0;
 		enemy.SetPhysicsProcess(false);
 		enemy.SetProcess(false);
 		enemy.ProcessMode = Node.ProcessModeEnum.Disabled;

@@ -12,6 +12,7 @@ public partial class Graphics : Control
 	[Export] private OptionButton msaaDropdown;
 	[Export] private OptionButton resolutionDropdown;
 	[Export] private CheckBox fpsMeterCheck;
+	[Export] private CheckBox shipModelCheck;
 	[Export] private Button backBtn;
 
 	private ConfigFileHandler configHandler;
@@ -27,6 +28,7 @@ public partial class Graphics : Control
 		msaaDropdown ??= GetNode<OptionButton>("Menu/Options/MSAADropdown");
 		resolutionDropdown ??= GetNode<OptionButton>("Menu/Options/ResolutionDropdown");
 		fpsMeterCheck ??= GetNode<CheckBox>("Menu/Options/FPSMeterCheck");
+		shipModelCheck ??= GetNode<CheckBox>("Menu/Options/ShipModelCheck");
 		backBtn ??= GetNode<Button>("HBoxContainer/BackBtn");
 
 		configHandler = GetTree().Root.GetNode<ConfigFileHandler>("/root/ConfigFileHandler");
@@ -142,6 +144,7 @@ public partial class Graphics : Control
 		};
 
 		fpsMeterCheck.ButtonPressed = configHandler.GetShowFpsMeter();
+		shipModelCheck.ButtonPressed = configHandler.GetShowShipModel();
 	}
 
 	private void _on_fps_dropdown_item_selected(int index)
@@ -207,6 +210,11 @@ public partial class Graphics : Control
 	private void _on_fps_meter_check_toggled(bool toggled)
 	{
 		configHandler.SaveVideoSettings("show_fps_meter", toggled);
+	}
+
+	private void _on_ship_model_check_toggled(bool toggled)
+	{
+		configHandler.SaveVideoSettings("show_ship_model", toggled);
 	}
 
 	private void _on_resolution_dropdown_item_selected(int index)

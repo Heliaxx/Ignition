@@ -90,7 +90,7 @@ volumetric_fog_temporal_reprojection_amount = 0.5
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_qi7iq"]
 
-[node name="Level" type="Node3D"]
+[node name="Level2" type="Node3D"]
 script = ExtResource("1_xijtb")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -163,7 +163,5 @@ horizontal_alignment = 2
 
 [node name="ChunkedAsteroidField" type="Node3D" parent="." node_paths=PackedStringArray("SpawnExclusionZones")]
 script = ExtResource("9_6rtd5")
-CollisionRadius = 5
 MinSpacing = 120.0
 SpawnExclusionZones = [null, NodePath("../NavigationRegion3D/Player")]
-MaxInstancesPerChunk = 210

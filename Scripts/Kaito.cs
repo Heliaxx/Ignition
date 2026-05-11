@@ -80,6 +80,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	private HealthComponent health;
 	private bool _isDead = false;
 
+	private MeshInstance3D _hull;
 	private MeshInstance3D _thrusterFlame;
 	private ShaderMaterial _thrusterMaterial;
 	private float _thrusterIntensity = 0.0f;
@@ -117,6 +118,11 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		health.HealthChanged += OnHealthChanged;
 		health.Died += OnDied;
 		if (_healthDisplay != null) _healthDisplay.Text = $"{health.CurrentHealth:F0}";
+
+		_hull = GetNodeOrNull<MeshInstance3D>("hull");
+		var cfg = GetTree().Root.GetNodeOrNull<ConfigFileHandler>("/root/ConfigFileHandler");
+		if (_hull != null && cfg != null)
+			_hull.Visible = cfg.GetShowShipModel();
 
 		InitWeapons();
 		InitBoost();
@@ -394,11 +400,14 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		torque.Y = yawInput * _currentYawAcceleration;
 		torque.Z = pitchInput * _currentPitchAcceleration;
 
-		// Stop key: precision stop assist
-		if (Input.IsActionPressed("stop") && !_isBoosting && Velocity.Length() <= MAX_SPEED * 0.5f && Velocity.Length() > 0.1f)
+		// Stop key: kills all movement and rotation
+		if (Input.IsActionPressed("stop") && !_isBoosting)
 		{
 			thrust = Vector3.Zero;
-			Velocity = Velocity.MoveToward(Vector3.Zero, ACCELERATION * delta);
+			torque = Vector3.Zero;
+			if (Velocity.Length() > 0.1f)
+				Velocity = Velocity.MoveToward(Vector3.Zero, ACCELERATION * delta);
+			angularVelocity = angularVelocity.MoveToward(Vector3.Zero, MAX_PITCH_SPEED * 4f * delta);
 		}
 
 		Velocity += thrust * delta;

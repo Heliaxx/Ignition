@@ -26,7 +26,7 @@ public partial class ChunkedAsteroidField : Node3D
     public int UnloadBuffer = 1; // Extra distance before unloading
 
     [Export]
-    public int CollisionRadius = 2; // Radius of chunks with collision shapes (should be <= LoadRadius)
+    public int CollisionRadius = 5; // Radius of chunks with collision shapes (should be <= LoadRadius)
 
     [Export]
     public int ChunksPerFrame = 1; // Chunks loaded per _Process frame (Optimization)
@@ -45,13 +45,13 @@ public partial class ChunkedAsteroidField : Node3D
     public int MaxChunksDown = 2; // Max chunks below Y=0 (if LimitDownward is true)
 
     [ExportGroup("Asteroid Settings")]
-    [Export]
+    [Export(PropertyHint.Range, "25,2000,25")]
     public float MinSpacing = 400f; // Minimum distance between asteroids for Poisson sampling
 
-    [Export]
+    [Export(PropertyHint.Range, "5,200,5")]
     public float MinScale = 25f; // Minimum asteroid scale
 
-    [Export]
+    [Export(PropertyHint.Range, "5,200,5")]
     public float MaxScale = 50f; // Maximum asteroid scale
 
     [Export]
@@ -68,9 +68,6 @@ public partial class ChunkedAsteroidField : Node3D
     public float SpawnExclusionRadius = 200f; // Minimum spawn distance from exclusion zones
 
     [ExportGroup("Performance")]
-    [Export]
-    public int MaxInstancesPerChunk = 200;
-
     [Export(PropertyHint.Range, "0.1,50.0,5.0")]
     public float LodBias = 15.0f; // Higher = more detail at distance
 
@@ -337,12 +334,6 @@ public partial class ChunkedAsteroidField : Node3D
         // Generate asteroid positions using Poisson disk sampling
         Vector3 regionSize = new Vector3(ChunkSize, ChunkSize, ChunkSize);
         var points = PoissonDiskSampler.GeneratePoints(regionSize, MinSpacing, chunkSeed);
-
-        // Limit points per chunk
-        if (points.Count > MaxInstancesPerChunk)
-        {
-            points.RemoveRange(MaxInstancesPerChunk, points.Count - MaxInstancesPerChunk);
-        }
 
         // Create asteroid instances
         var rng = new RandomNumberGenerator();

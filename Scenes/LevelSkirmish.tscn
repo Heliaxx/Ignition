@@ -293,8 +293,6 @@ navigation_mesh = SubResource("NavigationMesh_qi7iq")
 
 [node name="Player" parent="NavigationRegion3D" instance=ExtResource("5_6u5s5")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 150, -1500)
-MaxAmmo = 400
-MaxMissiles = 8
 
 [node name="BigStation" parent="NavigationRegion3D" instance=ExtResource("9_dgv10")]
 transform = Transform3D(27.9176, 8.02256, 7.50001, -9.911, 27.2302, 7.76458, -4.73117, -9.70334, 27.9904, 0, 0, 0)
@@ -302,11 +300,11 @@ transform = Transform3D(27.9176, 8.02256, 7.50001, -9.911, 27.2302, 7.76458, -4.
 [node name="ChunkedAsteroidField" parent="." node_paths=PackedStringArray("SpawnExclusionZones") instance=ExtResource("10_ky1rl")]
 ChunkSize = 1000.0
 LoadRadius = 6
+MinSpacing = 800.0
 MinScale = 30.0
 MaxScale = 90.0
 SpawnExclusionZones = [NodePath("../NavigationRegion3D/BigStation"), NodePath("../NavigationRegion3D/Player")]
 SpawnExclusionRadius = 1000.0
-MaxInstancesPerChunk = 4
 LodBias = 40.1
 
 [node name="ScoreHUD" type="CanvasLayer" parent="."]

@@ -4,7 +4,7 @@ public partial class Kaito
 {
 	[ExportGroup("Weapon")]
 	[Export] public bool UnlimitedAmmo = false;
-	[Export] public int MaxAmmo = 30;
+	[Export] public int MaxAmmo = 400;
 	[Export] public float BulletSpeed = 1600f;
 	[Export] public float FireRate = 10f; // shots per second
 	[Export] public float GimbalAngle = 10.0f; // degrees
@@ -12,7 +12,7 @@ public partial class Kaito
 
 	[ExportGroup("Missiles")]
 	[Export] public bool UnlimitedMissiles = false;
-	[Export] public int MaxMissiles = 6;
+	[Export] public int MaxMissiles = 8;
 	[Export] public float MissileCooldown = 1f; // seconds
 	[Export] public float MissileDamageMin = 50f;
 	[Export] public float MissileDamageMax = 70f;

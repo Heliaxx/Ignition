@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://dxjkortbmyj2c"]
 
 [ext_resource type="Script" uid="uid://dkj738m0u6bij" path="res://Scripts/Controls.cs" id="1_fdf8q"]
-[ext_resource type="PackedScene" uid="uid://p3dujtw54uuu" path="res://Scenes/InputButton.tscn" id="2_bhnol"]
+[ext_resource type="PackedScene" uid="uid://xqr7geijbu8v" path="res://Scenes/InputButton.tscn" id="2_bhnol"]
 [ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="3_oyrkr"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_kb_slider_bg"]

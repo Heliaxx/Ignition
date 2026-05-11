@@ -11,6 +11,7 @@ public partial class ConfigFileHandler
 	private const string DefaultMsaa          = "4x";
 	private const string DefaultResolution    = "1920x1080";
 	private const bool   DefaultShowFpsMeter  = true;
+	private const bool   DefaultShowShipModel = true;
 
 	public void SaveVideoSettings(string key, Variant value)
 	{
@@ -32,6 +33,7 @@ public partial class ConfigFileHandler
 		config.SetValue("video", "msaa",            DefaultMsaa);
 		config.SetValue("video", "resolution",      DefaultResolution);
 		config.SetValue("video", "show_fps_meter",  DefaultShowFpsMeter);
+		config.SetValue("video", "show_ship_model", DefaultShowShipModel);
 		config.Save(SETTINGS_FILE_PATH);
 		ApplyVideoSettings();
 	}
@@ -41,6 +43,13 @@ public partial class ConfigFileHandler
 		return config.HasSectionKey("video", "show_fps_meter")
 			? (bool)config.GetValue("video", "show_fps_meter")
 			: DefaultShowFpsMeter;
+	}
+
+	public bool GetShowShipModel()
+	{
+		return config.HasSectionKey("video", "show_ship_model")
+			? (bool)config.GetValue("video", "show_ship_model")
+			: DefaultShowShipModel;
 	}
 
 	private void EnsureVideoDefaults()
@@ -60,6 +69,7 @@ public partial class ConfigFileHandler
 		Ensure("msaa",           DefaultMsaa);
 		Ensure("resolution",     DefaultResolution);
 		Ensure("show_fps_meter", DefaultShowFpsMeter);
+		Ensure("show_ship_model", DefaultShowShipModel);
 		if (changed) config.Save(SETTINGS_FILE_PATH);
 	}
 

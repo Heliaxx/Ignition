@@ -340,10 +340,9 @@ layer = 3
 
 [node name="ChunkedAsteroidField" type="Node3D" parent="." node_paths=PackedStringArray("SpawnExclusionZones")]
 script = ExtResource("9_6rtd5")
-LoadRadius = 15
-CollisionRadius = 5
+LoadRadius = 18
 LimitUpward = true
 MinSpacing = 500.0
 MinScale = 30.0
-MaxScale = 90.0
+MaxScale = 60.0
 SpawnExclusionZones = [NodePath("../NavigationRegion3D/Player"), NodePath("../NavigationRegion3D/Station")]
