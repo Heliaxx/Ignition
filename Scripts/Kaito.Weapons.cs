@@ -109,7 +109,7 @@ public partial class Kaito
 		}
 	}
 
-	// ── Gimbal Tracking ──────────────────────────────────────────
+	// Gimbal Tracking
 
 	/// <summary>
 	/// Computes the ideal (instant) gimbal aim direction in world space.

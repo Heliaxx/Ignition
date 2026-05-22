@@ -17,7 +17,7 @@ public partial class ChunkedAsteroidField : Node3D
 
     [ExportGroup("Chunk Settings")]
     [Export]
-    public float ChunkSize = 400f;
+    public float ChunkSize = 800f;
 
     [Export]
     public int LoadRadius = 10; // Chunks loaded around player in each direction
@@ -68,10 +68,14 @@ public partial class ChunkedAsteroidField : Node3D
     public float SpawnExclusionRadius = 200f; // Minimum spawn distance from exclusion zones
 
     [ExportGroup("Performance")]
+    [Export]
+    public bool UseMultiMesh = true; // GPU instancing via MultiMeshInstance3D; disable for per-asteroid MeshInstance3D
+
     [Export(PropertyHint.Range, "0.1,50.0,5.0")]
     public float LodBias = 15.0f; // Higher = more detail at distance
 
-    public ulong WorldSeed = 0;
+    [Export] 
+    public long WorldSeed = 0;
 
     #endregion
 
@@ -100,6 +104,7 @@ public partial class ChunkedAsteroidField : Node3D
     {
         public List<MultiMeshInstance3D> MultiMeshInstances = new();
         public Dictionary<int, MultiMeshInstance3D> MmiByVariant = new();
+        public Dictionary<ulong, MeshInstance3D> MeshInstanceById = new();
         public List<AsteroidInstance> Asteroids;
         public AsteroidBody CollisionBody;
     }
@@ -119,7 +124,7 @@ public partial class ChunkedAsteroidField : Node3D
         if (WorldSeed == 0)
         {
             GD.Randomize();
-            WorldSeed = (ulong)GD.Randi() << 32 | GD.Randi();
+            WorldSeed = (long)((ulong)GD.Randi() << 32 | GD.Randi());
         }
         
         AddToGroup("asteroid_field");
@@ -369,53 +374,80 @@ public partial class ChunkedAsteroidField : Node3D
             asteroids.Add(asteroid);
         }
 
-        // Create MultiMeshInstance3D instances per mesh variant for GPU instancing
         List<MultiMeshInstance3D> mmis = new();
         var mmiByVariant = new Dictionary<int, MultiMeshInstance3D>();
+        var meshInstanceById = new Dictionary<ulong, MeshInstance3D>();
 
         if (_asteroidMeshes.Length > 0 && asteroids.Count > 0)
         {
-            for (int meshIndex = 0; meshIndex < _asteroidMeshes.Length; meshIndex++)
+            if (UseMultiMesh)
             {
-                if (_asteroidMeshes[meshIndex] == null)
-                    continue;
-
-                var variantAsteroids = asteroids.FindAll(a => a.MeshVariant == meshIndex);
-                if (variantAsteroids.Count == 0)
-                    continue;
-
-                var mmi = new MultiMeshInstance3D();
-                var multiMesh = new MultiMesh();
-                multiMesh.TransformFormat = MultiMesh.TransformFormatEnum.Transform3D;
-                multiMesh.Mesh = _asteroidMeshes[meshIndex];
-                multiMesh.InstanceCount = variantAsteroids.Count;
-
-                for (int i = 0; i < variantAsteroids.Count; i++)
+                for (int meshIndex = 0; meshIndex < _asteroidMeshes.Length; meshIndex++)
                 {
-                    var a = variantAsteroids[i];
-                    var localPos = a.Position - chunkOrigin;
-                    var transform = new Transform3D(Basis.Identity, localPos);
-                    transform.Basis = transform.Basis.Rotated(Vector3.Right, a.Rotation.X);
-                    transform.Basis = transform.Basis.Rotated(Vector3.Up, a.Rotation.Y);
-                    transform.Basis = transform.Basis.Rotated(Vector3.Forward, a.Rotation.Z);
-                    transform.Basis = transform.Basis.Scaled(new Vector3(a.Scale, a.Scale, a.Scale));
+                    if (_asteroidMeshes[meshIndex] == null)
+                        continue;
 
-                    multiMesh.SetInstanceTransform(i, transform);
+                    var variantAsteroids = asteroids.FindAll(a => a.MeshVariant == meshIndex);
+                    if (variantAsteroids.Count == 0)
+                        continue;
+
+                    var mmi = new MultiMeshInstance3D();
+                    var multiMesh = new MultiMesh();
+                    multiMesh.TransformFormat = MultiMesh.TransformFormatEnum.Transform3D;
+                    multiMesh.Mesh = _asteroidMeshes[meshIndex];
+                    multiMesh.InstanceCount = variantAsteroids.Count;
+
+                    for (int i = 0; i < variantAsteroids.Count; i++)
+                    {
+                        var a = variantAsteroids[i];
+                        var localPos = a.Position - chunkOrigin;
+                        var transform = new Transform3D(Basis.Identity, localPos);
+                        transform.Basis = transform.Basis.Rotated(Vector3.Right, a.Rotation.X);
+                        transform.Basis = transform.Basis.Rotated(Vector3.Up, a.Rotation.Y);
+                        transform.Basis = transform.Basis.Rotated(Vector3.Forward, a.Rotation.Z);
+                        transform.Basis = transform.Basis.Scaled(new Vector3(a.Scale, a.Scale, a.Scale));
+                        multiMesh.SetInstanceTransform(i, transform);
+                    }
+
+                    mmi.Multimesh = multiMesh;
+                    mmi.CastShadow = GeometryInstance3D.ShadowCastingSetting.On;
+                    mmi.LodBias = LodBias;
+                    mmi.Position = chunkOrigin;
+
+                    if (_asteroidMaterials != null && meshIndex < _asteroidMaterials.Length)
+                        mmi.MaterialOverride = _asteroidMaterials[meshIndex];
+
+                    AddChild(mmi);
+                    mmis.Add(mmi);
+                    mmiByVariant[meshIndex] = mmi;
                 }
-
-                mmi.Multimesh = multiMesh;
-                mmi.CastShadow = GeometryInstance3D.ShadowCastingSetting.On;
-                mmi.LodBias = LodBias;
-                mmi.Position = chunkOrigin; // node lives at chunk origin; instances use local coords
-
-                if (_asteroidMaterials != null && meshIndex < _asteroidMaterials.Length)
+            }
+            else
+            {
+                foreach (var a in asteroids)
                 {
-                    mmi.MaterialOverride = _asteroidMaterials[meshIndex];
-                }
+                    if (a.MeshVariant < 0 || a.MeshVariant >= _asteroidMeshes.Length) continue;
+                    var mesh = _asteroidMeshes[a.MeshVariant];
+                    if (mesh == null) continue;
 
-                AddChild(mmi);
-                mmis.Add(mmi);
-                mmiByVariant[meshIndex] = mmi;
+                    var basis = Basis.Identity;
+                    basis = basis.Rotated(Vector3.Right, a.Rotation.X);
+                    basis = basis.Rotated(Vector3.Up, a.Rotation.Y);
+                    basis = basis.Rotated(Vector3.Forward, a.Rotation.Z);
+                    basis = basis.Scaled(new Vector3(a.Scale, a.Scale, a.Scale));
+
+                    var mi = new MeshInstance3D();
+                    mi.Mesh = mesh;
+                    mi.Transform = new Transform3D(basis, a.Position);
+                    mi.CastShadow = GeometryInstance3D.ShadowCastingSetting.On;
+                    mi.LodBias = LodBias;
+
+                    if (_asteroidMaterials != null && a.MeshVariant < _asteroidMaterials.Length)
+                        mi.MaterialOverride = _asteroidMaterials[a.MeshVariant];
+
+                    AddChild(mi);
+                    meshInstanceById[a.Id] = mi;
+                }
             }
         }
 
@@ -423,6 +455,7 @@ public partial class ChunkedAsteroidField : Node3D
         {
             MultiMeshInstances = mmis,
             MmiByVariant = mmiByVariant,
+            MeshInstanceById = meshInstanceById,
             Asteroids = asteroids,
             CollisionBody = null
         };
@@ -439,12 +472,13 @@ public partial class ChunkedAsteroidField : Node3D
         if (_loadedChunks.TryGetValue(coord, out var chunk))
         {
             foreach (var mmi in chunk.MultiMeshInstances)
-            {
                 mmi?.QueueFree();
-            }
-            
+
+            foreach (var mi in chunk.MeshInstanceById.Values)
+                mi?.QueueFree();
+
             chunk.CollisionBody?.QueueFree();
-            
+
             _loadedChunks.Remove(coord);
         }
     }
@@ -483,7 +517,7 @@ public partial class ChunkedAsteroidField : Node3D
         // Combine world seed with chunk coordinates for deterministic generation
         unchecked
         {
-            ulong hash = WorldSeed;
+            ulong hash = (ulong)WorldSeed;
             hash ^= (ulong)(coord.X * 73856093) ^ ((ulong)coord.Y * 19349663) ^ ((ulong)coord.Z * 83492791);
             hash ^= hash >> 33;
             hash *= 0xff51afd7ed558ccdUL;
@@ -553,11 +587,19 @@ public partial class ChunkedAsteroidField : Node3D
         {
             if (kvp.Value.CollisionBody != chunkBody) continue;
 
-            if (kvp.Value.MmiByVariant.TryGetValue(meshVariant, out var mmi))
+            if (UseMultiMesh)
             {
-                var t = mmi.Multimesh.GetInstanceTransform(variantIndex);
-                t.Basis = Basis.Identity.Scaled(Vector3.Zero);
-                mmi.Multimesh.SetInstanceTransform(variantIndex, t);
+                if (kvp.Value.MmiByVariant.TryGetValue(meshVariant, out var mmi))
+                {
+                    var t = mmi.Multimesh.GetInstanceTransform(variantIndex);
+                    t.Basis = Basis.Identity.Scaled(Vector3.Zero);
+                    mmi.Multimesh.SetInstanceTransform(variantIndex, t);
+                }
+            }
+            else
+            {
+                if (kvp.Value.MeshInstanceById.TryGetValue(asteroidId, out var mi))
+                    mi.Visible = false;
             }
             break;
         }
@@ -629,6 +671,19 @@ public partial class ChunkedAsteroidField : Node3D
     /// Adds or removes collision bodies on loaded chunks based on CollisionRadius.
     /// Called whenever the player crosses a chunk boundary.
     /// </summary>
+    public void RefreshCollisionBodies() => UpdateCollisionBodies();
+
+    public void ApplyLodBias(float bias)
+    {
+        foreach (var chunk in _loadedChunks.Values)
+        {
+            foreach (var mmi in chunk.MultiMeshInstances)
+                if (mmi != null) mmi.LodBias = bias;
+            foreach (var mi in chunk.MeshInstanceById.Values)
+                if (mi != null) mi.LodBias = bias;
+        }
+    }
+
     private void UpdateCollisionBodies()
     {
         foreach (var kvp in _loadedChunks)

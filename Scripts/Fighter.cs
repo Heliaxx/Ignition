@@ -62,7 +62,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
     // Physics state for obstacle avoidance
     private PhysicsDirectSpaceState3D _spaceState;
     private int _avoidanceFrameCounter = 0;
-    private const int AVOIDANCE_FRAME_INTERVAL = 3; // raycast every 3rd physics frame
+    public static int AvoidanceFrameInterval = 3; // raycast every Nth physics frame
     private Vector3 _cachedAvoidance = Vector3.Zero;
     private float _cachedAvoidanceUrgency = 0f;
 
@@ -90,7 +90,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
             _thrusterMaterial = thrusterMesh.GetSurfaceOverrideMaterial(0) as ShaderMaterial
                 ?? thrusterMesh.Mesh?.SurfaceGetMaterial(0) as ShaderMaterial;
         // Stagger avoidance frames across instances so they don't all raycast simultaneously
-        _avoidanceFrameCounter = (int)(GD.Randi() % AVOIDANCE_FRAME_INTERVAL);
+        _avoidanceFrameCounter = (int)(GD.Randi() % AvoidanceFrameInterval);
         SetLaserFiring(false);
         if (!HasTarget())
         {
@@ -123,7 +123,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
 
         // Staggered obstacle avoidance - only raycast every Nth frame
         _avoidanceFrameCounter++;
-        if (_avoidanceFrameCounter >= AVOIDANCE_FRAME_INTERVAL)
+        if (_avoidanceFrameCounter >= AvoidanceFrameInterval)
         {
             _avoidanceFrameCounter = 0;
             if (_spaceState != null && ObstacleAvoidanceForce > 0)
@@ -330,7 +330,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
         MoveAndSlide();
     }
 
-    // ── Combat utilities ──────────────────────────────────────────
+    // Combat utilities
 
     public void SetLaserFiring(bool enabled)
     {

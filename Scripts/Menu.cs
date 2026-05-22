@@ -11,6 +11,7 @@ public partial class Menu : Control
 	[Export] private Button WavesButton;
 	[Export] private Button RushButton;
 	[Export] private Button SkirmishButton;
+	[Export] private Button PerfButton;
 	[Export] private Button exitButton;
 
 	private AudioStreamPlayer hoverSound;
@@ -29,6 +30,7 @@ public partial class Menu : Control
 		RushButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/RushButton");
 		WavesButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/WavesButton");
 		SkirmishButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/SkirmishButton");
+		PerfButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/PerfButton");
 
 		hoverSound = new AudioStreamPlayer();
 		clickSound = new AudioStreamPlayer();
@@ -48,6 +50,7 @@ public partial class Menu : Control
 		RushButton.Pressed += OnPlayRushButtonPressed;
 		WavesButton.Pressed += OnPlayWavesButtonPressed;
 		SkirmishButton.Pressed += OnPlaySkirmishButtonPressed;
+		PerfButton.Pressed += OnPlayPerfButtonPressed;
 		exitButton.Pressed += OnExitButtonPressed;
 		controlsButton.Pressed += OnControlsPressed;
 		graphicsButton.Pressed += OnGraphicsPressed;
@@ -57,6 +60,7 @@ public partial class Menu : Control
 		RushButton.MouseEntered += OnButtonHovered;
 		WavesButton.MouseEntered += OnButtonHovered;
 		SkirmishButton.MouseEntered += OnButtonHovered;
+		PerfButton.MouseEntered += OnButtonHovered;
 		exitButton.MouseEntered += OnButtonHovered;
 		controlsButton.MouseEntered += OnButtonHovered;
 		graphicsButton.MouseEntered += OnButtonHovered;
@@ -65,22 +69,32 @@ public partial class Menu : Control
 
 	private void OnPlayFreeFlyButtonPressed()
 	{
+		BenchmarkOverlay.SceneChangeTimestamp = (long)Time.GetTicksMsec();
 		GetTree().ChangeSceneToFile("res://Scenes/LevelFreeFlight.tscn");
 	}
 
 	private void OnPlayWavesButtonPressed()
 	{
+		BenchmarkOverlay.SceneChangeTimestamp = (long)Time.GetTicksMsec();
 		GetTree().ChangeSceneToFile("res://Scenes/LevelWave.tscn");
 	}
 
 	private void OnPlaySkirmishButtonPressed()
 	{
+		BenchmarkOverlay.SceneChangeTimestamp = (long)Time.GetTicksMsec();
 		GetTree().ChangeSceneToFile("res://Scenes/LevelSkirmish.tscn");
 	}
 
 	private void OnPlayRushButtonPressed()
 	{
+		BenchmarkOverlay.SceneChangeTimestamp = (long)Time.GetTicksMsec();
 		GetTree().ChangeSceneToFile("res://Scenes/LevelRush.tscn");
+	}
+
+	private void OnPlayPerfButtonPressed()
+	{
+		BenchmarkOverlay.SceneChangeTimestamp = (long)Time.GetTicksMsec();
+		GetTree().ChangeSceneToFile("res://Scenes/LevelPerfTest.tscn");
 	}
 
 	private void OnExitButtonPressed()

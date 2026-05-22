@@ -8,6 +8,8 @@ public class EnemySpawner
 	public PackedScene PortalScene { get; set; }
 	public int PoolSize { get; set; } = 10;
 
+	public static bool UsePooling = true;
+
 	public event Action<Fighter> EnemyDied;
 
 	private readonly Queue<Fighter> _pool = new();
@@ -120,7 +122,7 @@ public class EnemySpawner
 
 	private Fighter GetOrCreate()
 	{
-		if (_pool.Count > 0)
+		if (UsePooling && _pool.Count > 0)
 			return _pool.Dequeue();
 		return CreateEnemy();
 	}

@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://eqbd7lweaw6q" path="res://Imports/Planets/earth/textures/Material_62_baseColor.png" id="10_wh56p"]
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="11_n0ucd"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="12_ringt"]
+[ext_resource type="Script" uid="uid://by0vpvec8iuux" path="res://Scripts/BenchmarkOverlay.cs" id="15_bench"]
 
 [sub_resource type="Shader" id="Shader_6tkp5"]
 code = "shader_type sky;
@@ -305,20 +306,15 @@ volumetric_fog_sky_affect = 0.412
 volumetric_fog_temporal_reprojection_enabled = false
 volumetric_fog_temporal_reprojection_amount = 0.5
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_qi7iq"]
-
 [node name="Level2" type="Node3D"]
 script = ExtResource("1_xijtb")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_r05y7")
 
-[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavigationMesh_qi7iq")
+[node name="Station" parent="." instance=ExtResource("4_d3pwp")]
 
-[node name="Station" parent="NavigationRegion3D" instance=ExtResource("4_d3pwp")]
-
-[node name="Player" parent="NavigationRegion3D" instance=ExtResource("5_3qx6a")]
+[node name="Player" parent="." instance=ExtResource("5_3qx6a")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -500, 0, 0)
 UnlimitedAmmo = true
 UnlimitedMissiles = true
@@ -345,4 +341,7 @@ LimitUpward = true
 MinSpacing = 500.0
 MinScale = 30.0
 MaxScale = 60.0
-SpawnExclusionZones = [NodePath("../NavigationRegion3D/Player"), NodePath("../NavigationRegion3D/Station")]
+SpawnExclusionZones = [NodePath("../Player"), NodePath("../Station")]
+
+[node name="BenchmarkOverlay" type="CanvasLayer" parent="."]
+script = ExtResource("15_bench")

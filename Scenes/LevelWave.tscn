@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="12_hhpn1"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="13_ringt"]
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="14_theme"]
+[ext_resource type="Script" uid="uid://by0vpvec8iuux" path="res://Scripts/BenchmarkOverlay.cs" id="15_bench"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
 shader = ExtResource("2_qx2jm")
@@ -69,18 +70,13 @@ glow_normalized = true
 glow_mix = 0.113
 glow_hdr_luminance_cap = 41.19
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_qi7iq"]
-
 [node name="Level2" type="Node3D"]
 script = ExtResource("1_q8gjv")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_r05y7")
 
-[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavigationMesh_qi7iq")
-
-[node name="Player" parent="NavigationRegion3D" instance=ExtResource("5_d2lja")]
+[node name="Player" parent="." instance=ExtResource("5_d2lja")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -130,3 +126,19 @@ grow_horizontal = 0
 theme = ExtResource("14_theme")
 text = "High Score: 0"
 horizontal_alignment = 2
+
+[node name="WaveLabel" type="Label" parent="ScoreHUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 100.0
+offset_right = -20.0
+offset_bottom = 140.0
+grow_horizontal = 0
+theme = ExtResource("14_theme")
+text = "Wave 1"
+horizontal_alignment = 2
+
+[node name="BenchmarkOverlay" type="CanvasLayer" parent="."]
+script = ExtResource("15_bench")

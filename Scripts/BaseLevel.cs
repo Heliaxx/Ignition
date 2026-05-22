@@ -5,14 +5,14 @@ public partial class BaseLevel : Node3D
 	protected Node3D Player;
 	protected Kaito PlayerKaito;
 	protected MusicManager MusicManager;
-	protected NavigationRegion3D NavigationRegion;
+	protected Node3D NavigationRegion;
 
 	public override void _Ready()
 	{
 		EventBus.ClearAll();
-		Player = GetNode<Node3D>("NavigationRegion3D/Player");
+		Player = GetNode<Node3D>("Player");
 		PlayerKaito = Player as Kaito;
-		NavigationRegion = GetNode<NavigationRegion3D>("NavigationRegion3D");
+		NavigationRegion = this;
 		MusicManager = GetNode<MusicManager>("/root/MusicManager");
 		MusicManager.StopMusic();
 		SyncDirectionalLight();

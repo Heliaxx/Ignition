@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/ChunkedAsteroidField.tscn" id="10_ky1rl"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="11_ringt"]
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="12_theme"]
+[ext_resource type="Script" uid="uid://by0vpvec8iuux" path="res://Scripts/BenchmarkOverlay.cs" id="13_bench"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_spawn"]
 height = 200.0
@@ -260,8 +261,6 @@ volumetric_fog_sky_affect = 0.412
 volumetric_fog_temporal_reprojection_enabled = false
 volumetric_fog_temporal_reprojection_amount = 0.5
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_qi7iq"]
-
 [node name="Level" type="Node3D"]
 script = ExtResource("1_mrvn6")
 
@@ -288,13 +287,10 @@ layer = 3
 
 [node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_3dypt")]
 
-[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavigationMesh_qi7iq")
-
-[node name="Player" parent="NavigationRegion3D" instance=ExtResource("5_6u5s5")]
+[node name="Player" parent="." instance=ExtResource("5_6u5s5")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 150, -1500)
 
-[node name="BigStation" parent="NavigationRegion3D" instance=ExtResource("9_dgv10")]
+[node name="BigStation" parent="." instance=ExtResource("9_dgv10")]
 transform = Transform3D(27.9176, 8.02256, 7.50001, -9.911, 27.2302, 7.76458, -4.73117, -9.70334, 27.9904, 0, 0, 0)
 
 [node name="ChunkedAsteroidField" parent="." node_paths=PackedStringArray("SpawnExclusionZones") instance=ExtResource("10_ky1rl")]
@@ -303,7 +299,7 @@ LoadRadius = 6
 MinSpacing = 800.0
 MinScale = 30.0
 MaxScale = 90.0
-SpawnExclusionZones = [NodePath("../NavigationRegion3D/BigStation"), NodePath("../NavigationRegion3D/Player")]
+SpawnExclusionZones = [NodePath("../BigStation"), NodePath("../Player")]
 SpawnExclusionRadius = 1000.0
 LodBias = 40.1
 
@@ -369,3 +365,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 mouse_default_cursor_shape = 2
 text = "Continue Free Roam"
+
+[node name="BenchmarkOverlay" type="CanvasLayer" parent="."]
+script = ExtResource("13_bench")
