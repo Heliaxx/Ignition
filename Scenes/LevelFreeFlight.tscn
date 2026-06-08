@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://d3mqn4lo1yhif"]
+[gd_scene load_steps=15 format=3 uid="uid://d3mqn4lo1yhif"]
 
 [ext_resource type="Script" uid="uid://n875xpqjkl8q" path="res://Scripts/LevelFreeFlight.cs" id="1_xijtb"]
 [ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="3_02vup"]
@@ -10,7 +10,6 @@
 [ext_resource type="Texture2D" uid="uid://eqbd7lweaw6q" path="res://Imports/Planets/earth/textures/Material_62_baseColor.png" id="10_wh56p"]
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="11_n0ucd"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="12_ringt"]
-[ext_resource type="Script" uid="uid://by0vpvec8iuux" path="res://Scripts/BenchmarkOverlay.cs" id="15_bench"]
 
 [sub_resource type="Shader" id="Shader_6tkp5"]
 code = "shader_type sky;
@@ -342,6 +341,3 @@ MinSpacing = 500.0
 MinScale = 30.0
 MaxScale = 60.0
 SpawnExclusionZones = [NodePath("../Player"), NodePath("../Station")]
-
-[node name="BenchmarkOverlay" type="CanvasLayer" parent="."]
-script = ExtResource("15_bench")

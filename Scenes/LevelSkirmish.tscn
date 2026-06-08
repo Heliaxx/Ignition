@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://f8fa15xgmwqp"]
+[gd_scene load_steps=17 format=3 uid="uid://f8fa15xgmwqp"]
 
 [ext_resource type="Script" uid="uid://cncma7ah1d55k" path="res://Scripts/LevelSkirmish.cs" id="1_mrvn6"]
 [ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="3_fqnir"]
@@ -11,7 +11,6 @@
 [ext_resource type="PackedScene" path="res://Scenes/ChunkedAsteroidField.tscn" id="10_ky1rl"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="11_ringt"]
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="12_theme"]
-[ext_resource type="Script" uid="uid://by0vpvec8iuux" path="res://Scripts/BenchmarkOverlay.cs" id="13_bench"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_spawn"]
 height = 200.0
@@ -365,6 +364,3 @@ layout_mode = 2
 size_flags_horizontal = 4
 mouse_default_cursor_shape = 2
 text = "Continue Free Roam"
-
-[node name="BenchmarkOverlay" type="CanvasLayer" parent="."]
-script = ExtResource("13_bench")

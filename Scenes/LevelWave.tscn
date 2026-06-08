@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://ryeq8kdxlj7o"]
+[gd_scene load_steps=15 format=3 uid="uid://ryeq8kdxlj7o"]
 
 [ext_resource type="Script" uid="uid://bj1f8j6wbfydt" path="res://Scripts/LevelWave.cs" id="1_q8gjv"]
 [ext_resource type="Shader" uid="uid://vxoc6h16dya7" path="res://Shaders/SpaceShader.gdshader" id="2_qx2jm"]
@@ -11,7 +11,6 @@
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="12_hhpn1"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="13_ringt"]
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="14_theme"]
-[ext_resource type="Script" uid="uid://by0vpvec8iuux" path="res://Scripts/BenchmarkOverlay.cs" id="15_bench"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
 shader = ExtResource("2_qx2jm")
@@ -139,6 +138,3 @@ grow_horizontal = 0
 theme = ExtResource("14_theme")
 text = "Wave 1"
 horizontal_alignment = 2
-
-[node name="BenchmarkOverlay" type="CanvasLayer" parent="."]
-script = ExtResource("15_bench")

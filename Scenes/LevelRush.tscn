@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://ncvlr3whk36h"]
+[gd_scene load_steps=15 format=3 uid="uid://ncvlr3whk36h"]
 
 [ext_resource type="Script" uid="uid://q8h4bqdl7js7" path="res://Scripts/LevelRush.cs" id="1_xijtb"]
 [ext_resource type="Shader" uid="uid://vxoc6h16dya7" path="res://Shaders/SpaceShader.gdshader" id="2_fmvnv"]
@@ -11,7 +11,6 @@
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="11_n0ucd"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="12_ringt"]
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="13_theme"]
-[ext_resource type="Script" uid="uid://by0vpvec8iuux" path="res://Scripts/BenchmarkOverlay.cs" id="15_bench"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
 shader = ExtResource("2_fmvnv")
@@ -156,9 +155,6 @@ grow_horizontal = 0
 theme = ExtResource("13_theme")
 text = "x1.5 (2.0s)"
 horizontal_alignment = 2
-
-[node name="BenchmarkOverlay" type="CanvasLayer" parent="."]
-script = ExtResource("15_bench")
 
 [node name="ChunkedAsteroidField" type="Node3D" parent="." node_paths=PackedStringArray("SpawnExclusionZones")]
 script = ExtResource("9_6rtd5")

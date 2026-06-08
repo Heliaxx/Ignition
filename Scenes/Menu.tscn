@@ -101,15 +101,6 @@ text = "SKIRMISH"
 alignment = 0
 icon_alignment = 1
 
-[node name="PerfButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-mouse_default_cursor_shape = 2
-text = "PERF TEST"
-alignment = 0
-icon_alignment = 1
-
 [node name="Space" type="Control" parent="PanelContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
