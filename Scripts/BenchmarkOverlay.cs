@@ -4,8 +4,7 @@ using System.Collections.Generic;
 
 public partial class BenchmarkOverlay : CanvasLayer
 {
-    //  Settings 
-    private const int   BUFFER_SIZE         = 7200;  // 30s at 240fps
+    //  Settings
     private const float DISPLAY_UPDATE_RATE = 0.5f;
     private const float RECORD_DURATION     = 30f;
 
@@ -17,17 +16,16 @@ public partial class BenchmarkOverlay : CanvasLayer
     private const int   COLLISION_RADIUS_OFF = 99;
     private const int   CHUNKS_PER_FRAME_OFF = 999;
 
-    //  State 
+    //  State
     private enum BenchState { Idle, Recording }
     private BenchState _state          = BenchState.Idle;
     private float      _recordingTimer = 0f;
+    private float      _elapsedTime    = 0f;
     private float      _autoStartTimer = 5f;
     private bool       _hasResults     = false;
 
-    //  Frame time buffer
-    private float[] _buf = new float[BUFFER_SIZE];
-    private int _head  = 0;
-    private int _count = 0;
+    //  Frame time buffer (unbounded)
+    private readonly List<float> _buf = new();
 
     //  Stats cache
     private float _avgFps, _low1Fps, _low01Fps, _currentFps;
@@ -38,13 +36,13 @@ public partial class BenchmarkOverlay : CanvasLayer
     public static long SceneChangeTimestamp = 0;
     private long _loadTimeMs = -1;
 
-    //  Toggle states 
+    //  Toggle states
     private int  _visualLodMode = 0; // 0=default, 1=max, 2=min
     private bool _collisionLOD  = true;
     private bool _chunkLoading  = true;
     private bool _visible       = true;
 
-    //  Baseline values 
+    //  Baseline values
     private float _baseLodBias;
     private int   _baseCollisionRadius;
     private int   _baseChunksPerFrame;
@@ -53,7 +51,7 @@ public partial class BenchmarkOverlay : CanvasLayer
     private ChunkedAsteroidField _asteroidField;
     private Label _label;
 
-    //  Godot lifecycle 
+    //  Godot lifecycle
 
     public override void _Ready()
     {
@@ -94,10 +92,8 @@ public partial class BenchmarkOverlay : CanvasLayer
 
         if (_state == BenchState.Recording)
         {
-            _buf[_head] = dt;
-            _head = (_head + 1) % BUFFER_SIZE;
-            if (_count < BUFFER_SIZE) _count++;
-
+            _buf.Add(dt);
+            _elapsedTime    += dt;
             _recordingTimer -= dt;
 
             _displayTimer += dt;
@@ -168,8 +164,8 @@ public partial class BenchmarkOverlay : CanvasLayer
 
     private void StartRecording()
     {
-        _head           = 0;
-        _count          = 0;
+        _buf.Clear();
+        _elapsedTime    = 0f;
         _recordingTimer = RECORD_DURATION;
         _displayTimer   = 0f;
         _state          = BenchState.Recording;
@@ -179,7 +175,7 @@ public partial class BenchmarkOverlay : CanvasLayer
     private void StopRecording()
     {
         _state      = BenchState.Idle;
-        _hasResults = _count > 0;
+        _hasResults = _buf.Count > 0;
         ComputeStats();
         UpdateDisplay();
     }
@@ -223,21 +219,18 @@ public partial class BenchmarkOverlay : CanvasLayer
 
     private void ComputeStats()
     {
-        if (_count == 0) return;
+        int count = _buf.Count;
+        if (count == 0) return;
 
-        var sorted = new float[_count];
-        int start  = _count < BUFFER_SIZE ? 0 : _head;
-        float total = 0f;
-        for (int i = 0; i < _count; i++)
-        {
-            sorted[i] = _buf[(start + i) % BUFFER_SIZE];
-            total += sorted[i];
-        }
+        var sorted = _buf.ToArray();
         Array.Sort(sorted);
 
-        float slowP1  = sorted[(int)((_count - 1) * 0.99f)];
-        float slowP01 = sorted[(int)((_count - 1) * 0.999f)];
-        float avgDt   = total / _count;
+        float total = 0f;
+        foreach (var f in _buf) total += f;
+
+        float slowP1  = sorted[(int)((count - 1) * 0.99f)];
+        float slowP01 = sorted[(int)((count - 1) * 0.999f)];
+        float avgDt   = total / count;
 
         _low1Fps  = slowP1  > 0f ? 1f / slowP1  : 0f;
         _low01Fps = slowP01 > 0f ? 1f / slowP01 : 0f;
@@ -253,13 +246,11 @@ public partial class BenchmarkOverlay : CanvasLayer
         string on  = "[ON ]";
         string off = "[OFF]";
 
-        float elapsed = RECORD_DURATION - _recordingTimer;
-
         string header = _state == BenchState.Recording
-            ? $" RECORDING {elapsed:F1}s "
+            ? $" RECORDING {_elapsedTime:F1}s ({_buf.Count} frames) "
             : _hasResults
-                ? $" BENCHMARK ({_count} frames) ─"
-                : $" BENCHMARK ─";
+                ? $" BENCHMARK ({_buf.Count} frames, {_elapsedTime:F1}s) "
+                : $" BENCHMARK ";
 
         string stats = (_hasResults || _state == BenchState.Recording)
             ? $"FPS Current : {_currentFps:F1} fps\n" +
