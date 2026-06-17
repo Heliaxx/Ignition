@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://d0x8ba3p47i5m"]
 
-[ext_resource type="Script" uid="uid://dd8lxavpnkk0e" path="res://Scenes/bullet_extend.gd" id="1_xjght"]
+[ext_resource type="Script" uid="uid://buhlerjlviyew" path="res://Scripts/Bullet.cs" id="1_xjght"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1okna"]
 albedo_color = Color(1, 0.832649, 0.481108, 1)
