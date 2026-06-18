@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=4 uid="uid://bkmrv7xhowrhy"]
+[gd_scene load_steps=28 format=4 uid="uid://bkmrv7xhowrhy"]
 
 [ext_resource type="Script" uid="uid://c1w0c47owcnfl" path="res://Scripts/Kaito.cs" id="1_8p5tm"]
 [ext_resource type="PackedScene" uid="uid://c5r7xilp2j2yt" path="res://Scenes/ShakeableCamera.tscn" id="1_ypk4o"]
@@ -13,6 +13,8 @@
 [ext_resource type="Script" uid="uid://bdgluvaq1xpbk" path="res://Scripts/HealthComponent.cs" id="12_e2hpg"]
 [ext_resource type="PackedScene" uid="uid://086mbplltvr6" path="res://Scenes/DeathScreen.tscn" id="13_death"]
 [ext_resource type="PackedScene" uid="uid://bwpphn8333nc7" path="res://Scenes/ThrusterFlame.tscn" id="14_thruster"]
+[ext_resource type="PackedScene" uid="uid://brlfy145vlmbn" path="res://Scenes/GatlingWeapon.tscn" id="15_gatling"]
+[ext_resource type="PackedScene" uid="uid://d0x8ba3p47i5m" path="res://Scenes/bullet.tscn" id="16_bullet"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ow3ph"]
 points = PackedVector3Array(-5.37973, 0.767429, 3.13164, -7.01603, 0.767429, 2.04045, -7.83483, 0.767429, 3.13164, -7.01603, 1.31308, 2.31349, -7.83483, 1.31308, 3.67739, -4.56094, 1.04025, 2.04045, -6.19788, 1.31308, 3.67739, -6.74299, 0.767429, 3.67739, -4.56094, 0.767429, 2.04045, -5.65245, 1.31308, 2.31349, -7.83483, 1.31308, 3.13164, -7.83483, 0.767429, 3.67739, -4.56094, 1.04025, 2.31349, -7.01603, 1.04025, 2.04045, -5.65245, 1.31308, 3.13164, -6.19788, 1.04025, 3.67739, -4.56094, 0.767429, 2.31349, -5.37973, 1.04025, 3.13164)
@@ -183,8 +185,10 @@ visible = false
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2.2, 1.8, 3.5)
 visible = false
 
-[node name="Barrel" type="RayCast3D" parent="."]
+[node name="GatlingWeapon" parent="." instance=ExtResource("15_gatling")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 9.07156, 0.791914, 2.26056e-07)
+BulletScene = ExtResource("16_bullet")
+HasGimbal = true
 
 [node name="ShootingStart" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("5_0nka7")

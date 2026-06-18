@@ -50,6 +50,8 @@ public partial class LevelRush : BaseLevel
 
 	public override void _Process(double delta)
 	{
+		base._Process(delta);
+
 		if (PlayerKaito == null || _playerHealth == null || _playerHealth.IsDead)
 			return;
 

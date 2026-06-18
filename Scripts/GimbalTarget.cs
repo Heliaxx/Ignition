@@ -2,17 +2,13 @@ using Godot;
 
 public enum GimbalTargetType { Enemy, Ally, Powerup }
 
-/// <summary>
-/// Place this node anywhere in a scene to make that point targetable by the player's gimbal system.
-/// Registers itself in the "gimbal_targets" group on _Ready.
-/// Automatically links to its parent node as the owner - no Fighter reference needed.
-/// If the parent has a "Died" signal, it is forwarded as GimbalTarget.Died.
-/// </summary>
+// Makes its position targetable by the player's gimbal. Joins the "gimbal_targets"
+// group on ready, uses its parent as owner, and forwards the parent's Died signal.
 public partial class GimbalTarget : Node3D
 {
 	[Export] public GimbalTargetType TargetType = GimbalTargetType.Enemy;
 
-	/// <summary>Overrides the HUD display name. Falls back to parent name, then node name.</summary>
+	// Overrides the HUD name; falls back to parent name, then node name.
 	[Export] public string DisplayNameOverride = "";
 
 	[Signal]
@@ -31,7 +27,7 @@ public partial class GimbalTarget : Node3D
 			_owner.Connect("Died", Callable.From(() => EmitSignal(SignalName.Died)));
 	}
 
-	/// <summary>Returns the velocity of this target point from the parent physics body, if any.</summary>
+	// Velocity of the parent physics body, or zero.
 	public Vector3 GetVelocity()
 	{
 		if (_owner is CharacterBody3D cb && IsInstanceValid(cb)) return cb.Velocity;
@@ -39,7 +35,7 @@ public partial class GimbalTarget : Node3D
 		return Vector3.Zero;
 	}
 
-	/// <summary>Returns true if target is valid.</summary>
+	// True if this target can still be locked (visible, alive, enabled).
 	public bool IsValid()
 	{
 		if (!IsInstanceValid(this) || !Visible)
@@ -51,7 +47,6 @@ public partial class GimbalTarget : Node3D
 		if (!_owner.Visible || _owner.ProcessMode == ProcessModeEnum.Disabled)
 			return false;
 
-		// Health check - works with any node that exposes CurrentHealthValue
 		if (_owner is Fighter fighter)
 			return fighter.CurrentHealthValue > 0;
 
@@ -65,7 +60,7 @@ public partial class GimbalTarget : Node3D
 		return _owner?.Name ?? Name;
 	}
 
-	/// <summary>Returns true if health bar data is available.</summary>
+	// True if the owner exposes health for the target HUD bar.
 	public bool HasHealthData() => _owner is Fighter && IsInstanceValid(_owner);
 
 	public float GetCurrentHealth() => _owner is Fighter f ? f.CurrentHealthValue : 0;

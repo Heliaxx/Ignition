@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://brlfy145vlmbn"]
+
+[ext_resource type="Script" uid="uid://lonkha61aves" path="res://Scripts/GatlingWeapon.cs" id="1_gatling"]
+
+[node name="GatlingWeapon" type="Node3D"]
+script = ExtResource("1_gatling")

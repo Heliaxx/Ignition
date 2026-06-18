@@ -1,10 +1,7 @@
 using Godot;
 using System;
 
-/// <summary>
-/// Visualizes aiming widget on the HUD.
-/// Displays aiming radius circle, deadzone, and cursor position.
-/// </summary>
+// Draws the HUD aiming widget: cursor, reticles, and gimbal indicator.
 public partial class AimWidgetVisualizer : Control
 {
 	private Kaito playerShip;

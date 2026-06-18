@@ -134,39 +134,26 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	private void InitThrusters()
 	{
 		_thrusterFlame = GetNodeOrNull<MeshInstance3D>("ThrusterFlame");
-		if (_thrusterFlame != null)
-		{
-			var srcMat = _thrusterFlame.GetSurfaceOverrideMaterial(0) as ShaderMaterial
-				?? _thrusterFlame.Mesh?.SurfaceGetMaterial(0) as ShaderMaterial;
-			if (srcMat != null)
-			{
-				_thrusterMaterial = (ShaderMaterial)srcMat.Duplicate();
-				_thrusterFlame.SetSurfaceOverrideMaterial(0, _thrusterMaterial);
-			}
-		}
+		_thrusterMaterial = DuplicateThrusterMaterial(_thrusterFlame);
 
 		_reverseThruster1 = GetNodeOrNull<MeshInstance3D>("ReverseThruster1");
 		_reverseThruster2 = GetNodeOrNull<MeshInstance3D>("ReverseThruster2");
-		if (_reverseThruster1 != null)
-		{
-			var srcMat = _reverseThruster1.GetSurfaceOverrideMaterial(0) as ShaderMaterial
-				?? _reverseThruster1.Mesh?.SurfaceGetMaterial(0) as ShaderMaterial;
-			if (srcMat != null)
-			{
-				_reverseThrusterMaterial1 = (ShaderMaterial)srcMat.Duplicate();
-				_reverseThruster1.SetSurfaceOverrideMaterial(0, _reverseThrusterMaterial1);
-			}
-		}
-		if (_reverseThruster2 != null)
-		{
-			var srcMat = _reverseThruster2.GetSurfaceOverrideMaterial(0) as ShaderMaterial
-				?? _reverseThruster2.Mesh?.SurfaceGetMaterial(0) as ShaderMaterial;
-			if (srcMat != null)
-			{
-				_reverseThrusterMaterial2 = (ShaderMaterial)srcMat.Duplicate();
-				_reverseThruster2.SetSurfaceOverrideMaterial(0, _reverseThrusterMaterial2);
-			}
-		}
+		_reverseThrusterMaterial1 = DuplicateThrusterMaterial(_reverseThruster1);
+		_reverseThrusterMaterial2 = DuplicateThrusterMaterial(_reverseThruster2);
+	}
+
+	// Duplicates the mesh's shader material into a per-instance override so each
+	// thruster's intensity can be animated independently. Returns null if absent.
+	private static ShaderMaterial DuplicateThrusterMaterial(MeshInstance3D mesh)
+	{
+		if (mesh == null) return null;
+		var srcMat = mesh.GetSurfaceOverrideMaterial(0) as ShaderMaterial
+			?? mesh.Mesh?.SurfaceGetMaterial(0) as ShaderMaterial;
+		if (srcMat == null) return null;
+
+		var dup = (ShaderMaterial)srcMat.Duplicate();
+		mesh.SetSurfaceOverrideMaterial(0, dup);
+		return dup;
 	}
 
 	private void LoadControlSettings()
@@ -365,18 +352,10 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		thrust = Vector3.Zero;
 
-		// During active boost, force full forward thrust and disable backward
+		// Forward axis: boost forces full forward thrust and disables backward.
 		if (_isBoosting)
 		{
-			thrust = Transform.Basis.X * _currentAcceleration;
-			if (Input.IsActionPressed("strafe_up"))
-				thrust += Transform.Basis.Y * _currentAcceleration;
-			if (Input.IsActionPressed("strafe_down"))
-				thrust -= Transform.Basis.Y * _currentAcceleration;
-			if (Input.IsActionPressed("strafe_right"))
-				thrust += Transform.Basis.Z * _currentAcceleration;
-			if (Input.IsActionPressed("strafe_left"))
-				thrust -= Transform.Basis.Z * _currentAcceleration;
+			thrust += Transform.Basis.X * _currentAcceleration;
 		}
 		else
 		{
@@ -384,15 +363,17 @@ public partial class Kaito : CharacterBody3D, IDamageable
 				thrust += Transform.Basis.X * _currentAcceleration;
 			if (Input.IsActionPressed("thrust_backward"))
 				thrust -= Transform.Basis.X * _currentAcceleration;
-			if (Input.IsActionPressed("strafe_up"))
-				thrust += Transform.Basis.Y * _currentAcceleration;
-			if (Input.IsActionPressed("strafe_down"))
-				thrust -= Transform.Basis.Y * _currentAcceleration;
-			if (Input.IsActionPressed("strafe_right"))
-				thrust += Transform.Basis.Z * _currentAcceleration;
-			if (Input.IsActionPressed("strafe_left"))
-				thrust -= Transform.Basis.Z * _currentAcceleration;
 		}
+
+		// Strafe axes behave identically in both modes.
+		if (Input.IsActionPressed("strafe_up"))
+			thrust += Transform.Basis.Y * _currentAcceleration;
+		if (Input.IsActionPressed("strafe_down"))
+			thrust -= Transform.Basis.Y * _currentAcceleration;
+		if (Input.IsActionPressed("strafe_right"))
+			thrust += Transform.Basis.Z * _currentAcceleration;
+		if (Input.IsActionPressed("strafe_left"))
+			thrust -= Transform.Basis.Z * _currentAcceleration;
 
 		torque = Vector3.Zero;
 		rollInput = Input.GetActionStrength("roll_right") - Input.GetActionStrength("roll_left");
@@ -462,22 +443,11 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	{
 		_isExternalView = !_isExternalView;
 
-		if (_isExternalView)
-		{
-			_externalCamera.MakeCurrent();
-			canvasLayer.Visible = false;
-			if (_scoreHud != null) _scoreHud.Visible = false;
-			if (dustParticles != null)
-				dustParticles.Visible = false;
-		}
-		else
-		{
-			_cockpitCamera.MakeCurrent();
-			canvasLayer.Visible = true;
-			if (_scoreHud != null) _scoreHud.Visible = true;
-			if (dustParticles != null)
-				dustParticles.Visible = true;
-		}
+		bool cockpit = !_isExternalView;
+		(cockpit ? _cockpitCamera : _externalCamera).MakeCurrent();
+		canvasLayer.Visible = cockpit;
+		if (_scoreHud != null) _scoreHud.Visible = cockpit;
+		if (dustParticles != null) dustParticles.Visible = cockpit;
 	}
 
 	private void UpdateAutoCenterCursor(float delta)
@@ -540,7 +510,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 	private void UpdateThrusterFlame(float delta)
 	{
-		// Forward thruster
+		// Forward thruster flame
 		if (_thrusterMaterial != null)
 		{
 			float targetIntensity;
@@ -557,7 +527,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 			_thrusterMaterial.SetShaderParameter("intensity", _thrusterIntensity);
 		}
 
-		// Reverse thrusters
+		// Reverse thruster flame
 		if (_reverseThrusterMaterial1 != null || _reverseThrusterMaterial2 != null)
 		{
 			float reverseTarget;

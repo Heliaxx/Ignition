@@ -10,10 +10,7 @@ public partial class Bullet : Node3D
 	private Vector3 velocity = Vector3.Zero;
 	private bool _hasHit = false;
 
-	/// <summary>
-	/// Velocity inherited from the spawner.
-	/// Set before adding the bullet to the scene.
-	/// </summary>
+	// Velocity inherited from the spawner. Set before adding to the scene.
 	public Vector3 InheritedVelocity { get; set; } = Vector3.Zero;
 
 	private MeshInstance3D mesh;

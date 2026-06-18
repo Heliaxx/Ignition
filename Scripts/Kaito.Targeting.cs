@@ -138,7 +138,7 @@ public partial class Kaito
 
 		if (_lockedTarget == null)
 		{
-			if (_targetPanel != null) _targetPanel.Visible = false;
+			_targetPanel.Visible = false;
 			if (_targetNameDisplay3D != null) _targetNameDisplay3D.Text = "---";
 			if (_targetDistDisplay3D != null) _targetDistDisplay3D.Text = "---";
 			return;
@@ -152,7 +152,7 @@ public partial class Kaito
 				_missileLockTimer = 0f;
 		}
 
-		if (_targetPanel != null) _targetPanel.Visible = true;
+		_targetPanel.Visible = true;
 		float distance = GlobalPosition.DistanceTo(_lockedTarget.GlobalPosition);
 		if (_targetNameDisplay3D != null) _targetNameDisplay3D.Text = _lockedTarget.GetDisplayName();
 		if (_targetDistDisplay3D != null) _targetDistDisplay3D.Text = $"{distance:F0}m";
@@ -197,18 +197,9 @@ public partial class Kaito
 
 		Vector3 targetPos = _lockedTarget.GlobalPosition;
 		Vector3 targetVel = _lockedTarget.GetVelocity();
-		Vector3 shooterPos = GlobalPosition;
 
 		float bulletWorldSpeed = BulletSpeed + Mathf.Max(0, Velocity.Dot((-GlobalTransform.Basis.Z).Normalized()));
-
-		float dist = shooterPos.DistanceTo(targetPos);
-		Vector3 leadPos = targetPos;
-		for (int i = 0; i < 2; i++)
-		{
-			float tof = dist / bulletWorldSpeed;
-			leadPos = targetPos + targetVel * tof;
-			dist = shooterPos.DistanceTo(leadPos);
-		}
+		Vector3 leadPos = AimUtils.PredictIntercept(GlobalPosition, targetPos, targetVel, bulletWorldSpeed);
 
 		if (camera.IsPositionBehind(leadPos))
 			return null;

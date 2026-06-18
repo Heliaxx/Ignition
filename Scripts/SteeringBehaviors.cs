@@ -1,34 +1,25 @@
 using Godot;
 using System;
 
-/// <summary>
-/// Static class implementing Craig Reynolds' steering behaviors for autonomous agent movement.
-/// Methods return a steering force (desired velocity change), not final velocity.
-/// </summary>
+// Craig Reynolds steering behaviors. Each method returns a steering force
+// (a desired velocity change), not a final velocity.
 public static class SteeringBehaviors
 {
-    /// <summary>
-    /// Seek: Move directly toward a target position.
-    /// </summary>
+    // Steer straight toward a target.
     public static Vector3 Seek(Vector3 position, Vector3 targetPosition, float maxSpeed)
     {
         Vector3 desired = (targetPosition - position).Normalized() * maxSpeed;
         return desired;
     }
 
-    /// <summary>
-    /// Flee: Move directly away from a target position.
-    /// </summary>
+    // Steer straight away from a target.
     public static Vector3 Flee(Vector3 position, Vector3 targetPosition, float maxSpeed)
     {
         Vector3 desired = (position - targetPosition).Normalized() * maxSpeed;
         return desired;
     }
 
-    /// <summary>
-    /// Pursue: Intercept a moving target by predicting where it will be.
-    /// More natural than Seek - leads the target like a real pilot would.
-    /// </summary>
+    // Seek the predicted future position of a moving target.
     public static Vector3 Pursue(Vector3 position, Vector3 currentVelocity, float maxSpeed,
                                    Vector3 targetPosition, Vector3 targetVelocity)
     {
@@ -48,9 +39,7 @@ public static class SteeringBehaviors
         return Seek(position, predictedPosition, maxSpeed);
     }
 
-    /// <summary>
-    /// Evade: Flee from where a moving target will be
-    /// </summary>
+    // Flee from the predicted future position of a moving target.
     public static Vector3 Evade(Vector3 position, Vector3 currentVelocity, float maxSpeed,
                                   Vector3 targetPosition, Vector3 targetVelocity)
     {
@@ -66,10 +55,7 @@ public static class SteeringBehaviors
         return Flee(position, predictedPosition, maxSpeed);
     }
 
-    /// <summary>
-    /// Arrive: Move toward target but decelerate getting closer.
-    /// Prevents the overshooting and oscillation when near the target.
-    /// </summary>
+    // Seek a target but slow down inside the slowing radius to avoid overshoot.
     public static Vector3 Arrive(Vector3 position, Vector3 targetPosition, float maxSpeed, float slowingRadius)
     {
         Vector3 toTarget = targetPosition - position;
@@ -86,10 +72,7 @@ public static class SteeringBehaviors
         return desired;
     }
 
-    /// <summary>
-    /// Wander: Add organic randomness to movement. Returns a small deviation force.
-    /// Uses a "wander circle" projected in front of the agent.
-    /// </summary>
+    // Random drift force from a wander circle projected ahead of the agent.
     public static Vector3 Wander(Vector3 forward, float wanderStrength, float wanderRadius, ref float wanderAngle)
     {
         // Gradually shift the wander angle
@@ -112,10 +95,7 @@ public static class SteeringBehaviors
         return wanderForce;
     }
 
-    /// <summary>
-    /// MaintainDistance: Steering force to stay at a preferred range from target.
-    /// Returns pursue if too far, evade if too close, zero if just right.
-    /// </summary>
+    // Hold a preferred range: pursue when too far, evade when too close, else zero.
     public static Vector3 MaintainDistance(Vector3 position, Vector3 currentVelocity, float maxSpeed,
                                              Vector3 targetPosition, Vector3 targetVelocity,
                                              float preferredDistance, float tolerance)
@@ -139,10 +119,7 @@ public static class SteeringBehaviors
         return Vector3.Zero;
     }
 
-    /// <summary>
-    /// OffsetPursuit: Pursue to a position offset from the target (e.g., stay behind them).
-    /// Tailing or strafing maneuvers.
-    /// </summary>
+    // Pursue a point offset from the target, e.g. to tail or strafe it.
     public static Vector3 OffsetPursuit(Vector3 position, Vector3 currentVelocity, float maxSpeed,
                                           Vector3 targetPosition, Vector3 targetVelocity, Vector3 targetForward,
                                           Vector3 localOffset)
@@ -172,11 +149,8 @@ public static class SteeringBehaviors
         _rayQuery ??= new PhysicsRayQueryParameters3D();
     }
 
-    /// <summary>
-    /// ObstacleAvoidance: raycast ahead and to the sides, steer away from detected obstacles.
-    /// Returns a steering force away from the nearest obstacle, or zero if path is clear.
-    /// Also outputs an avoidance weight (0-1) for blending with other steering.
-    /// </summary>
+    // Raycast ahead and to the sides and steer away from the nearest obstacle.
+    // Returns zero if the path is clear. avoidanceUrgency (0-1) is for blending.
     public static Vector3 ObstacleAvoidance(PhysicsDirectSpaceState3D spaceState,
                                               Vector3 position, Vector3 velocity, Vector3 forward,
                                               float avoidanceForce, float lookAheadDistance,
@@ -263,23 +237,7 @@ public static class SteeringBehaviors
         return totalAvoidance * avoidanceForce * (0.5f + avoidanceUrgency * 0.5f);
     }
 
-    /// <summary>
-    /// Simplified overload without urgency output for backward compatibility.
-    /// </summary>
-    public static Vector3 ObstacleAvoidance(PhysicsDirectSpaceState3D spaceState,
-                                              Vector3 position, Vector3 velocity, Vector3 forward,
-                                              float avoidanceForce, float lookAheadDistance,
-                                              uint collisionMask, Rid excludeRid)
-    {
-        return ObstacleAvoidance(spaceState, position, velocity, forward,
-                                  avoidanceForce, lookAheadDistance, collisionMask, excludeRid,
-                                  out _);
-    }
-
-    /// <summary>
-    /// Applies a steering force to current velocity with mass/acceleration consideration.
-    /// Returns the new velocity (clamped to maxSpeed).
-    /// </summary>
+    // Integrates a steering force into velocity, clamping force and resulting speed.
     public static Vector3 ApplySteering(Vector3 currentVelocity, Vector3 steeringForce,
                                           float maxSpeed, float maxForce, float delta)
     {

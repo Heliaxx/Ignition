@@ -3,10 +3,10 @@ using System;
 
 public partial class Fighter : CharacterBody3D, IDamageable
 {
-    private const int MAX_HEALTH = 100;
-    private int currentHealth = MAX_HEALTH;
-    public int CurrentHealthValue => currentHealth;
-    public int MaxHealthValue => MAX_HEALTH;
+    private const float MAX_HEALTH = 100f;
+    private float currentHealth = MAX_HEALTH;
+    public float CurrentHealthValue => currentHealth;
+    public float MaxHealthValue => MAX_HEALTH;
 
     [Signal]
     public delegate void DiedEventHandler();
@@ -83,7 +83,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
         currentHealth = MAX_HEALTH;
         player = GetNode<Node3D>("../Player"); // Adjust if player path changes
         playerBody = player as CharacterBody3D;
-        _laserNode = GetNodeOrNull<Node3D>("Laser");
+        _laserNode = GetNodeOrNull<Node3D>("LaserWeapon");
         _firingArcCosThreshold = Mathf.Cos(Mathf.DegToRad(FiringArc));
         var thrusterMesh = GetNodeOrNull<MeshInstance3D>("ThrusterFlame");
         if (thrusterMesh != null)
@@ -196,10 +196,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
         return -GlobalTransform.Basis.Z;
     }
 
-    /// <summary>
-    /// Pursue the player using predictive interception (leads the target).
-    /// Pass skipFacing=true if the caller handles rotation (e.g. via FaceTarget).
-    /// </summary>
+    // Chase the player with lead prediction. skipFacing leaves rotation to the caller.
     public void PursuePlayer(float delta, bool skipFacing = false)
     {
         if (player == null) return;
@@ -215,9 +212,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
         ApplySteeringForce(steering, delta, skipFacing);
     }
 
-    /// <summary>
-    /// Evade away from predicted player position.
-    /// </summary>
+    // Flee the player's predicted position.
     public void EvadePlayer(float delta)
     {
         if (player == null) return;
@@ -233,9 +228,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
         ApplySteeringForce(steering, delta);
     }
     
-    /// <summary>
-    /// Maintain preferred combat distance from player.
-    /// </summary>
+    // Hold a preferred distance from the player, wandering when in the sweet spot.
     public void MaintainCombatRange(float delta, float preferredRange, float tolerance = 15f)
     {
         if (player == null) return;
@@ -261,9 +254,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
         ApplySteeringForce(steering, delta);
     }
     
-    /// <summary>
-    /// Wander aimlessly with organic movement.
-    /// </summary>
+    // Drift around with forward momentum and no target.
     public void Wander(float delta)
     {
         Vector3 steering = SteeringBehaviors.Wander(GetForward(), WanderStrength, 15f, ref _wanderAngle);
@@ -274,21 +265,18 @@ public partial class Fighter : CharacterBody3D, IDamageable
         ApplySteeringForce(steering, delta);
     }
     
-    /// <summary>
-    /// Apply a steering force, update velocity, move, and optionally face movement direction.
-    /// Uses cached obstacle avoidance (computed in _PhysicsProcess on staggered frames).
-    /// Pass skipFacing=true when the caller will handle rotation separately (e.g. FaceTarget).
-    /// </summary>
+    // Blends in cached obstacle avoidance, moves the ship, and faces the heading
+    // unless skipFacing is set. Avoidance is computed on staggered physics frames.
     private void ApplySteeringForce(Vector3 steering, float delta, bool skipFacing = false)
     {
-        // Blend in cached obstacle avoidance
+        // Blend in cached obstacle avoidance. The blend is stronger when avoidance
+        // is urgent and when the desired steering points into the obstacle.
         if (_cachedAvoidance.LengthSquared() > 0.01f)
         {
             Vector3 avoidDir = _cachedAvoidance.Normalized();
             float conflictAmount = Mathf.Max(0, -steering.Normalized().Dot(avoidDir));
-            float blendFactor = _cachedAvoidanceUrgency * (0.5f + conflictAmount * 0.5f);
+            float blendFactor = Mathf.Clamp(_cachedAvoidanceUrgency * (0.5f + conflictAmount * 0.5f), 0f, 1f);
             steering = steering.Lerp(_cachedAvoidance, blendFactor);
-            steering += _cachedAvoidance * (1f - blendFactor);
         }
 
         Velocity = SteeringBehaviors.ApplySteering(Velocity, steering, Speed, MaxSteeringForce, delta);
@@ -334,8 +322,16 @@ public partial class Fighter : CharacterBody3D, IDamageable
 
     public void SetLaserFiring(bool enabled)
     {
-        if (_laserNode != null)
+        if (_laserNode == null) return;
+        if (_laserNode is LaserWeapon lw)
+        {
+            if (enabled) lw.StartFiring();
+            else lw.StopFiring();
+        }
+        else
+        {
             _laserNode.Visible = enabled;
+        }
     }
 
     public bool IsPlayerInFiringArc()
@@ -356,7 +352,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
 
     public float GetHealthPercent()
     {
-        return (float)currentHealth / MAX_HEALTH;
+        return currentHealth / MAX_HEALTH;
     }
 
     public bool TookRecentDamage => _tookRecentDamage;
@@ -369,10 +365,9 @@ public partial class Fighter : CharacterBody3D, IDamageable
 
     public void TakeDamage(float amount, CollisionShape3D hitShape = null)
     {
-        currentHealth -= (int)amount;
+        currentHealth -= amount;
         _tookRecentDamage = true;
         _recentDamageTimer = EvadeDamageCooldown;
-        GD.Print($"{Name} hit! Health: {currentHealth}");
 
         if (currentHealth <= 0)
         {
@@ -387,7 +382,6 @@ public partial class Fighter : CharacterBody3D, IDamageable
         GD.Print($"{Name} destroyed!");
         SpawnExplosion();
         EmitSignal(SignalName.Died);
-        // Don't QueueFree - let the pool recycle this instance
     }
 
     private void SpawnExplosion()

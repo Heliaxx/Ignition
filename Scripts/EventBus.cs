@@ -1,26 +1,22 @@
 using System;
 
-/// <summary>
-/// Static event bus for events where the publisher and subscriber don't have direct node references.
-/// </summary>
+// Global event bus for publishers and subscribers without direct node references.
 public static class EventBus
 {
-	/// <summary>Fired when audio settings change (volume sliders, etc.).</summary>
+	// Audio settings changed (volume sliders, etc.).
 	public static event Action AudioSettingsChanged;
 
-	/// <summary>Fired when an enemy is killed. Subscribers receive the kill count delta.</summary>
+	// An enemy was killed; the argument is the kill count delta.
 	public static event Action<int> EnemyKilled;
 
-	/// <summary>Fired when the player dies.</summary>
+	// The player died.
 	public static event Action PlayerDied;
 
 	public static void EmitAudioSettingsChanged() => AudioSettingsChanged?.Invoke();
 	public static void EmitEnemyKilled(int count = 1) => EnemyKilled?.Invoke(count);
 	public static void EmitPlayerDied() => PlayerDied?.Invoke();
 
-	/// <summary>
-	/// Fired when changing scenes to prevent stale subscriptions from freed nodes.
-	/// </summary>
+	// Clears all subscriptions; call on scene change to drop stale handlers.
 	public static void ClearAll()
 	{
 		AudioSettingsChanged = null;

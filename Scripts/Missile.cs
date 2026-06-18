@@ -10,7 +10,7 @@ public partial class Missile : Node3D
 	[Export] public float Lifetime = 10f;
 	[Export] public float ProximityRadius = 10f; // detonate if within this distance of target
 
-	/// <summary>Set before adding to the scene.</summary>
+	// Set before adding to the scene.
 	public GimbalTarget Target { get; set; }
 	public Vector3 InheritedVelocity { get; set; } = Vector3.Zero;
 
@@ -24,8 +24,8 @@ public partial class Missile : Node3D
 	private GpuParticles3D _explosionParticles;
 	private MeshInstance3D _mesh;
 
-	private bool IsGuided =>
-		_burnTimer < BurnTime && Target != null && IsInstanceValid(Target) && Target.IsValid();
+	private bool TargetAlive => Target != null && IsInstanceValid(Target) && Target.IsValid();
+	private bool IsGuided => _burnTimer < BurnTime && TargetAlive;
 
 	public override void _Ready()
 	{
@@ -53,13 +53,10 @@ public partial class Missile : Node3D
 			SteerTowardTarget(dt);
 
 		// Proximity detonation
-		if (Target != null && IsInstanceValid(Target) && Target.IsValid())
+		if (TargetAlive && GlobalPosition.DistanceTo(Target.GlobalPosition) < ProximityRadius)
 		{
-			if (GlobalPosition.DistanceTo(Target.GlobalPosition) < ProximityRadius)
-			{
-				Detonate(Target.TargetOwner as IDamageable);
-				return;
-			}
+			Detonate(Target.TargetOwner as IDamageable);
+			return;
 		}
 
 		// Raycast collision
@@ -81,17 +78,8 @@ public partial class Missile : Node3D
 
 	private void SteerTowardTarget(float dt)
 	{
-		// Compute intercept point using target position, velocity, and missile speed
-		Vector3 targetPos = Target.GlobalPosition;
-		Vector3 targetVel = Target.GetVelocity();
-		float dist = GlobalPosition.DistanceTo(targetPos);
-		Vector3 interceptPos = targetPos;
-		for (int i = 0; i < 2; i++)
-		{
-			float tof = dist / Mathf.Max(_currentSpeed, 1f);
-			interceptPos = targetPos + targetVel * tof;
-			dist = GlobalPosition.DistanceTo(interceptPos);
-		}
+		Vector3 interceptPos = AimUtils.PredictIntercept(
+			GlobalPosition, Target.GlobalPosition, Target.GetVelocity(), _currentSpeed);
 
 		Vector3 desiredDir = (interceptPos - GlobalPosition).Normalized();
 		Vector3 currentForward = (-GlobalTransform.Basis.Z).Normalized();
@@ -99,12 +87,9 @@ public partial class Missile : Node3D
 		float angleToDesired = currentForward.AngleTo(desiredDir);
 		if (angleToDesired < 0.001f) return;
 
-		Vector3 steerAxis = currentForward.Cross(desiredDir);
-		if (steerAxis.LengthSquared() < 0.0001f) return;
-		steerAxis = steerAxis.Normalized();
-
-		float rotAmount = Mathf.Min(angleToDesired, Mathf.DegToRad(MaxTurnRate) * dt);
-		Vector3 newForward = currentForward.Rotated(steerAxis, rotAmount);
+		// Rotate toward the intercept direction, capped at the max turn rate.
+		float maxStep = Mathf.DegToRad(MaxTurnRate) * dt;
+		Vector3 newForward = currentForward.Slerp(desiredDir, Mathf.Min(maxStep / angleToDesired, 1f)).Normalized();
 
 		Vector3 up = GlobalTransform.Basis.Y;
 		if (Mathf.Abs(newForward.Dot(up)) > 0.99f)

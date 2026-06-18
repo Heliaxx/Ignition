@@ -315,7 +315,6 @@ environment = SubResource("Environment_r05y7")
 
 [node name="Player" parent="." instance=ExtResource("5_3qx6a")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -500, 0, 0)
-UnlimitedAmmo = true
 UnlimitedMissiles = true
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

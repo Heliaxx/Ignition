@@ -47,9 +47,6 @@ public class EnemySpawner
 		return SpawnAt(target.GlobalPosition + dir * dist);
 	}
 
-	/// <summary>
-	/// Opens a portal at an explicit position facing the given target, then spawns the enemy.
-	/// </summary>
 	// Builds a transform where +Z faces toward faceToward and +Y stays upright.
 	private static Transform3D PortalTransform(Vector3 pos, Node3D faceToward)
 	{
@@ -79,10 +76,8 @@ public class EnemySpawner
 		});
 	}
 
-	/// <summary>
-	/// Opens a portal near the target, then spawns the enemy from it once fully open.
-	/// Falls back to SpawnNear if no PortalScene is set.
-	/// </summary>
+	// Opens a portal near the target and spawns the enemy once it's open.
+	// Falls back to SpawnNear when no PortalScene is set.
 	public void SpawnNearViaPortal(Node3D target, float minDist, float maxDist)
 	{
 		Vector3 dir = new Vector3(

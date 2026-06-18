@@ -23,7 +23,7 @@
 [ext_resource type="Script" uid="uid://bkjrpyufe3ama" path="res://States/Orbit.cs" id="19_orbit"]
 [ext_resource type="Script" uid="uid://4c3wxf8n87rc" path="res://States/Pursue.cs" id="19_pursue"]
 [ext_resource type="Script" uid="uid://cogr2wsp3j1ts" path="res://States/ReturnToCenter.cs" id="21_q3xub"]
-[ext_resource type="PackedScene" uid="uid://ddlwyobo7a3il" path="res://Scenes/Laser.tscn" id="22_y1n25"]
+[ext_resource type="PackedScene" uid="uid://bpq0au2klggsn" path="res://Scenes/LaserWeapon.tscn" id="22_y1n25"]
 [ext_resource type="PackedScene" uid="uid://bwpphn8333nc7" path="res://Scenes/ThrusterFlame.tscn" id="23_thruster"]
 [ext_resource type="Script" uid="uid://iuhcmmfkmh3" path="res://Scripts/GimbalTarget.cs" id="26_0ufmu"]
 
@@ -195,8 +195,10 @@ skeleton = NodePath("")
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_fqskv")
 
-[node name="Laser" parent="." instance=ExtResource("22_y1n25")]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, -0.8, -3.4)
+[node name="LaserWeapon" parent="." instance=ExtResource("22_y1n25")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8, -3.4)
+DPS = 5.0
+BeamColor = Color(0.972549, 0.384314, 0, 1)
 
 [node name="ThrusterFlame" parent="." instance=ExtResource("23_thruster")]
 transform = Transform3D(0.25, 0, 0, 0, -4.37114e-08, 0.25, 0, -0.25, -4.37114e-08, 0, 0, 1.5)
