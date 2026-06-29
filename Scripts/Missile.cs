@@ -8,6 +8,8 @@ public partial class Missile : Node3D
 	[Export] public float Damage = 80f;
 	[Export] public float BurnTime = 5f; // seconds of guided flight
 	[Export] public float Lifetime = 10f;
+	[Export] public bool FadeOutOnDeath = true; // glow fades out before lifetime timeout instead of popping
+	[Export] public float FadeOutDuration = 1.5f; // seconds of glow fade before lifetime timeout
 	[Export] public float ProximityRadius = 10f; // detonate if within this distance of target
 
 	// Set before adding to the scene.
@@ -16,7 +18,9 @@ public partial class Missile : Node3D
 
 	private float _currentSpeed;
 	private float _burnTimer = 0f;
+	private float _lifeTimer = 0f;
 	private bool _hasDetonated = false;
+	private ShaderMaterial _meshMaterial;
 
 	private RayCast3D _ray;
 	private GpuParticles3D _exhaustParticles;
@@ -35,6 +39,15 @@ public partial class Missile : Node3D
 		_explosionParticles = GetNodeOrNull<GpuParticles3D>("ExplosionParticles");
 		_mesh = GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
 
+		// Duplicate the mesh material per-instance so driving life_fade on this
+		// missile doesn't affect every other missile sharing the scene's material.
+		// Only needed when the end-of-life fade is enabled.
+		if (FadeOutOnDeath && _mesh?.GetActiveMaterial(0) is ShaderMaterial shared)
+		{
+			_meshMaterial = (ShaderMaterial)shared.Duplicate();
+			_mesh.SetSurfaceOverrideMaterial(0, _meshMaterial);
+		}
+
 		_currentSpeed = InheritedVelocity.Length();
 
 		GetTree().CreateTimer(Lifetime).Timeout += QueueFree;
@@ -46,6 +59,16 @@ public partial class Missile : Node3D
 
 		float dt = (float)delta;
 		_burnTimer += dt;
+		_lifeTimer += dt;
+
+		// Smoothly fade the glow out over the final FadeOutDuration seconds before
+		// the lifetime timeout. Detonation bypasses this (it returns early above).
+		if (FadeOutOnDeath && _meshMaterial != null && FadeOutDuration > 0f)
+		{
+			float remaining = Lifetime - _lifeTimer;
+			float lifeFade = Mathf.Clamp(remaining / FadeOutDuration, 0f, 1f);
+			_meshMaterial.SetShaderParameter("life_fade", lifeFade);
+		}
 
 		_currentSpeed = Mathf.MoveToward(_currentSpeed, MaxSpeed, Acceleration * dt);
 

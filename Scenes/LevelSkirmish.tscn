@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cncma7ah1d55k" path="res://Scripts/LevelSkirmish.cs" id="1_mrvn6"]
 [ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="3_fqnir"]
-[ext_resource type="PackedScene" uid="uid://bkmrv7xhowrhy" path="res://Scenes/kaito.tscn" id="5_6u5s5"]
+[ext_resource type="PackedScene" uid="uid://bkmrv7xhowrhy" path="res://Scenes/Kaito.tscn" id="5_6u5s5"]
 [ext_resource type="PackedScene" uid="uid://p8bmcn3ds03m" path="res://Scenes/FpsMeter.tscn" id="7_n8v0p"]
 [ext_resource type="PackedScene" uid="uid://dmy55noj8bktd" path="res://Scenes/PauseMenu.tscn" id="8_3dypt"]
 [ext_resource type="PackedScene" uid="uid://00enhsw64eas" path="res://Scenes/BigStation.tscn" id="9_dgv10"]
@@ -231,6 +231,7 @@ tonemap_mode = 2
 ssao_intensity = 16.0
 ssao_detail = 5.0
 ssao_sharpness = 0.0
+glow_enabled = true
 glow_levels/1 = 7.1
 glow_levels/2 = 7.35
 glow_levels/3 = 6.45
@@ -239,7 +240,9 @@ glow_levels/5 = 2.85
 glow_levels/7 = 6.85
 glow_normalized = true
 glow_mix = 0.113
-glow_hdr_luminance_cap = 41.19
+glow_blend_mode = 0
+glow_hdr_threshold = 2.0
+glow_hdr_luminance_cap = 256.0
 fog_mode = 1
 fog_light_color = Color(0.337255, 0.584314, 0.72549, 1)
 fog_light_energy = 3.2

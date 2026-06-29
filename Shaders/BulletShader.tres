@@ -1,0 +1,38 @@
+[gd_resource type="Shader" format=3 uid="uid://dder8yksjv4e1"]
+
+[resource]
+code = "shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_schlick_ggx;
+
+// Color used for both the lit body and the emissive glow.
+uniform vec4 base_color : source_color = vec4(1.0, 0.83, 0.48, 1.0);
+
+// Overall glow brightness (HDR; > 1 drives bloom)
+uniform float emission_strength = 200.0;
+
+// --- Distance inflation ---
+// Push each vertex out along its normal by (distance * inflate_amount) so the
+// tracer stays visible at range instead of shrinking to a sub-pixel dot. True scale = 0.0
+uniform float inflate_amount = 0.01;
+
+// Dim the glow when the bullet is very close to the camera/ship (just fired) and
+// ramp to full brightness by near_dim_distance
+uniform float near_dim_floor : hint_range(0.0, 1.0) = 0.05;
+uniform float near_dim_distance = 200.0;
+
+void vertex() {
+	float dist = length(NODE_POSITION_WORLD - CAMERA_POSITION_WORLD);
+
+	VERTEX = VERTEX + NORMAL * (dist * inflate_amount);
+}
+
+void fragment() {
+	float dist = length(NODE_POSITION_WORLD - CAMERA_POSITION_WORLD);
+	float near_dim = mix(near_dim_floor, 1.0, smoothstep(0.0, near_dim_distance, dist));
+
+	ALBEDO = base_color.rgb;
+	METALLIC = 0.0;
+	ROUGHNESS = 1.0;
+	EMISSION = base_color.rgb * emission_strength * near_dim;
+}
+"
