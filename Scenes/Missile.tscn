@@ -1,11 +1,22 @@
 [gd_scene load_steps=13 format=3 uid="uid://cruxdg8rh7dyv"]
 
 [ext_resource type="Script" uid="uid://vtvg5fbkv6no" path="res://Scripts/Missile.cs" id="1_missile"]
-[ext_resource type="Shader" uid="uid://b64oaqkerhr8c" path="res://Materials/Missile/Visual_Mat_Missile.tres" id="2_3yf48"]
+[ext_resource type="Shader" uid="uid://b5tt1wbniaf71" path="res://Shaders/MissileShader.tres" id="2_3yf48"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7ghqc"]
 render_priority = 0
 shader = ExtResource("2_3yf48")
+shader_parameter/base_color = Color(0.694118, 0.682353, 0.580392, 1)
+shader_parameter/inflate_clamp_min = 300.0
+shader_parameter/inflate_clamp_max = 1000.0
+shader_parameter/inflate_power = 2.0
+shader_parameter/near_power = 2.0
+shader_parameter/near_clamp_max = 1000.0
+shader_parameter/far_fade_distance = 2500.0
+shader_parameter/far_gain = 1.5
+shader_parameter/emission_strength = 0.4
+shader_parameter/near_dim_floor = 0.2
+shader_parameter/near_dim_distance = 500.0
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
 material = SubResource("ShaderMaterial_7ghqc")
@@ -41,7 +52,9 @@ initial_velocity_max = 5.0
 angular_velocity_min = -20.0
 angular_velocity_max = 20.0
 gravity = Vector3(0, 0, 0)
-damping_max = 1.0
+damping_max = 0.2
+turbulence_influence_min = 0.0
+turbulence_influence_max = 0.05
 
 [sub_resource type="QuadMesh" id="QuadMesh_kfcgg"]
 
@@ -80,7 +93,7 @@ mesh = SubResource("CapsuleMesh_body")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.68074)
 material_override = SubResource("StandardMaterial3D_trail")
 amount = 600
-lifetime = 8.0
+lifetime = 10.0
 speed_scale = 6.0
 process_material = SubResource("ParticleProcessMaterial_trail")
 draw_pass_1 = SubResource("QuadMesh_kfcgg")

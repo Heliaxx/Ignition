@@ -5,7 +5,7 @@ public partial class Kaito
 	[ExportGroup("Weapon")]
 	[Export] public bool UnlimitedAmmo = false;
 	[Export] public int MaxAmmo = 400;
-	[Export] public float BulletSpeed = 1600f;
+	[Export] public float BulletSpeed = 2500f;
 	[Export] public float FireRate = 10f; // shots per second
 	[Export] public float GimbalAngle = 10.0f; // degrees
 	[Export] public float GimbalTrackingSpeed = 5.0f;
@@ -42,7 +42,7 @@ public partial class Kaito
 		startShooting = GetNode<AudioStreamPlayer3D>("ShootingStart");
 		shooting = GetNode<AudioStreamPlayer3D>("Shooting");
 		endShooting = GetNode<AudioStreamPlayer3D>("ShootingEnd");
-		bullet = GD.Load<PackedScene>("res://Scenes/bullet.tscn");
+		bullet = GD.Load<PackedScene>("res://Scenes/Bullet.tscn");
 		_missileScene = GD.Load<PackedScene>("res://Scenes/Missile.tscn");
 		fireCooldown = 1.0 / FireRate;
 		timeSinceLastShot = fireCooldown; // allow immediate first shot

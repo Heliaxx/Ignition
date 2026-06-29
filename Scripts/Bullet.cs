@@ -2,7 +2,7 @@ using Godot;
 
 public partial class Bullet : Node3D
 {
-	public float Speed { get; set; } = 1600f;
+	public float Speed { get; set; } = 2500f;
 	[Export] public float Damage { get; set; } = 10f;
 	private const float LIFETIME = 2f;
 	private const float COLLISION_DESTROY_DELAY = 1f;

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cr0ah8d21f4tm"]
+
+[ext_resource type="Script" path="res://Scripts/LaserWeapon.cs" id="1_laser"]
+
+[node name="LaserWeapon" type="Node3D"]
+script = ExtResource("1_laser")
+HasGimbal = true
