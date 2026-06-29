@@ -59,6 +59,7 @@ tonemap_mode = 2
 ssao_intensity = 16.0
 ssao_detail = 5.0
 ssao_sharpness = 0.0
+glow_enabled = true
 glow_levels/1 = 7.1
 glow_levels/2 = 7.35
 glow_levels/3 = 6.45
@@ -67,7 +68,9 @@ glow_levels/5 = 2.85
 glow_levels/7 = 6.85
 glow_normalized = true
 glow_mix = 0.113
-glow_hdr_luminance_cap = 41.19
+glow_blend_mode = 0
+glow_hdr_threshold = 2.0
+glow_hdr_luminance_cap = 256.0
 
 [node name="Level2" type="Node3D"]
 script = ExtResource("1_q8gjv")
