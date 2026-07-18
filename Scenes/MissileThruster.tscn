@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://c515r8h7q7br8"]
+
+[ext_resource type="Script" uid="uid://dbjtf10o1r1mf" path="res://Scripts/MissileThruster.cs" id="1_fqbko"]
+[ext_resource type="Material" uid="uid://be34y8f3d4phf" path="res://Imports/FlightModelMissile/thrusts/thrust/hol horse miss ile 2.tres" id="3_og8ry"]
+[ext_resource type="AudioStream" uid="uid://d3e54u0oih3t2" path="res://Imports/FlightModelMissile/thrusts/thrust/boom/thrust boom.tres" id="4_og8ry"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_og8ry"]
+material = ExtResource("3_og8ry")
+size = Vector2(1.815, 0.225)
+
+[sub_resource type="QuadMesh" id="QuadMesh_522yw"]
+material = ExtResource("3_og8ry")
+size = Vector2(1.815, 0.225)
+orientation = 1
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_fqbko")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("QuadMesh_og8ry")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("QuadMesh_522yw")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4_og8ry")
+volume_db = -12.631
+unit_size = 40.67
+bus = &"SFX"
+doppler_tracking = 2

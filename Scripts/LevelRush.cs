@@ -107,7 +107,7 @@ public partial class LevelRush : BaseLevel
 
 		Vector3 trajectory = PlayerKaito.Velocity.Length() > 5f
 			? PlayerKaito.Velocity.Normalized()
-			: PlayerKaito.GlobalTransform.Basis.X;
+			: -PlayerKaito.GlobalTransform.Basis.Z;
 
 		Vector3 spawnPos = PlayerKaito.GlobalPosition + trajectory * RingSpawnDistance;
 

@@ -11,6 +11,7 @@ public partial class Controls : Control
 	private bool IsRemapping = false;
 	private string ActionToRemap = null;
 	private Button RemappingButton = null;
+	private AudioStreamPlayer _menuClick;
 	private HSlider aimSensitivitySlider;
 	private HSlider aimDeadzoneSlider;
 	private HSlider autoCenterSpeedSlider;
@@ -52,6 +53,7 @@ public partial class Controls : Control
 		LoadKeybindingsFromSettings();
 		LoadMouseSettings();
 		BindMouseSettingsSignals();
+		_menuClick = MenuUtils.AttachButtonSounds(this);
 		CreateActionList();
 	}
 
@@ -132,6 +134,7 @@ public partial class Controls : Control
 
 			ActionList.AddChild(button);
 			ApplyKeybindRowHoverBehavior(button);
+			MenuUtils.WireControls(button, _menuClick);
 			button.Pressed += () => _on_input_button_pressed(button, action);
 		}
 	}
@@ -182,7 +185,14 @@ public partial class Controls : Control
 	public override void _Input(InputEvent @event)
 	{
 		if (!IsRemapping)
+		{
+			if (@event.IsActionPressed("menu"))
+			{
+				GetViewport().SetInputAsHandled();
+				_on_back_btn_pressed();
+			}
 			return;
+		}
 
 		if (@event is InputEventKey || (@event is InputEventMouseButton mouseBtn && mouseBtn.Pressed))
 		{

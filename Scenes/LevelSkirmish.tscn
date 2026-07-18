@@ -191,10 +191,10 @@ shader_parameter/star_enabled = true
 shader_parameter/star_pos = Vector3(40, 6, 100)
 shader_parameter/star_color = Color(1, 0.649088, 0.349364, 1)
 shader_parameter/star_core_color = Color(1, 0.933333, 0.933333, 1)
-shader_parameter/star_disc_size = 0.002
-shader_parameter/star_disc_softness = 0.5
+shader_parameter/star_disc_size = 0.0025
+shader_parameter/star_disc_softness = 0.8
 shader_parameter/star_halo_strength = 1.4
-shader_parameter/star_halo_falloff = 22.0
+shader_parameter/star_halo_falloff = 26.0
 shader_parameter/star_glare_strength = 0.22
 shader_parameter/planet_enabled = true
 shader_parameter/planet_albedo_tex = ExtResource("9_kl4x0")
@@ -290,7 +290,7 @@ layer = 3
 [node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_3dypt")]
 
 [node name="Player" parent="." instance=ExtResource("5_6u5s5")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 150, -1500)
+transform = Transform3D(-1, 0, 4.37114e-08, 0, 1, 0, -4.37114e-08, 0, -1, 0, 150, -1500)
 
 [node name="BigStation" parent="." instance=ExtResource("9_dgv10")]
 transform = Transform3D(27.9176, 8.02256, 7.50001, -9.911, 27.2302, 7.76458, -4.73117, -9.70334, 27.9904, 0, 0, 0)

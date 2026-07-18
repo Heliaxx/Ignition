@@ -3,12 +3,15 @@ using System;
 
 public partial class MusicManager : Node
 {
+    private const float MusicBoostDb = 4f;
+
     private AudioStreamPlayer _player;
 
     public override void _Ready()
     {
         _player = GetNode<AudioStreamPlayer>("AudioStreamPlayer");
         _player.Bus = "Music";
+        _player.VolumeDb = MusicBoostDb;
         _player.Autoplay = false;
         _player.StreamPaused = false;
 

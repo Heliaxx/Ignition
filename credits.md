@@ -1,5 +1,18 @@
 # Ignition — Credits
 
+## Licensing
+
+**Source code** — Copyright (C) 2026 heliaxx.
+Licensed under the GNU General Public License v3.0 — see [LICENSE](LICENSE).
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.
+
+**Third-party assets** — The models, textures, audio, fonts, game engine and it's addons 
+listed below are NOT covered by the GPL.
+They remain under their respective licenses and are only included here for attribution. 
+If you fork this repository, your rights to these assets come from their original licenses.
+
 ## 3D Models
 
 **Earth**
@@ -20,6 +33,9 @@ by brycejellybean1 — [CGTrader](https://www.cgtrader.com/designers/brycejellyb
 **Kaito Spaceship (player ship)**
 by Frosnix — [GitHub](https://github.com/Frosnix-8)
 
+**Geroteng G1 Missile (model & flight-model prototype)**
+by Frosnix — [Missile-flight-model](https://github.com/Frosnix-8/Missile-flight-model)
+
 **Asteroids**
 by Game Piggs Creators — [game-piggs.com](https://game-piggs.com/models/)
 
@@ -37,6 +53,10 @@ by Game Piggs Creators — [game-piggs.com](https://game-piggs.com/models/)
 by Alexey Anisimov — [Tunetank.com](https://tunetank.com/track/5193-ambient-panoramas/)
 Royalty Free
 
+**Main Menu Music — Supernova Loop**
+by Iohann
+License: [CC-BY-4.0](http://creativecommons.org/licenses/by/4.0/)
+
 ## Fonts
 
 **Eurostile**
@@ -47,5 +67,8 @@ Royalty Free
 
 ## Engine
 
-**Godot Engine 4**
+**Godot Engine**
 [godotengine.org](https://godotengine.org) — MIT License
+
+## Addons
+—

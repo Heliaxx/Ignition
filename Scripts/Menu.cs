@@ -32,6 +32,8 @@ public partial class Menu : Control
 
 		hoverSound = new AudioStreamPlayer();
 		clickSound = new AudioStreamPlayer();
+		hoverSound.Bus = "SFX";
+		clickSound.Bus = "SFX";
 
 		AddChild(hoverSound);
 		AddChild(clickSound);
@@ -40,7 +42,7 @@ public partial class Menu : Control
 		clickSound.Stream = (AudioStream)GD.Load("res://Imports/Sounds/click_sound_menu2.mp3");
 
 		var musicManager = GetNode<MusicManager>("/root/MusicManager");
-		var music = GD.Load<AudioStream>("res://Imports/Sounds/main_menu_2.mp3");
+		var music = GD.Load<AudioStream>("res://Imports/Sounds/supernova_loop.mp3");
 		if (!musicManager.IsPlaying())
 			musicManager.PlayMusic(music);
 

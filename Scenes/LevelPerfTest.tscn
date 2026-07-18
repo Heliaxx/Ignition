@@ -97,7 +97,7 @@ script = ExtResource("1_lperf")
 environment = SubResource("Environment_r05y7")
 
 [node name="Player" parent="." instance=ExtResource("5_3qx6a")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 0)
 MaxAmmo = 50
 MaxMissiles = 4
 

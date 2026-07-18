@@ -2,6 +2,15 @@ using Godot;
 
 public partial class Missile : Node3D
 {
+	public enum ChaseMode
+	{
+		Pursuit,                // steer toward the predicted intercept point
+		ProportionalNavigation, // constant-bearing guidance; falls back to Pursuit when not facing the target
+	}
+
+	[Export] public ChaseMode Guidance = ChaseMode.Pursuit;
+	[Export] public float PnGain = 4f; // aggressivity of Proportional Navigation corrections
+
 	[Export] public float MaxSpeed = 400f;
 	[Export] public float Acceleration = 200f; // speed increase per second
 	[Export] public float MaxTurnRate = 45f; // degrees per second
@@ -101,11 +110,11 @@ public partial class Missile : Node3D
 
 	private void SteerTowardTarget(float dt)
 	{
-		Vector3 interceptPos = AimUtils.PredictIntercept(
-			GlobalPosition, Target.GlobalPosition, Target.GetVelocity(), _currentSpeed);
-
-		Vector3 desiredDir = (interceptPos - GlobalPosition).Normalized();
 		Vector3 currentForward = (-GlobalTransform.Basis.Z).Normalized();
+		Vector3 targetPos = Target.GlobalPosition;
+		Vector3 targetVel = Target.GetVelocity();
+
+		Vector3 desiredDir = ComputeGuidanceDir(currentForward, targetPos, targetVel);
 
 		float angleToDesired = currentForward.AngleTo(desiredDir);
 		if (angleToDesired < 0.001f) return;
@@ -119,6 +128,27 @@ public partial class Missile : Node3D
 			up = GlobalTransform.Basis.X;
 
 		GlobalTransform = new Transform3D(Basis.LookingAt(newForward, up), GlobalTransform.Origin);
+	}
+
+	// Desired flight direction for the current guidance mode.
+	private Vector3 ComputeGuidanceDir(Vector3 currentForward, Vector3 targetPos, Vector3 targetVel)
+	{
+		if (Guidance == ChaseMode.ProportionalNavigation)
+		{
+			Vector3 toTarget = (targetPos - GlobalPosition).Normalized();
+			if (toTarget.Dot(currentForward) > 0.1f)
+			{
+				Vector3 missileVel = currentForward * _currentSpeed;
+				Vector3 command = AimUtils.ProportionalNavigation(
+					GlobalPosition, missileVel, targetPos, targetVel, PnGain);
+				return (toTarget + command / Mathf.Max(_currentSpeed, 1f)).Normalized();
+			}
+		}
+
+		// Pursuit: steer toward the predicted intercept point.
+		Vector3 interceptPos = AimUtils.PredictIntercept(
+			GlobalPosition, targetPos, targetVel, _currentSpeed);
+		return (interceptPos - GlobalPosition).Normalized();
 	}
 
 	private void Detonate(IDamageable target = null, CollisionShape3D hitShape = null)

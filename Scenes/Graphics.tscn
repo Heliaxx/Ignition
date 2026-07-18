@@ -37,10 +37,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -176.0
-offset_right = 300.0
-offset_bottom = 176.0
+offset_left = -500.0
+offset_top = -300.0
+offset_right = 500.0
+offset_bottom = 300.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -102,6 +102,22 @@ theme_override_fonts/font = ExtResource("2_ii5nb")
 theme_override_font_sizes/font_size = 30
 text = "Resolution"
 
+[node name="RenderScale" type="Label" parent="Menu/Labels"]
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
+theme_override_fonts/font = ExtResource("2_ii5nb")
+theme_override_font_sizes/font_size = 30
+text = "Render Scale"
+
+[node name="Upscaler" type="Label" parent="Menu/Labels"]
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
+theme_override_fonts/font = ExtResource("2_ii5nb")
+theme_override_font_sizes/font_size = 30
+text = "Upscaler"
+
 [node name="FPSMeter" type="Label" parent="Menu/Labels"]
 layout_mode = 2
 size_flags_vertical = 6
@@ -144,17 +160,14 @@ theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("2_ii5nb")
 theme_override_font_sizes/font_size = 30
 
-[node name="VsyncCheck" type="CheckBox" parent="Menu/Options"]
+[node name="VsyncDropdown" type="OptionButton" parent="Menu/Options"]
 layout_mode = 2
-size_flags_horizontal = 4
 size_flags_vertical = 6
 mouse_default_cursor_shape = 2
-theme_override_colors/font_disabled_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_colors/font_focus_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 1
 theme_override_fonts/font = ExtResource("2_ii5nb")
 theme_override_font_sizes/font_size = 30
 
@@ -200,6 +213,28 @@ theme_override_font_sizes/font_size = 30
 
 [node name="ResolutionDropdown" type="OptionButton" parent="Menu/Options"]
 layout_mode = 2
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
+theme_override_colors/font_focus_color = Color(0.894118, 0.717647, 0.337255, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_ii5nb")
+theme_override_font_sizes/font_size = 30
+
+[node name="RenderScaleDropdown" type="OptionButton" parent="Menu/Options"]
+layout_mode = 2
+size_flags_vertical = 6
+mouse_default_cursor_shape = 2
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
+theme_override_colors/font_focus_color = Color(0.894118, 0.717647, 0.337255, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_ii5nb")
+theme_override_font_sizes/font_size = 30
+
+[node name="UpscalerDropdown" type="OptionButton" parent="Menu/Options"]
+layout_mode = 2
+size_flags_vertical = 6
+mouse_default_cursor_shape = 2
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
 theme_override_colors/font_focus_color = Color(0.894118, 0.717647, 0.337255, 1)
@@ -315,13 +350,35 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_7yb8s")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_qdpag")
 text = "RESET"
 
+[node name="HintLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -440.0
+offset_right = 500.0
+offset_bottom = -340.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.894118, 0.717647, 0.337255, 1)
+theme_override_fonts/font = ExtResource("2_ii5nb")
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+
 [connection signal="item_selected" from="Menu/Options/FPSDropdown" to="." method="_on_fps_dropdown_item_selected"]
 [connection signal="item_selected" from="Menu/Options/ModeDropdown" to="." method="_on_mode_dropdown_item_selected"]
-[connection signal="toggled" from="Menu/Options/VsyncCheck" to="." method="_on_vsync_check_toggled"]
+[connection signal="item_selected" from="Menu/Options/VsyncDropdown" to="." method="_on_vsync_dropdown_item_selected"]
 [connection signal="toggled" from="Menu/Options/FXAACheck" to="." method="_on_fxaa_check_toggled"]
 [connection signal="toggled" from="Menu/Options/TAACheck" to="." method="_on_taa_check_toggled"]
 [connection signal="item_selected" from="Menu/Options/MSAADropdown" to="." method="_on_msaa_dropdown_item_selected"]
 [connection signal="item_selected" from="Menu/Options/ResolutionDropdown" to="." method="_on_resolution_dropdown_item_selected"]
+[connection signal="item_selected" from="Menu/Options/RenderScaleDropdown" to="." method="_on_render_scale_dropdown_item_selected"]
+[connection signal="item_selected" from="Menu/Options/UpscalerDropdown" to="." method="_on_upscaler_dropdown_item_selected"]
 [connection signal="toggled" from="Menu/Options/FPSMeterCheck" to="." method="_on_fps_meter_check_toggled"]
 [connection signal="toggled" from="Menu/Options/ShipModelCheck" to="." method="_on_ship_model_check_toggled"]
 [connection signal="pressed" from="HBoxContainer/BackBtn" to="." method="_on_back_btn_pressed"]

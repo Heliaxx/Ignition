@@ -29,9 +29,6 @@ public partial class ChunkedAsteroidField : Node3D
     [Export]
     public int CollisionRadius = 5; // Radius of chunks with collision shapes (should be <= LoadRadius)
 
-    [Export]
-    public int ChunksPerFrame = 1; // Chunks loaded per _Process frame (Optimization)
-
     [ExportSubgroup("Vertical Limits")]
     [Export]
     public bool LimitUpward = false; // Limit chunk generation above Y=0
@@ -142,6 +139,8 @@ public partial class ChunkedAsteroidField : Node3D
     private readonly ConcurrentQueue<ChunkBuildResult> _builtChunks = new();
     // Chunks currently being computed on a worker thread (main-thread only access)
     private readonly HashSet<Vector3I> _chunksBeingBuilt = new();
+    // Built chunks waiting to be applied, re-prioritized by distance each frame
+    private readonly List<ChunkBuildResult> _applyBuffer = new();
 
     public override void _Ready()
     {
@@ -785,16 +784,42 @@ public partial class ChunkedAsteroidField : Node3D
     // queue, then dispatch the remaining queued coords to background tasks.
     private void ProcessChunkQueue()
     {
-        // Applying is just node creation; the heavy sampling already ran off-thread.
-        int applied = 0;
-        while (applied < AsyncApplyPerFrame && _builtChunks.TryDequeue(out var result))
+        // Collect finished builds into the apply buffer. Coords stay in
+        // _chunksBeingBuilt until applied or discarded so they aren't re-dispatched.
+        while (_builtChunks.TryDequeue(out var built))
+            _applyBuffer.Add(built);
+
+        // Drop chunks that got loaded by another path or fell out of range.
+        _applyBuffer.RemoveAll(r =>
         {
+            if (_loadedChunks.ContainsKey(r.Coord) || !IsWithinLoadRange(r.Coord))
+            {
+                _chunksBeingBuilt.Remove(r.Coord);
+                return true;
+            }
+            return false;
+        });
+
+        // Apply the chunks nearest the (forward-shifted) load center first, so the
+        // corridor ahead of the player populates before the wake behind them.
+        // Applying is just node creation; the heavy sampling already ran off-thread.
+        Vector3I center = GetLoadCenter();
+        _applyBuffer.Sort((a, b) =>
+        {
+            Vector3I da = a.Coord - center;
+            Vector3I db = b.Coord - center;
+            return (da.X * da.X + da.Y * da.Y + da.Z * da.Z)
+                .CompareTo(db.X * db.X + db.Y * db.Y + db.Z * db.Z);
+        });
+
+        int applyCount = Mathf.Min(AsyncApplyPerFrame, _applyBuffer.Count);
+        for (int i = 0; i < applyCount; i++)
+        {
+            var result = _applyBuffer[i];
             _chunksBeingBuilt.Remove(result.Coord);
-            // Only apply if still within range and not already loaded by another path
-            if (!_loadedChunks.ContainsKey(result.Coord) && IsWithinLoadRange(result.Coord))
-                ApplyChunkData(result);
-            applied++;
+            ApplyChunkData(result);
         }
+        _applyBuffer.RemoveRange(0, applyCount);
 
         // Dispatch pending coords to worker threads.
         while (_loadQueue.Count > 0)

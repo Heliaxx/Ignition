@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Collections.Generic;
 
 public partial class Audio : Control
 {
@@ -15,7 +14,21 @@ public partial class Audio : Control
         sfxVolumeSlider = GetNode<Slider>("Menu/Options/VolSFXSlider");
 
         LoadSettingsIntoUi();
-        _ApplyAudioSettings();
+
+        generalVolumeSlider.ValueChanged += value => OnVolumeChanged("general_volume", value);
+        musicVolumeSlider.ValueChanged += value => OnVolumeChanged("music_volume", value);
+        sfxVolumeSlider.ValueChanged += value => OnVolumeChanged("sfx_volume", value);
+
+        MenuUtils.AttachButtonSounds(this);
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (@event.IsActionPressed("menu"))
+        {
+            GetViewport().SetInputAsHandled();
+            _on_back_btn_pressed();
+        }
     }
 
     private void LoadSettingsIntoUi()
@@ -30,18 +43,10 @@ public partial class Audio : Control
             sfxVolumeSlider.Value = Math.Min(sfxVol.As<float>(), 1.0f) * 100.0f;
     }
 
-    private void _ApplyAudioSettings()
+    private void OnVolumeChanged(string key, double sliderValue)
     {
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Master"), LinearToDb((float)generalVolumeSlider.Value / 100f));
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Music"), LinearToDb((float)musicVolumeSlider.Value / 100f));
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("SFX"), LinearToDb((float)sfxVolumeSlider.Value / 100f));
-    }
-
-    private float LinearToDb(float linear)
-    {
-        if (linear <= 0.0001f)
-            return -80f;
-        return 20f * (float)Math.Log10(linear);
+        ConfigFileHandler.Instance.SaveAudioSettings(key, (float)(sliderValue / 100.0));
+        EventBus.EmitAudioSettingsChanged();
     }
 
     private void _on_back_btn_pressed()
@@ -53,39 +58,6 @@ public partial class Audio : Control
     {
         ConfigFileHandler.Instance.ResetAudioSettings();
         LoadSettingsIntoUi();
-        _ApplyAudioSettings();
-    }
-
-    private void _on_vol_general_slider_drag_ended(bool valueChanged)
-    {
-        if (valueChanged)
-        {
-            float volume = (float)generalVolumeSlider.Value / 100f;
-            ConfigFileHandler.Instance.SaveAudioSettings("general_volume", volume);
-            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Master"), LinearToDb(volume));
-            EventBus.EmitAudioSettingsChanged();
-        }
-    }
-
-    private void _on_vol_music_slider_drag_ended(bool valueChanged)
-    {
-        if (valueChanged)
-        {
-            float volume = (float)musicVolumeSlider.Value / 100f;
-            ConfigFileHandler.Instance.SaveAudioSettings("music_volume", volume);
-            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Music"), LinearToDb(volume));
-            EventBus.EmitAudioSettingsChanged();
-        }
-    }
-
-    private void _on_vol_sfx_slider_drag_ended(bool valueChanged)
-    {
-        if (valueChanged)
-        {
-            float volume = (float)sfxVolumeSlider.Value / 100f;
-            ConfigFileHandler.Instance.SaveAudioSettings("sfx_volume", volume);
-            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("SFX"), LinearToDb(volume));
-            EventBus.EmitAudioSettingsChanged();
-        }
+        EventBus.EmitAudioSettingsChanged();
     }
 }

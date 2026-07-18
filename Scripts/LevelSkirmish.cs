@@ -22,6 +22,7 @@ public partial class LevelSkirmish : BaseLevel
 
 		// Setup click sound
 		_clickSound = new AudioStreamPlayer();
+		_clickSound.Bus = "SFX";
 		AddChild(_clickSound);
 		_clickSound.Stream = (AudioStream)GD.Load("res://Imports/Sounds/click_sound_menu2.mp3");
 

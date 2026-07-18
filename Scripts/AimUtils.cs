@@ -20,4 +20,25 @@ public static class AimUtils
         }
         return intercept;
     }
+
+    // Proportional Navigation commanded acceleration. Flies so the missile's
+    // bearing to the target stays constant until impact (constant-bearing,
+    // decreasing-range). Returns the world-space acceleration command; steer the
+    // missile toward (position + command).
+    public static Vector3 ProportionalNavigation(Vector3 missilePos, Vector3 missileVel,
+                                                 Vector3 targetPos, Vector3 targetVel,
+                                                 float pnGain = 4f)
+    {
+        Vector3 los = targetPos - missilePos;              // line of sight
+        float range = los.Length();
+        if (range < 0.5f)
+            return targetPos - missilePos;
+
+        Vector3 losUnit = los / range;
+        Vector3 relativeVel = targetVel - missileVel;
+        float closingVel = -relativeVel.Dot(losUnit);
+        // LOS rotation rate (rad/s) as a vector.
+        Vector3 losRate = los.Cross(relativeVel) / (range * range);
+        return pnGain * closingVel * losRate.Cross(losUnit);
+    }
 }

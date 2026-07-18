@@ -35,7 +35,7 @@ public partial class Kaito
         shooting      = GetNode<AudioStreamPlayer3D>("Shooting");
         endShooting   = GetNode<AudioStreamPlayer3D>("ShootingEnd");
 
-        _missileScene = GD.Load<PackedScene>("res://Scenes/Missile.tscn");
+        _missileScene = GD.Load<PackedScene>("res://Scenes/FlightModelMissile.tscn");
         _timeSinceLastMissile = MissileCooldown;
         _currentMissiles = MaxMissiles;
 
@@ -84,11 +84,23 @@ public partial class Kaito
         if (_timeSinceLastMissile < MissileCooldown) return;
         if (_lockedTarget != null && IsInstanceValid(_lockedTarget) && !IsMissileLocked) return;
 
-        var instance = _missileScene.Instantiate<Missile>();
-        instance.GlobalTransform = _gatling?.GlobalTransform ?? GlobalTransform;
-        instance.InheritedVelocity = Velocity;
+        // Flight-model missile (physics-based, PN guidance).
+        var instance = _missileScene.Instantiate<FlightModelMissile>();
         instance.Target = (_lockedTarget != null && IsInstanceValid(_lockedTarget)) ? _lockedTarget : null;
         instance.Damage = (float)GD.RandRange(MissileDamageMin, MissileDamageMax);
+        instance.InheritedVelocity = Velocity; // launch matching ship momentum
+        instance.IgnoreBody(this); // don't detonate on the launcher
+
+        AddCollisionExceptionWith(instance);
+        instance.TreeExited += () =>
+        {
+            if (IsInstanceValid(this) && IsInstanceValid(instance))
+                RemoveCollisionExceptionWith(instance);
+        };
+
+        Transform3D spawn = _gatling?.GlobalTransform ?? GlobalTransform;
+        spawn.Origin -= spawn.Basis.Z * 5f;
+        instance.Transform = spawn;
         GetParent().AddChild(instance);
 
         if (!UnlimitedMissiles) _currentMissiles--;

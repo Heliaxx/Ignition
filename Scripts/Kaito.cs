@@ -81,6 +81,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	private bool _isDead = false;
 
 	private MeshInstance3D _hull;
+	private bool _showShip = true;
 	private MeshInstance3D _thrusterFlame;
 	private ShaderMaterial _thrusterMaterial;
 	private float _thrusterIntensity = 0.0f;
@@ -121,8 +122,27 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		_hull = GetNodeOrNull<MeshInstance3D>("hull");
 		var cfg = GetTree().Root.GetNodeOrNull<ConfigFileHandler>("/root/ConfigFileHandler");
-		if (_hull != null && cfg != null)
-			_hull.Visible = cfg.GetShowShipModel();
+		if (cfg != null)
+		{
+			_showShip = cfg.GetShowShipModel();
+			if (_hull != null)
+				_hull.Visible = _showShip;
+
+			foreach (string nodeName in new[]
+			{
+				"HP", "HealthDisplay", "Speed", "SpeedDisplay",
+				"Ammo", "AmmoDisplay", "Missiles", "MissilesDisplay",
+				"TargetName", "TargetNameDisplay", "TargetDist", "TargetDistDisplay",
+				"ThrusterFlame", "ReverseThruster1", "ReverseThruster2"
+			})
+				GetNodeOrNull<Node3D>(nodeName)?.SetVisible(_showShip);
+
+			if (!_showShip)
+			{
+				canvasLayer.Visible = false;
+				if (_scoreHud != null) _scoreHud.Visible = false;
+			}
+		}
 
 		InitWeapons();
 		InitBoost();
@@ -352,17 +372,17 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		thrust = Vector3.Zero;
 
-		// Forward axis: boost forces full forward thrust and disables backward.
+		// Forward axis (-Z): boost forces full forward thrust and disables backward.
 		if (_isBoosting)
 		{
-			thrust += Transform.Basis.X * _currentAcceleration;
+			thrust -= Transform.Basis.Z * _currentAcceleration;
 		}
 		else
 		{
 			if (Input.IsActionPressed("thrust_forward"))
-				thrust += Transform.Basis.X * _currentAcceleration;
+				thrust -= Transform.Basis.Z * _currentAcceleration;
 			if (Input.IsActionPressed("thrust_backward"))
-				thrust -= Transform.Basis.X * _currentAcceleration;
+				thrust += Transform.Basis.Z * _currentAcceleration;
 		}
 
 		// Strafe axes behave identically in both modes.
@@ -371,15 +391,15 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		if (Input.IsActionPressed("strafe_down"))
 			thrust -= Transform.Basis.Y * _currentAcceleration;
 		if (Input.IsActionPressed("strafe_right"))
-			thrust += Transform.Basis.Z * _currentAcceleration;
+			thrust += Transform.Basis.X * _currentAcceleration;
 		if (Input.IsActionPressed("strafe_left"))
-			thrust -= Transform.Basis.Z * _currentAcceleration;
+			thrust -= Transform.Basis.X * _currentAcceleration;
 
 		torque = Vector3.Zero;
 		rollInput = Input.GetActionStrength("roll_right") - Input.GetActionStrength("roll_left");
-		torque.X = rollInput * _currentRollAcceleration;
+		torque.X = pitchInput * _currentPitchAcceleration;
 		torque.Y = yawInput * _currentYawAcceleration;
-		torque.Z = pitchInput * _currentPitchAcceleration;
+		torque.Z = -rollInput * _currentRollAcceleration;
 
 		// Stop key: kills all movement and rotation
 		if (Input.IsActionPressed("stop") && !_isBoosting)
@@ -406,9 +426,9 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		}
 
 		angularVelocity += torque * delta;
-		angularVelocity.X = Mathf.Clamp(angularVelocity.X, -_currentMaxRollSpeed, _currentMaxRollSpeed);
+		angularVelocity.X = Mathf.Clamp(angularVelocity.X, -_currentMaxPitchSpeed, _currentMaxPitchSpeed);
 		angularVelocity.Y = Mathf.Clamp(angularVelocity.Y, -_currentMaxYawSpeed, _currentMaxYawSpeed);
-		angularVelocity.Z = Mathf.Clamp(angularVelocity.Z, -_currentMaxPitchSpeed, _currentMaxPitchSpeed);
+		angularVelocity.Z = Mathf.Clamp(angularVelocity.Z, -_currentMaxRollSpeed, _currentMaxRollSpeed);
 
 		var collision = MoveAndCollide(Velocity * delta);
 		if (collision != null)
@@ -445,8 +465,8 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		bool cockpit = !_isExternalView;
 		(cockpit ? _cockpitCamera : _externalCamera).MakeCurrent();
-		canvasLayer.Visible = cockpit;
-		if (_scoreHud != null) _scoreHud.Visible = cockpit;
+		canvasLayer.Visible = cockpit && _showShip;
+		if (_scoreHud != null) _scoreHud.Visible = cockpit && _showShip;
 		if (dustParticles != null) dustParticles.Visible = cockpit;
 	}
 

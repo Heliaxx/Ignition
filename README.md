@@ -1,0 +1,66 @@
+# Ignition
+
+A 3D space combat game built with **Godot 4**. Fly a fully Newtonian
+6-DOF fighter through asteroid fields, dogfight AI enemies (and in future other players!)
+and race through checkpoints — in your cockpit or from a cinematic external view.
+
+## Game modes
+
+- **Free Flight** — open sandbox with station, asteroid fields and unlimited ammo.
+- **Rush** — high-speed scoring run: chase rings through a dense, endless asteroid field.
+- **Waves** — survive escalating waves of enemy fighters.
+- **Skirmish** —  Attack on a squadron of enemy fighters guarding their base.
+
+## Features
+
+- **Newtonian flight model** — full 6 degrees of freedom with real inertia: thrust, strafe on three axes, roll/pitch/yaw, boost with mechanic, and a precision-stop assist.
+- **Weapons** — gimbal-tracking main gun with lead prediction reticle, and physics-based guided missiles.
+- **Targeting** — target cycling, missile lock-on with gimbal-cone lock timer, lead indicator for guns.
+- **AI opponents** — complex-behavior fighters (pursue, evade, orbit, joust, flee) with obstacle avoidance.
+- **Procedural world** — Endless asteroid field realised with Poisson Disc Sampling, GPU instancing , destructible asteroids, and priority chunk loading for maximum performance and immersion.
+- **Settings** — rebindable controls, graphics options (window mode, resolution, render scale, AntiAliasing, VSync etc.), and audio volumes; persistent in a `user://settings.ini`.
+
+## Default controls
+
+| Input | Action |
+|---|---|
+| Mouse | Yaw/Pitch |
+| `W` / `S` | Thrust forward / backward |
+| `A` / `D` | Strafe left / right |
+| `Space` / `Alt` | Strafe up / down |
+| `Q` / `E` | Roll left / right |
+| `Tab` | Boost |
+| `X` | Precision stop |
+| Left mouse | Fire gatling |
+| Right mouse | Fire missile |
+| `T` | Cycle target |
+| `C` | Switch camera (cockpit / external) |
+| `L` | Toggle lights |
+| `Esc` | Pause menu |
+
+Controls are rebindable in **Options → Controls**.
+
+## Running from source
+
+1. Install [Godot 4.4 (.NET/mono edition)](https://godotengine.org/download) and the [.NET SDK](https://dotnet.microsoft.com/download) (8.0+).
+2. Clone the repository and open `project.godot` in the Godot editor.
+3. Build the C# solution (Godot prompts on first run, or use `dotnet build Ignition.csproj`).
+4. Run with <kbd>F5 / Launch project</kbd>.
+
+## Project layout
+
+```
+Scenes/     Game scenes (levels, menus, ships, weapons, structures)
+Scripts/    C# Game code
+States/     AI Enemies state machine
+Shaders/    Visual shaders
+Imports/    Third-party models, textures, sounds, fonts etc.
+addons/     Godot addons if any in use
+```
+
+## License
+
+The **source code** is licensed under the **GNU GPL v3.0** — see [LICENSE](LICENSE).
+
+For **third-party assets** (models, textures, audio, fonts, addons)
+attribution and per-asset licensing, see [credits.md](credits.md).

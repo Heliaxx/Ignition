@@ -45,7 +45,10 @@ public partial class ConfigFileHandler : Node
 		config.SetValue("video", "taa",             DefaultTaa);
 		config.SetValue("video", "msaa",            DefaultMsaa);
 		config.SetValue("video", "resolution",      DefaultResolution);
+		config.SetValue("video", "render_scale",    DefaultRenderScale);
+		config.SetValue("video", "upscaler",        DefaultUpscaler);
 		config.SetValue("video", "show_fps_meter",  DefaultShowFpsMeter);
+		config.SetValue("video", "show_ship_model", DefaultShowShipModel);
 	}
 
 	private void SetDefaultAudioSettings()

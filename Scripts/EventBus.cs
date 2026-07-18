@@ -16,10 +16,10 @@ public static class EventBus
 	public static void EmitEnemyKilled(int count = 1) => EnemyKilled?.Invoke(count);
 	public static void EmitPlayerDied() => PlayerDied?.Invoke();
 
-	// Clears all subscriptions; call on scene change to drop stale handlers.
+	// Clears scene-scoped subscriptions; call on scene change to drop stale
+	// handlers.
 	public static void ClearAll()
 	{
-		AudioSettingsChanged = null;
 		EnemyKilled = null;
 		PlayerDied = null;
 	}

@@ -1,4 +1,5 @@
 [gd_scene format=3 uid="uid://c5r7xilp2j2yt"]
 
 [node name="ShakeableCamera" type="Camera3D"]
+doppler_tracking = 2
 far = 6000.0

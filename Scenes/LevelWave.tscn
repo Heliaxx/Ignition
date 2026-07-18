@@ -19,10 +19,10 @@ shader_parameter/star_enabled = true
 shader_parameter/star_pos = Vector3(2000, 500, 1000)
 shader_parameter/star_color = Color(1, 0.62, 0.28, 1)
 shader_parameter/star_core_color = Color(1, 0.95, 0.86, 1)
-shader_parameter/star_disc_size = 0.008
+shader_parameter/star_disc_size = 0.006
 shader_parameter/star_disc_softness = 0.45
 shader_parameter/star_halo_strength = 1.4
-shader_parameter/star_halo_falloff = 18.0
+shader_parameter/star_halo_falloff = 40.0
 shader_parameter/star_glare_strength = 0.22
 shader_parameter/planet_enabled = true
 shader_parameter/planet_albedo_tex = ExtResource("11_nyx84")
@@ -79,7 +79,7 @@ script = ExtResource("1_q8gjv")
 environment = SubResource("Environment_r05y7")
 
 [node name="Player" parent="." instance=ExtResource("5_d2lja")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 light_bake_mode = 0

@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://b0fv72m3gcpnc"
+path="res://.godot/imported/RCS GO BOOOM.ogg-3787f185b471a0490ec4c5dd462fa882.oggvorbisstr"
+
+[deps]
+
+source_file="res://Imports/FlightModelMissile/thrusts/thrust/boom/RCS GO BOOOM.ogg"
+dest_files=["res://.godot/imported/RCS GO BOOOM.ogg-3787f185b471a0490ec4c5dd462fa882.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -25,10 +25,12 @@ public partial class PauseMenu : ColorRect
 		}
 
 		hoverSound = new AudioStreamPlayer();
+		hoverSound.Bus = "SFX";
 		AddChild(hoverSound);
 		hoverSound.Stream = (AudioStream)GD.Load("res://Imports/Sounds/hover_menu_sound.mp3");
 
 		clickSound = new AudioStreamPlayer();
+		clickSound.Bus = "SFX";
 		AddChild(clickSound);
 		clickSound.Stream = (AudioStream)GD.Load("res://Imports/Sounds/click_sound_menu2.mp3");
 
