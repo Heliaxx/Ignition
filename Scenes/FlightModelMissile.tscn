@@ -1,6 +1,7 @@
-[gd_scene load_steps=15 format=3 uid="uid://cen33ej277jql"]
+[gd_scene format=3 uid="uid://cen33ej277jql"]
 
 [ext_resource type="Script" uid="uid://bquwkeog136uu" path="res://Scripts/FlightModelMissile.cs" id="1_7qqlg"]
+[ext_resource type="PackedScene" uid="uid://d03awq5mx4eqh" path="res://Scenes/SmokeEffect.tscn" id="2_smokeeffect"]
 [ext_resource type="PackedScene" uid="uid://c515r8h7q7br8" path="res://Scenes/MissileThruster.tscn" id="4_iwfhy"]
 [ext_resource type="AudioStream" uid="uid://dsoitvy6jdcit" path="res://Imports/FlightModelMissile/thrusts/thrust/boom/missileboom.tres" id="5_m3eeq"]
 [ext_resource type="Shader" uid="uid://b5tt1wbniaf71" path="res://Shaders/MissileShader.tres" id="6_glow"]
@@ -25,9 +26,10 @@ turbulence_initial_displacement_min = 1.49012e-06
 turbulence_initial_displacement_max = 1.49012e-06
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7qqlg"]
+albedo_color = Color(1, 0.70828927, 0.47033298, 1)
 emission_enabled = true
-emission = Color(0.969992, 0.660424, 0.217171, 1)
-emission_energy_multiplier = 4.0
+emission = Color(0.9999996, 0.6380247, 0.27650443, 1)
+emission_energy_multiplier = 100.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_m3eeq"]
 material = SubResource("StandardMaterial3D_7qqlg")
@@ -62,14 +64,14 @@ shader_parameter/near_power = 2.0
 shader_parameter/near_clamp_max = 1000.0
 shader_parameter/far_fade_distance = 2500.0
 shader_parameter/far_gain = 4.0
-shader_parameter/emission_strength = 2.0
+shader_parameter/emission_strength = 4.0
 shader_parameter/near_dim_floor = 0.2
 shader_parameter/near_dim_distance = 250.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_burn"]
 material = SubResource("ShaderMaterial_hl8ep")
 
-[node name="Geroteng G-1" type="RigidBody3D"]
+[node name="Geroteng G-1" type="RigidBody3D" unique_id=189291899]
 mass = 85.0
 gravity_scale = 0.0
 inertia = Vector3(1, 1, 1)
@@ -77,47 +79,47 @@ linear_damp_mode = 1
 angular_damp_mode = 1
 script = ExtResource("1_7qqlg")
 
-[node name="missile final_001" type="MeshInstance3D" parent="."]
+[node name="missile final_001" type="MeshInstance3D" parent="." unique_id=1263519204]
 mesh = ExtResource("7_body")
 
-[node name="Text_008" type="MeshInstance3D" parent="."]
+[node name="Text_008" type="MeshInstance3D" parent="." unique_id=294193985]
 visible = false
 cast_shadow = 0
 mesh = ExtResource("8_text")
 
-[node name="ThrustEffect" parent="." instance=ExtResource("4_iwfhy")]
+[node name="ThrustEffect" parent="." unique_id=372147139 instance=ExtResource("4_iwfhy")]
 transform = Transform3D(-6.50425e-08, 0, 1.022, 0, 1.022, 0, -1.488, 0, -4.4673e-08, 0, 0, 1.9817)
 ConstantThrust = true
 
-[node name="ThrustEffect2" parent="." instance=ExtResource("4_iwfhy")]
+[node name="ThrustEffect2" parent="." unique_id=2083170664 instance=ExtResource("4_iwfhy")]
 transform = Transform3D(6.80204e-16, -2.07629e-08, 0.475, -0.356, -2.07629e-08, 0, 1.55613e-08, -0.475, -2.07629e-08, 0, 0.744, -0.589)
 
-[node name="ThrustEffect5" parent="." instance=ExtResource("4_iwfhy")]
+[node name="ThrustEffect5" parent="." unique_id=1128296266 instance=ExtResource("4_iwfhy")]
 transform = Transform3D(6.80204e-16, 2.07629e-08, 0.475, 0.356, -2.07629e-08, 9.46684e-23, 1.55613e-08, 0.475, -2.07629e-08, 0, -0.744, -0.589)
 
-[node name="ThrustEffect4" parent="." instance=ExtResource("4_iwfhy")]
+[node name="ThrustEffect4" parent="." unique_id=626918058 instance=ExtResource("4_iwfhy")]
 transform = Transform3D(6.80204e-16, 2.07629e-08, 0.475, 0.356, -2.07629e-08, 1.38491e-22, 1.55613e-08, 0.475, -2.07629e-08, 0, -0.744343, 0.463575)
 
-[node name="ThrustEffect3" parent="." instance=ExtResource("4_iwfhy")]
+[node name="ThrustEffect3" parent="." unique_id=1294898900 instance=ExtResource("4_iwfhy")]
 transform = Transform3D(6.80204e-16, -2.07629e-08, 0.475, -0.356, -2.07629e-08, 1.75446e-23, 1.55613e-08, -0.475, -2.07629e-08, 0, 0.744, 0.464)
 
-[node name="ThrustEffect6" parent="." instance=ExtResource("4_iwfhy")]
+[node name="ThrustEffect6" parent="." unique_id=1334494722 instance=ExtResource("4_iwfhy")]
 transform = Transform3D(0.356, 6.22887e-08, 2.72273e-15, 0, -2.07629e-08, 0.475, 4.66838e-08, -0.475, -2.07629e-08, -0.744086, -8.57602e-05, -0.589)
 
-[node name="ThrustEffect7" parent="." instance=ExtResource("4_iwfhy")]
+[node name="ThrustEffect7" parent="." unique_id=2136449394 instance=ExtResource("4_iwfhy")]
 transform = Transform3D(-0.356, -7.1723e-08, -3.13511e-15, 0, -2.07629e-08, 0.475, -5.37545e-08, 0.475, 2.07629e-08, 0.743914, -8.56952e-05, -0.589)
 
-[node name="ThrustEffect8" parent="." instance=ExtResource("4_iwfhy")]
+[node name="ThrustEffect8" parent="." unique_id=1102605507 instance=ExtResource("4_iwfhy")]
 transform = Transform3D(-0.356, -7.1723e-08, -3.13511e-15, 0, -2.07629e-08, 0.475, -5.37545e-08, 0.475, 2.07629e-08, 0.744257, -8.56031e-05, 0.463575)
 
-[node name="ThrustEffect9" parent="." instance=ExtResource("4_iwfhy")]
+[node name="ThrustEffect9" parent="." unique_id=88215901 instance=ExtResource("4_iwfhy")]
 transform = Transform3D(0.356, 6.22887e-08, 2.72273e-15, 0, -2.07629e-08, 0.475, 4.66838e-08, -0.475, -2.07629e-08, -0.744086, -8.56682e-05, 0.464)
 
-[node name="missile collision" type="CollisionShape3D" parent="."]
+[node name="missile collision" type="CollisionShape3D" parent="." unique_id=1737710814]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 2.0033e-09, -0.13423)
 shape = SubResource("BoxShape3D_7qqlg")
 
-[node name="impact" type="GPUParticles3D" parent="."]
+[node name="impact" type="GPUParticles3D" parent="." unique_id=944609486]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.00409)
 gi_mode = 2
 emitting = false
@@ -129,7 +131,7 @@ randomness = 0.4
 process_material = SubResource("ParticleProcessMaterial_7qqlg")
 draw_pass_1 = SubResource("SphereMesh_m3eeq")
 
-[node name="impactcheck" type="ShapeCast3D" parent="."]
+[node name="impactcheck" type="ShapeCast3D" parent="." unique_id=175527407]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.01817)
 shape = SubResource("SphereShape3D_m3eeq")
 target_position = Vector3(0, 0, -1.95)
@@ -138,13 +140,16 @@ max_results = 1
 debug_shape_custom_color = Color(1, 0.46571, 0.55557, 1)
 script = SubResource("GDScript_m3eeq")
 
-[node name="explosion" type="AudioStreamPlayer3D" parent="."]
+[node name="explosion" type="AudioStreamPlayer3D" parent="." unique_id=753835057]
 stream = ExtResource("5_m3eeq")
 unit_size = 59.48
 bus = &"SFX"
 
-[node name="BurnGlow" type="MeshInstance3D" parent="."]
+[node name="BurnGlow" type="MeshInstance3D" parent="." unique_id=145464881]
 transform = Transform3D(-1.30085e-08, 0, 0.1022, 0, 0.1022, 0, -0.2976, 0, -4.4673e-09, -1.62606e-08, 0, 1.39966)
 cast_shadow = 0
 mesh = SubResource("SphereMesh_burn")
 skeleton = NodePath("../ThrustEffect")
+
+[node name="SmokeTrail" parent="." unique_id=1205843371 instance=ExtResource("2_smokeeffect")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)

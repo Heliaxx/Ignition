@@ -375,26 +375,14 @@ public partial class Fighter : CharacterBody3D, IDamageable
         }
     }
 
-    private static PackedScene _explosionScene;
+    private bool _isDead;
 
     private void Die()
     {
-        GD.Print($"{Name} destroyed!");
-        SpawnExplosion();
+        if (_isDead) return; // a second lethal hit must not spawn a second explosion
+        _isDead = true;
+
+        Explosion.SpawnAt(this, GlobalPosition);
         EmitSignal(SignalName.Died);
-    }
-
-    private void SpawnExplosion()
-    {
-        _explosionScene ??= GD.Load<PackedScene>("res://Scenes/BigExplosionScene.tscn");
-        if (_explosionScene == null) return;
-
-        Vector3 pos = GlobalPosition;
-        var explosion = _explosionScene.Instantiate<Node3D>();
-        GetTree().Root.AddChild(explosion);
-        explosion.GlobalPosition = pos;
-
-        // Auto-free after particles finish (lifetime + small buffer)
-        GetTree().CreateTimer(3.0).Timeout += () => explosion.QueueFree();
     }
 }

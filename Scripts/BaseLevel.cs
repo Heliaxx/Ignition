@@ -7,14 +7,16 @@ public partial class BaseLevel : Node3D
 	protected MusicManager MusicManager;
 	protected Node3D NavigationRegion;
 
-	// Floating-point origin rebasing: when the player drifts this far from world
-	// origin, every scene object is shifted back so the player returns to (0,0,0).
-	// ChunkedAsteroidField IS included in the shift — WorldToChunk uses
-	// (worldPos - GlobalPosition) so relative positions stay correct regardless of
-	// where the field node sits in world space.
 	[Export] public float OriginShiftThreshold = 5000f;
 
 	private float _originShiftThresholdSq;
+
+	private static readonly string[] PrewarmScenes =
+	{
+		"res://Scenes/Bullet.tscn",
+		"res://Scenes/FlightModelMissile.tscn",
+		"res://Scenes/BigExplosionSpace.tscn",
+	};
 
 	public override void _Ready()
 	{
@@ -26,10 +28,70 @@ public partial class BaseLevel : Node3D
 		MusicManager.StopMusic();
 		SyncDirectionalLight();
 		_originShiftThresholdSq = OriginShiftThreshold * OriginShiftThreshold;
+		PrewarmEffectShaders();
+	}
+
+	private void PrewarmEffectShaders()
+	{
+		var cam = GetViewport()?.GetCamera3D();
+		Vector3 basePos = cam != null
+			? cam.GlobalPosition - cam.GlobalTransform.Basis.Z * 20f
+			: Player.GlobalPosition;
+
+		foreach (string path in PrewarmScenes)
+		{
+			var scene = GD.Load<PackedScene>(path);
+			if (scene == null) continue;
+
+			var inst = scene.Instantiate();
+			AddChild(inst);
+			if (inst is Node3D n3d)
+				n3d.GlobalPosition = basePos;
+			FreezeSubtree(inst);
+			ForceParticlesOn(inst);
+			_prewarmInstances.Add(inst);
+		}
+	}
+
+	private readonly System.Collections.Generic.List<Node> _prewarmInstances = new();
+	private int _prewarmFramesLeft = 2;
+
+	private void TickPrewarmCleanup()
+	{
+		if (_prewarmInstances.Count == 0) return;
+
+		if (--_prewarmFramesLeft > 0) return;
+
+		foreach (Node inst in _prewarmInstances)
+			if (GodotObject.IsInstanceValid(inst))
+				inst.QueueFree();
+		_prewarmInstances.Clear();
+	}
+
+	private static void FreezeSubtree(Node node)
+	{
+		node.ProcessMode = Node.ProcessModeEnum.Disabled;
+		foreach (Node child in node.GetChildren())
+			FreezeSubtree(child);
+	}
+
+	private static void ForceParticlesOn(Node node)
+	{
+		if (node is GpuParticles3D p)
+		{
+			p.ProcessMode = Node.ProcessModeEnum.Inherit;
+			p.Emitting = true;
+		}
+		if (node is Node3D vis)
+			vis.Visible = true;
+		foreach (Node child in node.GetChildren())
+			ForceParticlesOn(child);
 	}
 
 	public override void _Process(double delta)
 	{
+		TickPrewarmCleanup();
+
 		if (Player != null && Player.GlobalPosition.LengthSquared() > _originShiftThresholdSq)
 			ShiftWorldOrigin();
 	}

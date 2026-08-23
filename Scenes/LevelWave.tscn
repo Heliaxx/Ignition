@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://ryeq8kdxlj7o"]
+[gd_scene format=3 uid="uid://ryeq8kdxlj7o"]
 
 [ext_resource type="Script" uid="uid://bj1f8j6wbfydt" path="res://Scripts/LevelWave.cs" id="1_q8gjv"]
 [ext_resource type="Shader" uid="uid://vxoc6h16dya7" path="res://Shaders/SpaceShader.gdshader" id="2_qx2jm"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="12_hhpn1"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="13_ringt"]
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="14_theme"]
+[ext_resource type="Material" path="res://Shaders/FogStreaksMaterial.tres" id="15_fogstreak"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
 shader = ExtResource("2_qx2jm")
@@ -71,39 +72,45 @@ glow_mix = 0.113
 glow_blend_mode = 0
 glow_hdr_threshold = 2.0
 glow_hdr_luminance_cap = 256.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0002
+volumetric_fog_albedo = Color(0.99215686, 0.87058824, 0.7019608, 1)
+volumetric_fog_emission_energy = 0.0
+volumetric_fog_gi_inject = 0.0
+volumetric_fog_length = 200.0
 
-[node name="Level2" type="Node3D"]
+[node name="Level2" type="Node3D" unique_id=230063944]
 script = ExtResource("1_q8gjv")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2105745883]
 environment = SubResource("Environment_r05y7")
 
-[node name="Player" parent="." instance=ExtResource("5_d2lja")]
+[node name="Player" parent="." unique_id=997055589 instance=ExtResource("5_d2lja")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 0)
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=533679251]
 light_bake_mode = 0
 sky_mode = 1
 
-[node name="FPSMeter" parent="." instance=ExtResource("7_xv4tn")]
+[node name="FPSMeter" parent="." unique_id=1811543090 instance=ExtResource("7_xv4tn")]
 mouse_filter = 2
 
-[node name="PauseMenuLayer" type="CanvasLayer" parent="."]
+[node name="PauseMenuLayer" type="CanvasLayer" parent="." unique_id=1154794161]
 process_mode = 3
 layer = 3
 
-[node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_1lsgi")]
+[node name="PauseMenu" parent="PauseMenuLayer" unique_id=285596519 instance=ExtResource("8_1lsgi")]
 
-[node name="ChunkedAsteroidField" type="Node3D" parent="." node_paths=PackedStringArray("SpawnExclusionZones")]
+[node name="ChunkedAsteroidField" type="Node3D" parent="." unique_id=1369365015 node_paths=PackedStringArray("SpawnExclusionZones")]
 script = ExtResource("9_psghp")
 LoadRadius = 15
 LimitUpward = true
 SpawnExclusionZones = []
 
-[node name="ScoreHUD" type="CanvasLayer" parent="."]
+[node name="ScoreHUD" type="CanvasLayer" parent="." unique_id=804187116]
 layer = 2
 
-[node name="KillLabel" type="Label" parent="ScoreHUD"]
+[node name="KillLabel" type="Label" parent="ScoreHUD" unique_id=1279054288]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -116,7 +123,7 @@ theme = ExtResource("14_theme")
 text = "Kills: 0"
 horizontal_alignment = 2
 
-[node name="HighKillLabel" type="Label" parent="ScoreHUD"]
+[node name="HighKillLabel" type="Label" parent="ScoreHUD" unique_id=1139793481]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -129,7 +136,7 @@ theme = ExtResource("14_theme")
 text = "High Score: 0"
 horizontal_alignment = 2
 
-[node name="WaveLabel" type="Label" parent="ScoreHUD"]
+[node name="WaveLabel" type="Label" parent="ScoreHUD" unique_id=1671260414]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -141,3 +148,7 @@ grow_horizontal = 0
 theme = ExtResource("14_theme")
 text = "Wave 1"
 horizontal_alignment = 2
+
+[node name="FogStreaks" type="FogVolume" parent="."]
+shape = 4
+material = ExtResource("15_fogstreak")

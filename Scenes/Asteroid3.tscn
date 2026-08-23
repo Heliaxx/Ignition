@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=4 uid="uid://dqs5bw8wgmt2o"]
+[gd_scene load_steps=10 format=4 uid="uid://d1ltn7o0yqj55"]
 
 [ext_resource type="Texture2D" uid="uid://dhhlnlkbkdo5i" path="res://Imports/Asteroids/Asteroid2c/2K/Asteroid2c_Color_2K.png" id="1_7y2eg"]
 [ext_resource type="Texture2D" uid="uid://ud1if1d7k51s" path="res://Imports/Asteroids/Asteroid2c/2K/Asteroid2c_Metalness_2K.png" id="2_18v0d"]

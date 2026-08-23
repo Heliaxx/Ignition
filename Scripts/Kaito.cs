@@ -309,52 +309,65 @@ public partial class Kaito : CharacterBody3D, IDamageable
 				endShooting.Play();
 		}
 
-		// Camera switch
 		if (Input.IsActionJustPressed("camera_switch"))
 			ToggleCameraView();
 
-		// Boost input
 		if (Input.IsActionJustPressed("boost") && CanBoost && !_isBoosting)
 		{
 			ActivateBoost();
 		}
 
-		// Target cycling
 		if (Input.IsActionJustPressed("target_cycle"))
 			CycleTarget();
 
-		// Missiles
 		if (Input.IsActionJustPressed("secondary_fire"))
 			FireMissile();
 	}
 
+	// Applies the current thrust and torque inputs to the ship, integrating them into velocity and angular velocity
 	private void ApplyInputs(float delta)
 	{
-		Vector2 screenSize = GetViewport().GetVisibleRect().Size;
-		Vector2 center = screenSize / 2.0f;
-		Vector2 mousePos;
+		UpdateAim(delta);
+		ReadThrustAndTorqueInput();
+		ApplyStopKey(delta);
+		IntegrateVelocities(delta);
+		MoveAndResolveCollision(delta);
+		ApplyRotation(delta);
+	}
+
+	// Returns the aim cursor's position in screen space, clamped to the aim circle.
+	private Vector2 ResolveAimCursor(Vector2 center)
+	{
 		if (Input.MouseMode == Input.MouseModeEnum.Visible)
 		{
-			mousePos = GetViewport().GetMousePosition();
-			widgetCursor = mousePos;
+			widgetCursor = GetViewport().GetMousePosition();
 			widgetCursorInitialized = true;
-		}
-		else
-		{
-			if (!widgetCursorInitialized)
-			{
-				widgetCursor = center;
-				widgetCursorInitialized = true;
-			}
-			mousePos = widgetCursor;
+			return widgetCursor;
 		}
 
-		Vector2 diff = mousePos - center;
-		Vector2 norm = diff / AimRadius;
+		if (!widgetCursorInitialized)
+		{
+			widgetCursor = center;
+			widgetCursorInitialized = true;
+		}
+		return widgetCursor;
+	}
+
+	// Turns the aim cursor's offset from screen centre into pitch and yaw input.
+	private void UpdateAim(float delta)
+	{
+		Vector2 center = GetViewport().GetVisibleRect().Size / 2.0f;
+
+		// Offset from centre, scaled to the aim circle and clamped to its edge.
+		Vector2 norm = (ResolveAimCursor(center) - center) / AimRadius;
 		float mag = norm.Length();
 		if (mag > 1.0f)
-			norm = norm / mag;
-		if (norm.Length() < AimDeadzone)
+		{
+			norm /= mag;
+			mag = 1.0f;
+		}
+
+		if (mag < AimDeadzone)
 		{
 			aimTargetYaw = 0.0f;
 			aimTargetPitch = 0.0f;
@@ -369,7 +382,11 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		aimPitch = Mathf.Lerp(aimPitch, aimTargetPitch, AIM_RESPONSIVENESS * delta);
 		yawInput = aimYaw;
 		pitchInput = aimPitch;
+	}
 
+	// Collects the movement keys into current frame's thrust and torque vectors.
+	private void ReadThrustAndTorqueInput()
+	{
 		thrust = Vector3.Zero;
 
 		// Forward axis (-Z): boost forces full forward thrust and disables backward.
@@ -379,46 +396,44 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		}
 		else
 		{
-			if (Input.IsActionPressed("thrust_forward"))
-				thrust -= Transform.Basis.Z * _currentAcceleration;
-			if (Input.IsActionPressed("thrust_backward"))
-				thrust += Transform.Basis.Z * _currentAcceleration;
+			thrust -= Transform.Basis.Z * _currentAcceleration * Axis("thrust_forward", "thrust_backward");
 		}
 
-		// Strafe axes behave identically in both modes.
-		if (Input.IsActionPressed("strafe_up"))
-			thrust += Transform.Basis.Y * _currentAcceleration;
-		if (Input.IsActionPressed("strafe_down"))
-			thrust -= Transform.Basis.Y * _currentAcceleration;
-		if (Input.IsActionPressed("strafe_right"))
-			thrust += Transform.Basis.X * _currentAcceleration;
-		if (Input.IsActionPressed("strafe_left"))
-			thrust -= Transform.Basis.X * _currentAcceleration;
+		thrust += Transform.Basis.Y * _currentAcceleration * Axis("strafe_up", "strafe_down");
+		thrust += Transform.Basis.X * _currentAcceleration * Axis("strafe_right", "strafe_left");
 
-		torque = Vector3.Zero;
 		rollInput = Input.GetActionStrength("roll_right") - Input.GetActionStrength("roll_left");
-		torque.X = pitchInput * _currentPitchAcceleration;
-		torque.Y = yawInput * _currentYawAcceleration;
-		torque.Z = -rollInput * _currentRollAcceleration;
+		torque = new Vector3(
+			pitchInput * _currentPitchAcceleration,
+			yawInput * _currentYawAcceleration,
+			-rollInput * _currentRollAcceleration);
+	}
 
-		// Stop key: kills all movement and rotation
-		if (Input.IsActionPressed("stop") && !_isBoosting)
-		{
-			thrust = Vector3.Zero;
-			torque = Vector3.Zero;
-			if (Velocity.Length() > 0.1f)
-				Velocity = Velocity.MoveToward(Vector3.Zero, ACCELERATION * delta);
-			angularVelocity = angularVelocity.MoveToward(Vector3.Zero, MAX_PITCH_SPEED * 4f * delta);
-		}
+	private static float Axis(string positive, string negative) =>
+		(Input.IsActionPressed(positive) ? 1.0f : 0.0f) - (Input.IsActionPressed(negative) ? 1.0f : 0.0f);
 
+	private void ApplyStopKey(float delta)
+	{
+		if (!Input.IsActionPressed("stop") || _isBoosting)
+			return;
+
+		thrust = Vector3.Zero;
+		torque = Vector3.Zero;
+		if (Velocity.Length() > 0.1f)
+			Velocity = Velocity.MoveToward(Vector3.Zero, ACCELERATION * delta);
+		angularVelocity = angularVelocity.MoveToward(Vector3.Zero, MAX_PITCH_SPEED * 4f * delta);
+	}
+
+	// Integrates thrust and torque, caps both against the ship's current limits.
+	private void IntegrateVelocities(float delta)
+	{
 		Velocity += thrust * delta;
 
-		// Cap velocity based on current state
 		if (_isBoostDecaying)
 		{
+			// While boost bleeds off, the cap eases from the boosted speed back to normal.
 			float decayProgress = 1.0f - (_boostDecayTimer / BoostDecayTime);
-			float decayMaxSpeed = Mathf.Lerp(_speedAtBoostEnd, MAX_SPEED, decayProgress);
-			Velocity = Velocity.LimitLength(decayMaxSpeed);
+			Velocity = Velocity.LimitLength(Mathf.Lerp(_speedAtBoostEnd, MAX_SPEED, decayProgress));
 		}
 		else
 		{
@@ -429,33 +444,32 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		angularVelocity.X = Mathf.Clamp(angularVelocity.X, -_currentMaxPitchSpeed, _currentMaxPitchSpeed);
 		angularVelocity.Y = Mathf.Clamp(angularVelocity.Y, -_currentMaxYawSpeed, _currentMaxYawSpeed);
 		angularVelocity.Z = Mathf.Clamp(angularVelocity.Z, -_currentMaxRollSpeed, _currentMaxRollSpeed);
+	}
 
+	private void MoveAndResolveCollision(float delta)
+	{
 		var collision = MoveAndCollide(Velocity * delta);
-		if (collision != null)
-		{
-			Vector3 normal = collision.GetNormal();
+		if (collision == null)
+			return;
 
-			float impactSpeed = Mathf.Max(0.0f, -Velocity.Dot(normal));
-			if (impactSpeed > CollisionDamageSpeedThreshold)
-			{
-				float damage = (impactSpeed - CollisionDamageSpeedThreshold) * CollisionDamageMultiplier;
-				health.TakeDamage(damage);
-			}
+		Vector3 normal = collision.GetNormal();
 
-			Velocity = Velocity.Slide(normal) * CollisionLinearDamping;
-			angularVelocity *= CollisionAngularDamping;
+		float impactSpeed = Mathf.Max(0.0f, -Velocity.Dot(normal));
+		if (impactSpeed > CollisionDamageSpeedThreshold)
+			health.TakeDamage((impactSpeed - CollisionDamageSpeedThreshold) * CollisionDamageMultiplier);
 
-			if (CollisionPushOutDistance > 0.0f)
-			{
-				GlobalPosition += normal * CollisionPushOutDistance;
-			}
-		}
+		Velocity = Velocity.Slide(normal) * CollisionLinearDamping;
+		angularVelocity *= CollisionAngularDamping;
 
+		if (CollisionPushOutDistance > 0.0f)
+			GlobalPosition += normal * CollisionPushOutDistance;
+	}
+
+	private void ApplyRotation(float delta)
+	{
 		RotateObjectLocal(Vector3.Right, angularVelocity.X * delta);
 		RotateObjectLocal(Vector3.Up, angularVelocity.Y * delta);
 		RotateObjectLocal(Vector3.Back, angularVelocity.Z * delta);
-
-		// Prevent floating-point drift in the rotation matrix from accumulating over time
 		Transform = Transform.Orthonormalized();
 	}
 

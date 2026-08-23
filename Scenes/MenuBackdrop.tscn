@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://cqmml57xs665l"]
+
+[ext_resource type="Shader" uid="uid://vxoc6h16dya7" path="res://Shaders/SpaceShader.gdshader" id="1_sky"]
+[ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="2_skytex"]
+[ext_resource type="Texture2D" uid="uid://eqbd7lweaw6q" path="res://Imports/Planets/earth/textures/Material_62_baseColor.png" id="3_planet"]
+[ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="4_night"]
+[ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="5_ring"]
+[ext_resource type="Material" uid="uid://bcjj72a158t5m" path="res://Shaders/FogStreaksMaterial.tres" id="6_fog"]
+[ext_resource type="PackedScene" uid="uid://wakcgehtegdh" path="res://Scenes/ChunkedAsteroidField.tscn" id="7_field"]
+[ext_resource type="Script" uid="uid://bb52egpyhtvgb" path="res://Scripts/MenuCameraDrift.cs" id="8_drift"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
+shader = ExtResource("1_sky")
+shader_parameter/sky_tex = ExtResource("2_skytex")
+shader_parameter/star_enabled = true
+shader_parameter/star_pos = Vector3(2500, -400, 900)
+shader_parameter/star_color = Color(1, 0.62, 0.28, 1)
+shader_parameter/star_core_color = Color(1, 0.95, 0.86, 1)
+shader_parameter/star_disc_size = 0.00060000002122
+shader_parameter/star_disc_softness = 0.45
+shader_parameter/star_halo_strength = 1.4
+shader_parameter/star_halo_falloff = 100.0000014603176
+shader_parameter/star_glare_strength = 0.7999999821184
+shader_parameter/planet_enabled = true
+shader_parameter/planet_albedo_tex = ExtResource("3_planet")
+shader_parameter/planet_night_tex = ExtResource("4_night")
+shader_parameter/planet_direction = Vector3(-0.55, 0.29, -0.86)
+shader_parameter/planet_distance = 16.0
+shader_parameter/planet_radius = 6.2
+shader_parameter/planet_rotation = 0.15
+shader_parameter/planet_tint = Color(1, 1, 1, 1)
+shader_parameter/planet_night_strength = 0.85
+shader_parameter/atmosphere_color = Color(0.5229157, 0.7874838, 1, 1)
+shader_parameter/atmosphere_strength = 0.3999999910592
+shader_parameter/atmosphere_falloff = 4.999999899416
+shader_parameter/ring_enabled = true
+shader_parameter/ring_texture = ExtResource("5_ring")
+shader_parameter/ring_normal = Vector3(0.2, 1, 0.35)
+shader_parameter/ring_inner_radius = 10.000000149012
+shader_parameter/ring_outer_radius = 24.0000003576288
+shader_parameter/ring_color = Color(0.84452325, 0.80751294, 0.7336472, 1)
+shader_parameter/ring_opacity = 0.6
+
+[sub_resource type="Sky" id="Sky_menu"]
+sky_material = SubResource("ShaderMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_menu"]
+background_mode = 2
+sky = SubResource("Sky_menu")
+sky_rotation = Vector3(0, 3.14159, 0)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.15
+reflected_light_source = 1
+tonemap_mode = 2
+ssao_intensity = 16.0
+ssao_detail = 5.0
+ssao_sharpness = 0.0
+glow_enabled = true
+glow_levels/1 = 7.1
+glow_levels/2 = 7.35
+glow_levels/3 = 6.45
+glow_levels/4 = 6.69
+glow_levels/5 = 2.85
+glow_levels/7 = 6.85
+glow_normalized = true
+glow_mix = 0.113
+glow_blend_mode = 0
+glow_hdr_threshold = 2.0
+glow_hdr_luminance_cap = 256.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0002
+volumetric_fog_albedo = Color(0.99215686, 0.87058824, 0.7019608, 1)
+volumetric_fog_emission_energy = 0.0
+volumetric_fog_gi_inject = 0.0
+volumetric_fog_length = 200.0
+
+[node name="MenuBackdrop" type="Node3D" unique_id=25302798]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=733594893]
+environment = SubResource("Environment_menu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1403416274]
+transform = Transform3D(0.86, 0, -0.51, -0.19, 0.93, -0.32, 0.47, 0.37, 0.8, 0, 0, 0)
+light_bake_mode = 0
+sky_mode = 1
+
+[node name="FogStreaks" type="FogVolume" parent="." unique_id=1133397120]
+shape = 4
+material = ExtResource("6_fog")
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=816262835 groups=["Player"]]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
+script = ExtResource("8_drift")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=1727798038]
+far = 6000.0
+
+[node name="ChunkedAsteroidField" parent="." unique_id=1608585928 instance=ExtResource("7_field")]
+ChunkSize = 1000.0
+LoadRadius = 6
+UnloadBuffer = 1
+CollisionRadius = 0
+MinSpacing = 800.0
+MinScale = 30.0
+MaxScale = 90.0
+LodBias = 20.1
+WorldSeed = 1

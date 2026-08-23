@@ -1,4 +1,4 @@
-[gd_resource type="VisualShader" load_steps=17 format=3 uid="uid://c7d7sskcrjsae"]
+[gd_resource type="VisualShader" format=3 uid="uid://c7d7sskcrjsae"]
 
 [ext_resource type="Texture2D" uid="uid://bcgp7vfp2k4c7" path="res://Imports/FlightModelMissile/thrusts/thrust/thruster_frames_tex.tres" id="1_d6d3c"]
 
@@ -53,27 +53,6 @@ operator = 1
 [sub_resource type="VisualShaderNodeVectorLen" id="VisualShaderNodeVectorLen_qdnm0"]
 
 [resource]
-code = "shader_type spatial;
-render_mode blend_mix, depth_draw_opaque, cull_disabled, diffuse_lambert, specular_schlick_ggx;
-
-uniform sampler2D tex_frg_2 : source_color;
-
-
-
-void fragment() {
-// Texture2D:2
-	vec4 n_out2p0 = texture(tex_frg_2, UV);
-	float n_out2p4 = n_out2p0.a;
-
-
-// Output:0
-	ALBEDO = vec3(n_out2p0.xyz);
-	ALPHA = n_out2p4;
-	EMISSION = vec3(n_out2p0.xyz);
-
-
-}
-"
 modes/cull = 2
 nodes/fragment/0/position = Vector2(380, 160)
 nodes/fragment/2/node = SubResource("VisualShaderNodeTexture_s3qk6")

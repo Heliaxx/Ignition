@@ -14,6 +14,9 @@ public partial class Kaito
     private double _timeSinceLastMissile = 0.0;
     private PackedScene _missileScene;
 
+    [ExportGroup("Gatling")]
+    [Export] public bool UnlimitedGatlingAmmo = false;
+
     private GatlingWeapon _gatling;
 
     private bool UnlimitedAmmo => _gatling?.UnlimitedAmmo ?? false;
@@ -45,6 +48,8 @@ public partial class Kaito
         _gatling = GetNodeOrNull<GatlingWeapon>("GatlingWeapon");
         if (_gatling != null)
         {
+            if (UnlimitedGatlingAmmo)
+                _gatling.UnlimitedAmmo = true;
             _gatling.SpawnParent = GetParent() as Node3D;
             _gatling.AmmoChanged += (cur, max) => UpdateAmmoHUD();
         }

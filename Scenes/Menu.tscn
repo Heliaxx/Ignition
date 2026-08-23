@@ -4,6 +4,7 @@
 [ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="2_afw1a"]
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="3_nj5k7"]
 [ext_resource type="Texture2D" uid="uid://cn1btk5nakcdt" path="res://Imports/Logos/MenuScreen.png" id="4_s2c3o"]
+[ext_resource type="PackedScene" path="res://Scenes/MenuBackdrop.tscn" id="5_backdrop"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ydy06"]
 font = ExtResource("2_afw1a")
@@ -169,6 +170,7 @@ text = "EXIT"
 alignment = 0
 
 [node name="TextureRect" type="TextureRect" parent="."]
+visible = false
 show_behind_parent = true
 layout_mode = 0
 offset_right = 2560.0
@@ -176,3 +178,5 @@ offset_bottom = 1440.0
 scale = Vector2(0.75, 0.75)
 mouse_filter = 2
 texture = ExtResource("4_s2c3o")
+
+[node name="MenuBackdrop" parent="." instance=ExtResource("5_backdrop")]

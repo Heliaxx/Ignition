@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bcjj72a158t5m"]
+
+[ext_resource type="Shader" uid="uid://k3awb8wobpx1" path="res://Shaders/FogStreaks.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/base_density = 0.002000000095
+shader_parameter/base_color = Color(1, 1, 1, 1)
+shader_parameter/world_scale = Vector3(0.002, 0.01, 0.002)
+shader_parameter/noise_amounts = Vector3(0.6, 0.4, 0.4)
+shader_parameter/noise_scales = Vector3(1, 1, 8)
+shader_parameter/noise_velocity1 = Vector3(0.004, 0, 0.002)
+shader_parameter/noise_velocity2 = Vector3(0.007, 0.001, -0.005)
+shader_parameter/noise_velocity3 = Vector3(0, 0.004, 0.003)
+shader_parameter/patch_edge_low = -0.15
+shader_parameter/patch_edge_high = 0.8

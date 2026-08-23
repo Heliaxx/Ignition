@@ -119,13 +119,23 @@ public partial class FlightModelMissile : RigidBody3D
 			_collisionCheck.AddException(_ignoredBody);
 			AddCollisionExceptionWith(_ignoredBody);
 		}
+
+		_smokeTrail = GetNodeOrNull<GpuParticles3D>("SmokeTrail");
 	}
+
+	private GpuParticles3D _smokeTrail;
 
 	private CollisionObject3D _ignoredBody;
 
 	// Call before adding to the tree: the missile will never collide with / detonate
 	// on this body (the launcher). Prevents self-detonation on spawn.
 	public void IgnoreBody(CollisionObject3D body) => _ignoredBody = body;
+
+	private void SetSmokeTrail(bool emitting)
+	{
+		if (_smokeTrail != null)
+			_smokeTrail.Emitting = emitting;
+	}
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -158,6 +168,7 @@ public partial class FlightModelMissile : RigidBody3D
 				t.Shutdown();
 				t.Hide();
 			}
+			SetSmokeTrail(false); // engine off, no more smoke
 			if (ExplodeOnFuelLoss)
 				MissileImpact(null);
 			return;
@@ -417,6 +428,8 @@ public partial class FlightModelMissile : RigidBody3D
 
 		GetNode<AudioStreamPlayer3D>("explosion").Play();
 		GetNode<GpuParticles3D>("impact").Emitting = true;
+		Explosion.SpawnAt(this, GlobalPosition); // big space explosion at the impact point
+		SetSmokeTrail(false); // already-emitted smoke stays in the world
 		foreach (MissileThruster t in _allThrusters)
 		{
 			t.Shutdown();

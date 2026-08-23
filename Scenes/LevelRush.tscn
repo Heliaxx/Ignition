@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://ncvlr3whk36h"]
+[gd_scene format=3 uid="uid://ncvlr3whk36h"]
 
 [ext_resource type="Script" uid="uid://q8h4bqdl7js7" path="res://Scripts/LevelRush.cs" id="1_xijtb"]
 [ext_resource type="Shader" uid="uid://vxoc6h16dya7" path="res://Shaders/SpaceShader.gdshader" id="2_fmvnv"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="11_n0ucd"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="12_ringt"]
 [ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="13_theme"]
+[ext_resource type="Material" path="res://Shaders/FogStreaksMaterial.tres" id="14_fogstreak"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7645s"]
 shader = ExtResource("2_fmvnv")
@@ -84,41 +85,39 @@ volumetric_fog_enabled = true
 volumetric_fog_density = 0.0002
 volumetric_fog_albedo = Color(1, 0.866047, 0.715673, 1)
 volumetric_fog_emission_energy = 0.0
-volumetric_fog_gi_inject = 0.5
-volumetric_fog_anisotropy = 0.5
-volumetric_fog_length = 1000.0
-volumetric_fog_sky_affect = 0.412
+volumetric_fog_gi_inject = 0.0
+volumetric_fog_length = 400.0
 volumetric_fog_temporal_reprojection_enabled = false
 volumetric_fog_temporal_reprojection_amount = 0.5
 
-[node name="Level3" type="Node3D"]
+[node name="Level3" type="Node3D" unique_id=509348223]
 script = ExtResource("1_xijtb")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=168676791]
 environment = SubResource("Environment_r05y7")
 
-[node name="Player" parent="." instance=ExtResource("5_3qx6a")]
+[node name="Player" parent="." unique_id=1499692613 instance=ExtResource("5_3qx6a")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 0)
 MaxMissiles = 4
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=584183668]
 transform = Transform3D(-0.573577, 0, -0.819152, 0, 1, 0, 0.819152, 0, -0.573577, 0, 0, -20)
 light_bake_mode = 0
 sky_mode = 1
 
-[node name="FPSMeter" parent="." instance=ExtResource("7_6pirs")]
+[node name="FPSMeter" parent="." unique_id=1082325039 instance=ExtResource("7_6pirs")]
 mouse_filter = 2
 
-[node name="PauseMenuLayer" type="CanvasLayer" parent="."]
+[node name="PauseMenuLayer" type="CanvasLayer" parent="." unique_id=546019998]
 process_mode = 3
 layer = 3
 
-[node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_63mkt")]
+[node name="PauseMenu" parent="PauseMenuLayer" unique_id=108278102 instance=ExtResource("8_63mkt")]
 
-[node name="ScoreHUD" type="CanvasLayer" parent="."]
+[node name="ScoreHUD" type="CanvasLayer" parent="." unique_id=2022050664]
 layer = 2
 
-[node name="ScoreLabel" type="Label" parent="ScoreHUD"]
+[node name="ScoreLabel" type="Label" parent="ScoreHUD" unique_id=12413613]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -131,7 +130,7 @@ theme = ExtResource("13_theme")
 text = "Score: 0"
 horizontal_alignment = 2
 
-[node name="HighScoreLabel" type="Label" parent="ScoreHUD"]
+[node name="HighScoreLabel" type="Label" parent="ScoreHUD" unique_id=227144840]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -144,7 +143,7 @@ theme = ExtResource("13_theme")
 text = "Best: 0"
 horizontal_alignment = 2
 
-[node name="MultiplierLabel" type="Label" parent="ScoreHUD"]
+[node name="MultiplierLabel" type="Label" parent="ScoreHUD" unique_id=74132431]
 visible = false
 anchors_preset = 1
 anchor_left = 1.0
@@ -158,10 +157,14 @@ theme = ExtResource("13_theme")
 text = "x1.5 (2.0s)"
 horizontal_alignment = 2
 
-[node name="ChunkedAsteroidField" type="Node3D" parent="." node_paths=PackedStringArray("SpawnExclusionZones")]
+[node name="ChunkedAsteroidField" type="Node3D" parent="." unique_id=1664462103 node_paths=PackedStringArray("SpawnExclusionZones")]
 script = ExtResource("9_6rtd5")
 ChunkSize = 400.0
 CollisionRadius = 3
 MinSpacing = 120.0
 SpawnExclusionZones = [null, NodePath("../Player")]
 AsyncApplyPerFrame = 2
+
+[node name="FogStreaks" type="FogVolume" parent="."]
+shape = 4
+material = ExtResource("14_fogstreak")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://d3mqn4lo1yhif"]
+[gd_scene format=3 uid="uid://d3mqn4lo1yhif"]
 
 [ext_resource type="Script" uid="uid://n875xpqjkl8q" path="res://Scripts/LevelFreeFlight.cs" id="1_xijtb"]
 [ext_resource type="Texture2D" uid="uid://bsvhlcw4w5oev" path="res://Imports/Skyboxes/2k_stars_milky_way.jpg" id="3_02vup"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://00enhsw64eas" path="res://Scenes/BigStation.tscn" id="11_4pajc"]
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="11_n0ucd"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="12_ringt"]
+[ext_resource type="Material" uid="uid://bcjj72a158t5m" path="res://Shaders/FogStreaksMaterial.tres" id="13_fogstreak"]
 
 [sub_resource type="Shader" id="Shader_6tkp5"]
 code = "shader_type sky;
@@ -296,42 +297,43 @@ fog_sky_affect = 0.0
 fog_height = 300.0
 fog_height_density = 0.002
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.0002
-volumetric_fog_albedo = Color(1, 0.866047, 0.715673, 1)
+volumetric_fog_density = 0.0
+volumetric_fog_albedo = Color(0.9923268, 0.8713972, 0.70300174, 1)
 volumetric_fog_emission_energy = 0.0
-volumetric_fog_gi_inject = 0.5
-volumetric_fog_anisotropy = 0.5
-volumetric_fog_length = 1000.0
-volumetric_fog_sky_affect = 0.412
-volumetric_fog_temporal_reprojection_enabled = false
-volumetric_fog_temporal_reprojection_amount = 0.5
+volumetric_fog_gi_inject = 0.0
+volumetric_fog_length = 1500.0
 
-[node name="Level2" type="Node3D"]
+[node name="Level2" type="Node3D" unique_id=399596360]
 script = ExtResource("1_xijtb")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1773659853]
 environment = SubResource("Environment_r05y7")
 
-[node name="Player" parent="." instance=ExtResource("5_3qx6a")]
+[node name="Player" parent="." unique_id=61359999 instance=ExtResource("5_3qx6a")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -500, 0, 0)
 UnlimitedMissiles = true
+UnlimitedGatlingAmmo = true
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1551429100]
 light_bake_mode = 0
 sky_mode = 1
 
-[node name="FPSMeter" parent="." instance=ExtResource("7_6pirs")]
+[node name="FPSMeter" parent="." unique_id=1165791745 instance=ExtResource("7_6pirs")]
 mouse_filter = 2
 
-[node name="Scenery" type="Node3D" parent="."]
+[node name="Scenery" type="Node3D" parent="." unique_id=1640933670]
 
-[node name="PauseMenuLayer" type="CanvasLayer" parent="."]
+[node name="FogStreaks" type="FogVolume" parent="Scenery" unique_id=1377953489]
+shape = 4
+material = ExtResource("13_fogstreak")
+
+[node name="PauseMenuLayer" type="CanvasLayer" parent="." unique_id=2060067354]
 process_mode = 3
 layer = 3
 
-[node name="PauseMenu" parent="PauseMenuLayer" instance=ExtResource("8_63mkt")]
+[node name="PauseMenu" parent="PauseMenuLayer" unique_id=2136833427 instance=ExtResource("8_63mkt")]
 
-[node name="ChunkedAsteroidField" type="Node3D" parent="." node_paths=PackedStringArray("SpawnExclusionZones")]
+[node name="ChunkedAsteroidField" type="Node3D" parent="." unique_id=663903800 node_paths=PackedStringArray("SpawnExclusionZones")]
 script = ExtResource("9_6rtd5")
 LoadRadius = 18
 MinSpacing = 500.0
@@ -339,5 +341,5 @@ MinScale = 30.0
 MaxScale = 60.0
 SpawnExclusionZones = [NodePath("../Player"), NodePath("../BigStation")]
 
-[node name="BigStation" parent="." instance=ExtResource("11_4pajc")]
+[node name="BigStation" parent="." unique_id=1039518398 instance=ExtResource("11_4pajc")]
 transform = Transform3D(29.8357, -3.13585, 0, 3.11868, 29.6722, -3.13585, 0.327786, 3.11868, 29.8357, 600, -100, 0)

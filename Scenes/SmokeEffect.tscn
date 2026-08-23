@@ -1,0 +1,118 @@
+[gd_scene load_steps=15 format=3 uid="uid://d03awq5mx4eqh"]
+
+[sub_resource type="Gradient" id="Gradient_age"]
+offsets = PackedFloat32Array(0, 0.75, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.75, 0.75, 0.75, 0.6, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_age"]
+gradient = SubResource("Gradient_age")
+
+[sub_resource type="Curve" id="Curve_grow"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 5), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTex_grow"]
+curve = SubResource("Curve_grow")
+
+[sub_resource type="Curve" id="Curve_kkv1v"]
+_limits = [0.0, 3.0, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1.99934), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_8mf8h"]
+curve = SubResource("Curve_kkv1v")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_smoke"]
+angle_min = -180.0
+angle_max = 180.0
+direction = Vector3(0, 0, 1)
+spread = 0.0
+initial_velocity_min = 1.0
+initial_velocity_max = 5.0
+angular_velocity_min = -20.0
+angular_velocity_max = 20.0
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTex_grow")
+scale_over_velocity_curve = SubResource("CurveTexture_8mf8h")
+color_ramp = SubResource("GradientTexture1D_age")
+turbulence_influence_min = 0.0
+turbulence_influence_max = 0.05
+
+[sub_resource type="Shader" id="Shader_smoke"]
+code = "shader_type spatial;
+render_mode blend_mix, depth_draw_never, cull_disabled, unshaded;
+
+// LOD noise smoke: the particle's age (COLOR.r ramps 0->1 over the lifetime,
+// driven by the process material's color ramp) selects the noise texture's
+// mipmap level, so the profile progressively blurs and dissolves as it ages.
+uniform vec4 smoke_color : source_color = vec4(0.75, 0.75, 0.78, 1.0);
+uniform sampler2D noise_tex;
+uniform sampler2D mask_tex;
+uniform float max_lod : hint_range(0.0, 10.0) = 8.0;
+
+void vertex() {
+	// Particle billboard, keeping per-particle scale and rotation.
+	mat4 mat_world = mat4(
+		normalize(INV_VIEW_MATRIX[0]),
+		normalize(INV_VIEW_MATRIX[1]),
+		normalize(INV_VIEW_MATRIX[2]),
+		MODEL_MATRIX[3]);
+	mat_world = mat_world * mat4(
+		vec4(cos(INSTANCE_CUSTOM.x), -sin(INSTANCE_CUSTOM.x), 0.0, 0.0),
+		vec4(sin(INSTANCE_CUSTOM.x), cos(INSTANCE_CUSTOM.x), 0.0, 0.0),
+		vec4(0.0, 0.0, 1.0, 0.0),
+		vec4(0.0, 0.0, 0.0, 1.0));
+	mat_world = mat_world * mat4(
+		vec4(length(MODEL_MATRIX[0].xyz), 0.0, 0.0, 0.0),
+		vec4(0.0, length(MODEL_MATRIX[1].xyz), 0.0, 0.0),
+		vec4(0.0, 0.0, length(MODEL_MATRIX[2].xyz), 0.0),
+		vec4(0.0, 0.0, 0.0, 1.0));
+	MODELVIEW_MATRIX = VIEW_MATRIX * mat_world;
+	MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+}
+
+void fragment() {
+	float lod = mix(0.0, max_lod, COLOR.r);
+	float noise = textureLod(noise_tex, UV, lod).r;
+	float mask = texture(mask_tex, UV).r;
+	ALBEDO = smoke_color.rgb;
+	ALPHA = noise * mask * COLOR.a * smoke_color.a;
+}
+"
+
+[sub_resource type="Gradient" id="Gradient_mask"]
+offsets = PackedFloat32Array(0.45, 0.95)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mask"]
+gradient = SubResource("Gradient_mask")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_smoke"]
+frequency = 0.008
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_smoke"]
+seamless = true
+noise = SubResource("FastNoiseLite_smoke")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_smoke"]
+render_priority = 0
+shader = SubResource("Shader_smoke")
+shader_parameter/smoke_color = Color(0.75, 0.75, 0.78, 1)
+shader_parameter/noise_tex = SubResource("NoiseTexture2D_smoke")
+shader_parameter/mask_tex = SubResource("GradientTexture2D_mask")
+shader_parameter/max_lod = 8.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_smoke"]
+material = SubResource("ShaderMaterial_smoke")
+
+[node name="SmokeEffect" type="GPUParticles3D"]
+amount = 800
+lifetime = 20.0
+speed_scale = 6.0
+fixed_fps = 0
+trail_lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_smoke")
+draw_pass_1 = SubResource("QuadMesh_smoke")

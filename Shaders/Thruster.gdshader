@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode unshaded, blend_add, cull_disabled, depth_draw_never;
+render_mode unshaded, blend_add, cull_disabled, depth_draw_never, fog_disabled;
 
 uniform float intensity : hint_range(0.0, 2.0) = 0.8;
 uniform vec4 core_color : source_color = vec4(1.0, 0.95, 0.8, 1.0);
@@ -9,7 +9,7 @@ uniform float noise_speed : hint_range(0.5, 10.0) = 3.0;
 uniform float flame_sharpness : hint_range(0.5, 5.0) = 2.0;
 uniform float flicker_strength : hint_range(0.0, 1.0) = 0.3;
 
-// Simple hash-based noise (no texture needed)
+// Simple hash-based noise
 float hash(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
 	p3 += dot(p3, p3.yzx + 33.33);
