@@ -5,6 +5,9 @@ using Godot;
 // is built procedurally in _Ready.
 public partial class LaserWeapon : WeaponBase
 {
+    // Ship this weapon belongs to, passed to the victim for kill attribution.
+    public Node3D Shooter { get; set; }
+
     [ExportGroup("Laser")]
     [Export] public float DPS = 15f;
     [Export] public float Range = 500f;
@@ -88,7 +91,7 @@ public partial class LaserWeapon : WeaponBase
                     uint owner = body.ShapeFindOwner(_ray.GetColliderShape());
                     shape = body.ShapeOwnerGetOwner(owner) as CollisionShape3D;
                 }
-                dmg.TakeDamage(DPS * (float)delta, shape);
+                dmg.TakeDamage(DPS * (float)delta, shape, Shooter);
             }
         }
 

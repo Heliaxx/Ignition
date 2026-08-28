@@ -4,7 +4,7 @@ public partial class AsteroidBody : StaticBody3D, IDamageable
 {
 	public ChunkedAsteroidField Field { get; set; }
 
-	public void TakeDamage(float amount, CollisionShape3D hitShape = null)
+	public void TakeDamage(float amount, CollisionShape3D hitShape = null, Node3D source = null)
 	{
 		if (Field == null || hitShape == null) return;
 		if (!hitShape.HasMeta("asteroid_id")) return;

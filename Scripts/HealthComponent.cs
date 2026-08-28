@@ -8,6 +8,9 @@ public partial class HealthComponent : Node
 
     public bool IsDead => CurrentHealth <= 0;
 
+    // Whoever dealt the most recent damage; still readable from a Died handler.
+    public Node3D LastAttacker { get; private set; }
+
     [Signal] public delegate void HealthChangedEventHandler(float current, float max);
     [Signal] public delegate void DiedEventHandler();
 
@@ -16,9 +19,13 @@ public partial class HealthComponent : Node
         CurrentHealth = MaxHealth;
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, Node3D source = null)
     {
         if (IsDead) return;
+
+        // Self-damage keeps the previous attacker, so a shove into an asteroid still counts.
+        if (source != null && source != GetParent())
+            LastAttacker = source;
 
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
         EmitSignal(SignalName.HealthChanged, CurrentHealth, MaxHealth);

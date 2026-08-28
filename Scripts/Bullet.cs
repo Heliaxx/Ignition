@@ -13,6 +13,9 @@ public partial class Bullet : Node3D
 	// Velocity inherited from the spawner. Set before adding to the scene.
 	public Vector3 InheritedVelocity { get; set; } = Vector3.Zero;
 
+	// Ship that fired this bullet for kill credit. Set before adding to the scene.
+	public Node3D Source { get; set; }
+
 	private MeshInstance3D mesh;
 	private RayCast3D ray;
 	private GpuParticles3D particles;
@@ -48,7 +51,7 @@ public partial class Bullet : Node3D
 					uint ownerId = body.ShapeFindOwner(ray.GetColliderShape());
 					hitShape = body.ShapeOwnerGetOwner(ownerId) as CollisionShape3D;
 				}
-				damageable.TakeDamage(Damage, hitShape);
+				damageable.TakeDamage(Damage, hitShape, Source);
 			}
 			GetTree().CreateTimer(COLLISION_DESTROY_DELAY).Timeout += QueueFree;
 		}

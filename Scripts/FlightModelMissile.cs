@@ -44,6 +44,9 @@ public partial class FlightModelMissile : RigidBody3D
 	// missile leaves the ship already matching its momentum. Set before adding to the tree.
 	public Vector3 InheritedVelocity { get; set; } = Vector3.Zero;
 
+	// Ship that launched this missile for kill credit. Set before adding to the tree.
+	public Node3D Source { get; set; }
+
 	// Remaining engine burn time in seconds; with the fuel spent the missile can only coast.
 	private float _thrustTime = 10.0f;
 
@@ -424,7 +427,7 @@ public partial class FlightModelMissile : RigidBody3D
 		// Deal damage to whatever we hit if it's damageable. Asteroids need the hit
 		// CollisionShape3D to know which asteroid was struck (see AsteroidBody).
 		if (collider is IDamageable damageable)
-			damageable.TakeDamage(Damage, hitShape);
+			damageable.TakeDamage(Damage, hitShape, Source);
 
 		GetNode<AudioStreamPlayer3D>("explosion").Play();
 		GetNode<GpuParticles3D>("impact").Emitting = true;

@@ -56,6 +56,9 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	private float yawInput = 0.0f;
 	private float rollInput = 0.0f;
 
+	// This tick's intent; the flight model reads this, never Input directly.
+	private ShipInput _input;
+
 	private bool _justUnpaused = false;
 	private float _currentMaxSpeed = MAX_SPEED;
 	private float _currentAcceleration = ACCELERATION;
@@ -198,14 +201,16 @@ public partial class Kaito : CharacterBody3D, IDamageable
 			_justUnpaused = true;
 	}
 
-	public void TakeDamage(float amount, CollisionShape3D hitShape = null)
+	public void TakeDamage(float amount, CollisionShape3D hitShape = null, Node3D source = null)
 	{
-		health.TakeDamage(amount);
+		health.TakeDamage(amount, source);
 	}
 
 	private void OnDied()
 	{
 		_isDead = true;
+		EventBus.EmitKilled(this, health.LastAttacker);
+
 		ClearTarget();
 		SetProcess(false);
 		SetPhysicsProcess(false);
@@ -327,6 +332,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	// Applies the current thrust and torque inputs to the ship, integrating them into velocity and angular velocity
 	private void ApplyInputs(float delta)
 	{
+		SampleLocalInput();
 		UpdateAim(delta);
 		ReadThrustAndTorqueInput();
 		ApplyStopKey(delta);
@@ -351,6 +357,20 @@ public partial class Kaito : CharacterBody3D, IDamageable
 			widgetCursorInitialized = true;
 		}
 		return widgetCursor;
+	}
+
+	// Reads the keyboard into this tick's intent. A replayed or remote tick assigns
+	// _input from a record instead.
+	private void SampleLocalInput()
+	{
+		_input.ThrustForward  = Input.IsActionPressed("thrust_forward");
+		_input.ThrustBackward = Input.IsActionPressed("thrust_backward");
+		_input.StrafeUp       = Input.IsActionPressed("strafe_up");
+		_input.StrafeDown     = Input.IsActionPressed("strafe_down");
+		_input.StrafeRight    = Input.IsActionPressed("strafe_right");
+		_input.StrafeLeft     = Input.IsActionPressed("strafe_left");
+		_input.Stop           = Input.IsActionPressed("stop");
+		_input.Roll           = Input.GetActionStrength("roll_right") - Input.GetActionStrength("roll_left");
 	}
 
 	// Turns the aim cursor's offset from screen centre into pitch and yaw input.
@@ -382,11 +402,16 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		aimPitch = Mathf.Lerp(aimPitch, aimTargetPitch, AIM_RESPONSIVENESS * delta);
 		yawInput = aimYaw;
 		pitchInput = aimPitch;
+
+		// Only the result is intent; sensitivity and smoothing stay local.
+		_input.Pitch = aimPitch;
+		_input.Yaw = aimYaw;
 	}
 
 	// Collects the movement keys into current frame's thrust and torque vectors.
 	private void ReadThrustAndTorqueInput()
 	{
+		_input = _input.Sanitized();
 		thrust = Vector3.Zero;
 
 		// Forward axis (-Z): boost forces full forward thrust and disables backward.
@@ -396,25 +421,25 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		}
 		else
 		{
-			thrust -= Transform.Basis.Z * _currentAcceleration * Axis("thrust_forward", "thrust_backward");
+			thrust -= Transform.Basis.Z * _currentAcceleration
+				* ShipInput.Axis(_input.ThrustForward, _input.ThrustBackward);
 		}
 
-		thrust += Transform.Basis.Y * _currentAcceleration * Axis("strafe_up", "strafe_down");
-		thrust += Transform.Basis.X * _currentAcceleration * Axis("strafe_right", "strafe_left");
+		thrust += Transform.Basis.Y * _currentAcceleration * ShipInput.Axis(_input.StrafeUp, _input.StrafeDown);
+		thrust += Transform.Basis.X * _currentAcceleration * ShipInput.Axis(_input.StrafeRight, _input.StrafeLeft);
 
-		rollInput = Input.GetActionStrength("roll_right") - Input.GetActionStrength("roll_left");
+		pitchInput = _input.Pitch;
+		yawInput = _input.Yaw;
+		rollInput = _input.Roll;
 		torque = new Vector3(
 			pitchInput * _currentPitchAcceleration,
 			yawInput * _currentYawAcceleration,
 			-rollInput * _currentRollAcceleration);
 	}
 
-	private static float Axis(string positive, string negative) =>
-		(Input.IsActionPressed(positive) ? 1.0f : 0.0f) - (Input.IsActionPressed(negative) ? 1.0f : 0.0f);
-
 	private void ApplyStopKey(float delta)
 	{
-		if (!Input.IsActionPressed("stop") || _isBoosting)
+		if (!_input.Stop || _isBoosting)
 			return;
 
 		thrust = Vector3.Zero;
@@ -456,7 +481,8 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		float impactSpeed = Mathf.Max(0.0f, -Velocity.Dot(normal));
 		if (impactSpeed > CollisionDamageSpeedThreshold)
-			health.TakeDamage((impactSpeed - CollisionDamageSpeedThreshold) * CollisionDamageMultiplier);
+			health.TakeDamage((impactSpeed - CollisionDamageSpeedThreshold) * CollisionDamageMultiplier,
+				collision.GetCollider() as Node3D);
 
 		Velocity = Velocity.Slide(normal) * CollisionLinearDamping;
 		angularVelocity *= CollisionAngularDamping;
@@ -550,7 +576,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 			float targetIntensity;
 			if (_isBoosting)
 				targetIntensity = 1.5f;
-			else if (Input.IsActionPressed("thrust_forward"))
+			else if (_input.ThrustForward)
 				targetIntensity = 0.6f + _currentBoostPower * 0.4f;
 			else if (Velocity.LengthSquared() > 1f)
 				targetIntensity = 0.15f;
@@ -565,7 +591,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		if (_reverseThrusterMaterial1 != null || _reverseThrusterMaterial2 != null)
 		{
 			float reverseTarget;
-			if (Input.IsActionPressed("thrust_backward") && !_isBoosting)
+			if (_input.ThrustBackward && !_isBoosting)
 				reverseTarget = 0.6f;
 			else
 				reverseTarget = 0.0f;

@@ -50,6 +50,7 @@ public partial class Kaito
         {
             if (UnlimitedGatlingAmmo)
                 _gatling.UnlimitedAmmo = true;
+            _gatling.Shooter = this;
             _gatling.SpawnParent = GetParent() as Node3D;
             _gatling.AmmoChanged += (cur, max) => UpdateAmmoHUD();
         }
@@ -94,6 +95,7 @@ public partial class Kaito
         instance.Target = (_lockedTarget != null && IsInstanceValid(_lockedTarget)) ? _lockedTarget : null;
         instance.Damage = (float)GD.RandRange(MissileDamageMin, MissileDamageMax);
         instance.InheritedVelocity = Velocity; // launch matching ship momentum
+        instance.Source = this;
         instance.IgnoreBody(this); // don't detonate on the launcher
 
         AddCollisionExceptionWith(instance);

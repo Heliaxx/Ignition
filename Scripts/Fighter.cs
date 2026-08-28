@@ -325,6 +325,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
         if (_laserNode == null) return;
         if (_laserNode is LaserWeapon lw)
         {
+            lw.Shooter = this;
             if (enabled) lw.StartFiring();
             else lw.StopFiring();
         }
@@ -363,8 +364,14 @@ public partial class Fighter : CharacterBody3D, IDamageable
         return Mathf.Sqrt(_cachedDistanceSquared);
     }
 
-    public void TakeDamage(float amount, CollisionShape3D hitShape = null)
+    // Whoever dealt the most recent damage; read from a Died handler to credit a kill.
+    public Node3D LastAttacker { get; private set; }
+
+    public void TakeDamage(float amount, CollisionShape3D hitShape = null, Node3D source = null)
     {
+        if (source != null && source != this)
+            LastAttacker = source;
+
         currentHealth -= amount;
         _tookRecentDamage = true;
         _recentDamageTimer = EvadeDamageCooldown;
@@ -381,6 +388,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
     {
         if (_isDead) return; // a second lethal hit must not spawn a second explosion
         _isDead = true;
+        EventBus.EmitKilled(this, LastAttacker);
 
         Explosion.SpawnAt(this, GlobalPosition);
         EmitSignal(SignalName.Died);

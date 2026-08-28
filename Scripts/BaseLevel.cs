@@ -21,6 +21,7 @@ public partial class BaseLevel : Node3D
 	public override void _Ready()
 	{
 		EventBus.ClearAll();
+		MatchStats.Reset();
 		Player = GetNode<Node3D>("Player");
 		PlayerKaito = Player as Kaito;
 		NavigationRegion = this;

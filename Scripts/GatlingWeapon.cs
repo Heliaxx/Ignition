@@ -23,6 +23,9 @@ public partial class GatlingWeapon : WeaponBase
     // Node bullets are spawned under.
     public Node3D SpawnParent { get; set; }
 
+    // Ship this weapon belongs to. Stamped onto every bullet for kill attribution.
+    public Node3D Shooter { get; set; }
+
     // Ship velocity inherited by spawned bullets.
     public Vector3 ShipVelocity { get; set; }
 
@@ -79,6 +82,7 @@ public partial class GatlingWeapon : WeaponBase
         bullet.Speed = BulletSpeed;
         bullet.Damage = DamagePerBullet;
         bullet.InheritedVelocity = ShipVelocity;
+        bullet.Source = Shooter;
 
         Transform3D spawn = GlobalTransform;
         if (SpreadAngle > 0f)
