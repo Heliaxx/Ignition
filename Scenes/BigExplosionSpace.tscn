@@ -1,8 +1,8 @@
 [gd_scene load_steps=24 format=3 uid="uid://duvmffx5gj5xg"]
 
-[ext_resource type="Material" uid="uid://hgi0nqa0v3vb" path="res://Shaders/ExplosionCloudMaterial.tres" id="1_cloud"]
-[ext_resource type="Material" uid="uid://bpmnxqfygods0" path="res://Shaders/ExplosionStreakMaterial.tres" id="2_streak"]
-[ext_resource type="Material" path="res://Shaders/ExplosionFlareMaterial.tres" id="3_flare"]
+[ext_resource type="Material" uid="uid://hgi0nqa0v3vb" path="res://Resources/Materials/ExplosionCloudMaterial.tres" id="1_cloud"]
+[ext_resource type="Material" uid="uid://bpmnxqfygods0" path="res://Resources/Materials/ExplosionStreakMaterial.tres" id="2_streak"]
+[ext_resource type="Material" path="res://Resources/Materials/ExplosionFlareMaterial.tres" id="3_flare"]
 
 [sub_resource type="Gradient" id="Grad_cloud"]
 offsets = PackedFloat32Array(0, 0.15, 0.5, 1)

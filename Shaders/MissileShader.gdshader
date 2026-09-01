@@ -1,7 +1,4 @@
-[gd_resource type="Shader" format=3 uid="uid://b5tt1wbniaf71"]
-
-[resource]
-code = "shader_type spatial;
+shader_type spatial;
 render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_schlick_ggx;
 
 // Color used for albedo and emissive glow.
@@ -42,4 +39,3 @@ void fragment() {
 	ROUGHNESS = 1.0;
 	EMISSION = base_color.rgb * brightness;
 }
-"

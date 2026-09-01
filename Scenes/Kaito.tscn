@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://c1w0c47owcnfl" path="res://Scripts/Kaito.cs" id="1_8p5tm"]
 [ext_resource type="PackedScene" uid="uid://c5r7xilp2j2yt" path="res://Scenes/ShakeableCamera.tscn" id="1_ypk4o"]
 [ext_resource type="Texture2D" uid="uid://ce40wfy4nvtuk" path="res://Imports/Spaceships/Kaito/Kaito MCS-71 revised_albedo.png" id="2_nhkah"]
-[ext_resource type="PackedScene" path="res://Scenes/Light.tscn" id="2_xwtgm"]
+[ext_resource type="PackedScene" uid="uid://yvagcpnbd5be" path="res://Scenes/Light.tscn" id="2_xwtgm"]
 [ext_resource type="PackedScene" uid="uid://cu2tlich0yrj7" path="res://Scenes/CockpitHUD.tscn" id="3_qcx3i"]
 [ext_resource type="AudioStream" uid="uid://c3fd06dncbffa" path="res://Imports/Sounds/shooting_start.mp3" id="5_0nka7"]
 [ext_resource type="AudioStream" uid="uid://csmb15gf7523j" path="res://Imports/Sounds/shooting.mp3" id="6_3f0po"]

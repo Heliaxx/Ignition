@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://eqbd7lweaw6q" path="res://Imports/Planets/earth/textures/Material_62_baseColor.png" id="3_planet"]
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="4_night"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="5_ring"]
-[ext_resource type="Material" uid="uid://bcjj72a158t5m" path="res://Shaders/FogStreaksMaterial.tres" id="6_fog"]
+[ext_resource type="Material" uid="uid://bcjj72a158t5m" path="res://Resources/Materials/FogStreaksMaterial.tres" id="6_fog"]
 [ext_resource type="PackedScene" uid="uid://wakcgehtegdh" path="res://Scenes/ChunkedAsteroidField.tscn" id="7_field"]
 [ext_resource type="Script" uid="uid://bb52egpyhtvgb" path="res://Scripts/MenuCameraDrift.cs" id="8_drift"]
 

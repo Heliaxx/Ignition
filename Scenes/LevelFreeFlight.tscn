@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://00enhsw64eas" path="res://Scenes/BigStation.tscn" id="11_4pajc"]
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="11_n0ucd"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="12_ringt"]
-[ext_resource type="Material" uid="uid://bcjj72a158t5m" path="res://Shaders/FogStreaksMaterial.tres" id="13_fogstreak"]
+[ext_resource type="Material" uid="uid://bcjj72a158t5m" path="res://Resources/Materials/FogStreaksMaterial.tres" id="13_fogstreak"]
 
 [sub_resource type="Shader" id="Shader_6tkp5"]
 code = "shader_type sky;

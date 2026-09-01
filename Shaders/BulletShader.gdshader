@@ -1,7 +1,4 @@
-[gd_resource type="Shader" format=3 uid="uid://dder8yksjv4e1"]
-
-[resource]
-code = "shader_type spatial;
+shader_type spatial;
 render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_schlick_ggx;
 
 // Color used for both the lit body and the emissive glow.
@@ -35,4 +32,3 @@ void fragment() {
 	ROUGHNESS = 1.0;
 	EMISSION = base_color.rgb * emission_strength * near_dim;
 }
-"

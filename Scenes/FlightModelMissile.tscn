@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://d03awq5mx4eqh" path="res://Scenes/SmokeEffect.tscn" id="2_smokeeffect"]
 [ext_resource type="PackedScene" uid="uid://c515r8h7q7br8" path="res://Scenes/MissileThruster.tscn" id="4_iwfhy"]
 [ext_resource type="AudioStream" uid="uid://dsoitvy6jdcit" path="res://Imports/FlightModelMissile/thrusts/thrust/boom/missileboom.tres" id="5_m3eeq"]
-[ext_resource type="Shader" uid="uid://b5tt1wbniaf71" path="res://Shaders/MissileShader.tres" id="6_glow"]
+[ext_resource type="Shader" uid="uid://b5tt1wbniaf71" path="res://Shaders/MissileShader.gdshader" id="6_glow"]
 [ext_resource type="ArrayMesh" path="res://Imports/FlightModelMissile/missile_body.res" id="7_body"]
 [ext_resource type="ArrayMesh" path="res://Imports/FlightModelMissile/missile_text.res" id="8_text"]
 
@@ -12,6 +12,7 @@
 size = Vector3(0.32, 1.93666, 0.32)
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7qqlg"]
+lifetime_randomness = 0.4
 particle_flag_align_y = true
 direction = Vector3(0, 0, -1)
 spread = 140.0

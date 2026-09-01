@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://d0x8ba3p47i5m"]
 
 [ext_resource type="Script" uid="uid://buhlerjlviyew" path="res://Scripts/Bullet.cs" id="1_xjght"]
-[ext_resource type="Shader" uid="uid://dder8yksjv4e1" path="res://Shaders/BulletShader.tres" id="2_bullet"]
+[ext_resource type="Shader" uid="uid://dder8yksjv4e1" path="res://Shaders/BulletShader.gdshader" id="2_bullet"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1okna"]
 render_priority = 0
