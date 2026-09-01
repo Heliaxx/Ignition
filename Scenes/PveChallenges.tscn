@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://w7rov0kpimpd"]
+
+[ext_resource type="Script" uid="uid://bo52yqh8carxy" path="res://Scripts/PveChallenges.cs" id="1_script"]
+[ext_resource type="Theme" uid="uid://brj8jmsa6vurj" path="res://theme.tres" id="2_theme"]
+[ext_resource type="FontFile" uid="uid://dp75um7jdyrun" path="res://Imports/Fonts/Eurostile.ttf" id="3_271sc"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_8xicv"]
+font = ExtResource("3_271sc")
+font_size = 80
+outline_color = Color(0, 0, 0, 1)
+
+[node name="PveChallenges" type="Control" unique_id=1808041471]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1935688321]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.21296297
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+metadata/_edit_use_anchors_ = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1608129085]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FreeFlyButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1696901112]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "FREE FLIGHT"
+
+[node name="RushButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=257504557]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "RUSH"
+
+[node name="WavesButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=121181907]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "WAVES"
+
+[node name="SkirmishButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=860048809]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "SKIRMISH"
+
+[node name="Space" type="Control" parent="CenterContainer/VBoxContainer" unique_id=1712646512]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BackButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1888025259]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "BACK"
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=2060894528]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -600.0
+offset_right = 600.0
+offset_bottom = 220.0
+grow_horizontal = 2
+
+[node name="Space" type="Control" parent="PanelContainer" unique_id=768509999]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Title" type="Label" parent="PanelContainer" unique_id=244772004]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_271sc")
+text = "CHALLENGE SCENARIOS"
+label_settings = SubResource("LabelSettings_8xicv")
+horizontal_alignment = 1
+vertical_alignment = 1

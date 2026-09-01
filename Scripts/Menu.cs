@@ -7,28 +7,25 @@ public partial class Menu : Control
 	[Export] private Button controlsButton;
 	[Export] private Button graphicsButton;
 	[Export] private Button audioButton;
-	[Export] private Button FreeFlyButton;
-	[Export] private Button WavesButton;
-	[Export] private Button RushButton;
-	[Export] private Button SkirmishButton;
+	[Export] private Button pveChallengesButton;
 	[Export] private Button exitButton;
 
 	private AudioStreamPlayer hoverSound;
 	private AudioStreamPlayer clickSound;
+	private MenuStack menuStack;
 
 	public override void _Ready()
 	{
 		GetTree().Paused = false;
 		EventBus.ClearAll();
 
-		controlsButton ??= GetNode<Button>("PanelContainer/VBoxContainer/ControlsButton");
-		graphicsButton ??= GetNode<Button>("PanelContainer/VBoxContainer/GraphicsButton");
-		audioButton ??= GetNode<Button>("PanelContainer/VBoxContainer/AudioButton");
-		exitButton ??= GetNode<Button>("PanelContainer/VBoxContainer/ExitButton");
-		FreeFlyButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/FreeFlyButton");
-		RushButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/RushButton");
-		WavesButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/WavesButton");
-		SkirmishButton ??= GetNode<Button>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/SkirmishButton");
+		// Found by name, not by path: the menu gets rearranged in the editor often, and a
+		// stale path silently leaves the rest of _Ready unwired.
+		controlsButton ??= FindChild("ControlsButton") as Button;
+		graphicsButton ??= FindChild("GraphicsButton") as Button;
+		audioButton ??= FindChild("AudioButton") as Button;
+		exitButton ??= FindChild("ExitButton") as Button;
+		pveChallengesButton ??= FindChild("PveChallengesButton") as Button;
 
 		hoverSound = new AudioStreamPlayer();
 		clickSound = new AudioStreamPlayer();
@@ -46,43 +43,25 @@ public partial class Menu : Control
 		if (!musicManager.IsPlaying())
 			musicManager.PlayMusic(music);
 
-		FreeFlyButton.Pressed += OnPlayFreeFlyButtonPressed;
-		RushButton.Pressed += OnPlayRushButtonPressed;
-		WavesButton.Pressed += OnPlayWavesButtonPressed;
-		SkirmishButton.Pressed += OnPlaySkirmishButtonPressed;
+		menuStack = new MenuStack { Name = "MenuStack" };
+		AddChild(menuStack);
+
+		pveChallengesButton.Pressed += OnPveChallengesPressed;
 		exitButton.Pressed += OnExitButtonPressed;
 		controlsButton.Pressed += OnControlsPressed;
 		graphicsButton.Pressed += OnGraphicsPressed;
 		audioButton.Pressed += OnAudioPressed;
 
-		FreeFlyButton.MouseEntered += OnButtonHovered;
-		RushButton.MouseEntered += OnButtonHovered;
-		WavesButton.MouseEntered += OnButtonHovered;
-		SkirmishButton.MouseEntered += OnButtonHovered;
+		pveChallengesButton.MouseEntered += OnButtonHovered;
 		exitButton.MouseEntered += OnButtonHovered;
 		controlsButton.MouseEntered += OnButtonHovered;
 		graphicsButton.MouseEntered += OnButtonHovered;
 		audioButton.MouseEntered += OnButtonHovered;
 	}
 
-	private void OnPlayFreeFlyButtonPressed()
+	private void OnPveChallengesPressed()
 	{
-		GetTree().ChangeSceneToFile("res://Scenes/LevelFreeFlight.tscn");
-	}
-
-	private void OnPlayWavesButtonPressed()
-	{
-		GetTree().ChangeSceneToFile("res://Scenes/LevelWave.tscn");
-	}
-
-	private void OnPlaySkirmishButtonPressed()
-	{
-		GetTree().ChangeSceneToFile("res://Scenes/LevelSkirmish.tscn");
-	}
-
-	private void OnPlayRushButtonPressed()
-	{
-		GetTree().ChangeSceneToFile("res://Scenes/LevelRush.tscn");
+		menuStack.Push(GD.Load<PackedScene>("res://Scenes/PveChallenges.tscn"));
 	}
 
 	private void OnExitButtonPressed()
