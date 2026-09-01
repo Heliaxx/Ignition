@@ -21,9 +21,13 @@ public partial class BaseLevel : Node3D
 	public override void _Ready()
 	{
 		EventBus.ClearAll();
+		Participants.Reset();
 		MatchStats.Reset();
 		Player = GetNode<Node3D>("Player");
 		PlayerKaito = Player as Kaito;
+		// Ships register themselves in _Ready, but children run before the level does,
+		// so the player would have been wiped by the reset above.
+		MatchStats.Register(PlayerKaito);
 		NavigationRegion = this;
 		MusicManager = GetNode<MusicManager>("/root/MusicManager");
 		MusicManager.StopMusic();

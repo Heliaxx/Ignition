@@ -80,6 +80,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
 
     public override void _Ready()
     {
+        MatchStats.Register(this);
         currentHealth = MAX_HEALTH;
         player = GetNode<Node3D>("../Player"); // Adjust if player path changes
         playerBody = player as CharacterBody3D;
@@ -388,7 +389,7 @@ public partial class Fighter : CharacterBody3D, IDamageable
     {
         if (_isDead) return; // a second lethal hit must not spawn a second explosion
         _isDead = true;
-        EventBus.EmitKilled(this, LastAttacker);
+        EventBus.EmitKilled(Participants.IdOf(this), Participants.IdOf(LastAttacker));
 
         Explosion.SpawnAt(this, GlobalPosition);
         EmitSignal(SignalName.Died);

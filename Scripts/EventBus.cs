@@ -12,13 +12,14 @@ public static class EventBus
 	// The player died.
 	public static event Action PlayerDied;
 
-	// A ship was destroyed: the victim and whoever last damaged it (null if nobody).
-	public static event Action<Godot.Node3D, Godot.Node3D> Killed;
+	// A ship was destroyed: the victim's participant id and whoever last damaged it
+	// (Participants.None if nobody on the roster did).
+	public static event Action<int, int> Killed;
 
 	public static void EmitAudioSettingsChanged() => AudioSettingsChanged?.Invoke();
 	public static void EmitEnemyKilled(int count = 1) => EnemyKilled?.Invoke(count);
 	public static void EmitPlayerDied() => PlayerDied?.Invoke();
-	public static void EmitKilled(Godot.Node3D victim, Godot.Node3D killer) => Killed?.Invoke(victim, killer);
+	public static void EmitKilled(int victim, int killer) => Killed?.Invoke(victim, killer);
 
 	// Clears scene-scoped subscriptions; call on scene change to drop stale
 	// handlers.

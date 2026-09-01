@@ -18,6 +18,12 @@ public struct ShipInput
 	public bool StrafeRight;
 	public bool Stop;
 
+	// Held, not edges: IsActionJustPressed cannot be replayed, so edges are derived
+	// by comparing against the previous tick's record.
+	public bool PrimaryFire;
+	public bool SecondaryFire;
+	public bool Boost;
+
 	// Clamps the axes; call on anything that did not come from this machine.
 	public ShipInput Sanitized()
 	{

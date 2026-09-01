@@ -14,9 +14,9 @@ public static class MatchStats
 		public int Suicides;
 	}
 
-	private static readonly Dictionary<Node3D, Entry> _entries = new();
+	private static readonly Dictionary<int, Entry> _entries = new();
 
-	public static IReadOnlyDictionary<Node3D, Entry> Entries => _entries;
+	public static IReadOnlyDictionary<int, Entry> Entries => _entries;
 
 	public static void Reset()
 	{
@@ -27,21 +27,23 @@ public static class MatchStats
 		EventBus.Killed += OnKilled;
 	}
 
-	// Puts a participant on the board before it has scored. Safe to call twice.
+	// Puts a participant on the roster and the board before it has scored.
+	// Safe to call twice.
 	public static void Register(Node3D participant)
 	{
-		if (participant != null) Get(participant);
+		int id = Participants.Register(participant);
+		if (id != Participants.None) Get(id);
 	}
 
-	private static void OnKilled(Node3D victim, Node3D killer)
+	private static void OnKilled(int victim, int killer)
 	{
-		if (victim == null) return;
+		if (victim == Participants.None) return;
 
 		Get(victim).Deaths++;
 
 		// Attribution also carries non-ships — ramming an asteroid credits the asteroid —
-		// so anything that is not a ship counts as a suicide.
-		if (killer == null || killer == victim || !IsParticipant(killer))
+		// but those are off the roster, so their id is None and the death is a suicide.
+		if (killer == Participants.None || killer == victim)
 		{
 			Get(victim).Suicides++;
 			return;
@@ -50,22 +52,13 @@ public static class MatchStats
 		Get(killer).Kills++;
 	}
 
-	private static bool IsParticipant(Node3D node) => node is Kaito || node is Fighter;
-
-	private static Entry Get(Node3D participant)
+	private static Entry Get(int id)
 	{
-		if (!_entries.TryGetValue(participant, out Entry entry))
+		if (!_entries.TryGetValue(id, out Entry entry))
 		{
-			entry = new Entry { Name = LabelFor(participant) };
-			_entries[participant] = entry;
+			entry = new Entry { Name = Participants.NameOf(id) };
+			_entries[id] = entry;
 		}
 		return entry;
-	}
-
-	private static string LabelFor(Node3D node)
-	{
-		if (node is Fighter fighter && !string.IsNullOrEmpty(fighter.DisplayName))
-			return fighter.DisplayName;
-		return node.Name.ToString();
 	}
 }

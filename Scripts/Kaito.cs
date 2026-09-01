@@ -52,12 +52,14 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	private Vector3 thrust = Vector3.Zero;
 	private Vector3 torque = Vector3.Zero;
 
-	private float pitchInput = 0.0f;
-	private float yawInput = 0.0f;
-	private float rollInput = 0.0f;
-
 	// This tick's intent; the flight model reads this, never Input directly.
 	private ShipInput _input;
+	// Last tick's intent, so held-button edges can be derived without Input.
+	private ShipInput _prevInput;
+
+	// False for a ship driven by a remote or replayed input record: it is simulated
+	// from _input, but never samples this machine's keyboard or mouse.
+	public bool IsLocallyControlled { get; set; } = true;
 
 	private bool _justUnpaused = false;
 	private float _currentMaxSpeed = MAX_SPEED;
@@ -209,7 +211,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	private void OnDied()
 	{
 		_isDead = true;
-		EventBus.EmitKilled(this, health.LastAttacker);
+		EventBus.EmitKilled(Participants.IdOf(this), Participants.IdOf(health.LastAttacker));
 
 		ClearTarget();
 		SetProcess(false);
@@ -272,68 +274,86 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 	public override void _PhysicsProcess(double delta)
 	{
-		GetInput((float)delta);
+		if (IsLocallyControlled)
+			_input = SampleLocalInput((float)delta);
+
+		if (CanAct())
+		{
+			ProcessIntent((float)delta);
+			if (IsLocallyControlled) UpdateLocalOnly();
+		}
+
 		ProcessBoost((float)delta);
-		ApplyInputs((float)delta);
+		SimulateTick((float)delta);
 		UpdateGimbalTracking((float)delta);
+
+		_prevInput = _input;
 	}
 
-	private void GetInput(float delta)
+	// Dead ships act on nothing, and the first tick after unpausing is skipped so a
+	// key held from before the pause does not re-trigger. Clears _justUnpaused.
+	private bool CanAct()
 	{
-		if (_isDead) return;
+		if (_isDead) return false;
 		if (_justUnpaused)
 		{
 			_justUnpaused = false;
-			return;
+			return false;
 		}
+		return true;
+	}
 
+	// Acts on this tick's intent. Edges come from _prevInput, not Input, so a replayed
+	// or remote tick fires the same way the tick that produced the record did.
+	private void ProcessIntent(float delta)
+	{
 		timeSinceLastShot += delta;
 		_timeSinceLastMissile += delta;
-		if (Input.IsActionJustPressed("light"))
+
+		if (_input.PrimaryFire && timeSinceLastShot >= fireCooldown)
 		{
-			lightLeft.Visible = !lightLeft.Visible;
-			lightRight.Visible = !lightRight.Visible;
+			Shoot();
+			timeSinceLastShot = 0.0;
 		}
 
-		if (Input.IsActionPressed("primary_fire"))
-		{
-			if (timeSinceLastShot >= fireCooldown)
-			{
-				Shoot();
-				timeSinceLastShot = 0.0;
-			}
-		}
-
-		if (Input.IsActionJustPressed("primary_fire") && (UnlimitedAmmo || _currentAmmo > 0))
+		if (_input.PrimaryFire && !_prevInput.PrimaryFire && (UnlimitedAmmo || _currentAmmo > 0))
 			shooting.Play();
 
-		if (Input.IsActionJustReleased("primary_fire"))
+		if (!_input.PrimaryFire && _prevInput.PrimaryFire)
 		{
 			shooting.Stop();
 			if (UnlimitedAmmo || _currentAmmo > 0)
 				endShooting.Play();
 		}
 
-		if (Input.IsActionJustPressed("camera_switch"))
-			ToggleCameraView();
-
-		if (Input.IsActionJustPressed("boost") && CanBoost && !_isBoosting)
-		{
+		if (_input.Boost && !_prevInput.Boost && CanBoost && !_isBoosting)
 			ActivateBoost();
-		}
 
-		if (Input.IsActionJustPressed("target_cycle"))
-			CycleTarget();
-
-		if (Input.IsActionJustPressed("secondary_fire"))
+		if (_input.SecondaryFire && !_prevInput.SecondaryFire)
 			FireMissile();
 	}
 
-	// Applies the current thrust and torque inputs to the ship, integrating them into velocity and angular velocity
-	private void ApplyInputs(float delta)
+	// Cosmetic and UI actions that never leave this machine, so they read Input directly
+	// and stay out of the intent record.
+	private void UpdateLocalOnly()
 	{
-		SampleLocalInput();
-		UpdateAim(delta);
+		if (Input.IsActionJustPressed("light"))
+		{
+			lightLeft.Visible = !lightLeft.Visible;
+			lightRight.Visible = !lightRight.Visible;
+		}
+
+		if (Input.IsActionJustPressed("camera_switch"))
+			ToggleCameraView();
+
+		if (Input.IsActionJustPressed("target_cycle"))
+			CycleTarget();
+	}
+
+	// The flight model for one tick. Reads only _input, so replaying a record reproduces
+	// the tick that generated it.
+	private void SimulateTick(float delta)
+	{
 		ReadThrustAndTorqueInput();
 		ApplyStopKey(delta);
 		IntegrateVelocities(delta);
@@ -359,22 +379,31 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		return widgetCursor;
 	}
 
-	// Reads the keyboard into this tick's intent. A replayed or remote tick assigns
-	// _input from a record instead.
-	private void SampleLocalInput()
+	// Reads this machine's keyboard and mouse into one tick of intent. A replayed or
+	// remote tick assigns _input from a record instead and never calls this.
+	private ShipInput SampleLocalInput(float delta)
 	{
-		_input.ThrustForward  = Input.IsActionPressed("thrust_forward");
-		_input.ThrustBackward = Input.IsActionPressed("thrust_backward");
-		_input.StrafeUp       = Input.IsActionPressed("strafe_up");
-		_input.StrafeDown     = Input.IsActionPressed("strafe_down");
-		_input.StrafeRight    = Input.IsActionPressed("strafe_right");
-		_input.StrafeLeft     = Input.IsActionPressed("strafe_left");
-		_input.Stop           = Input.IsActionPressed("stop");
-		_input.Roll           = Input.GetActionStrength("roll_right") - Input.GetActionStrength("roll_left");
+		ShipInput input = default;
+
+		input.ThrustForward  = Input.IsActionPressed("thrust_forward");
+		input.ThrustBackward = Input.IsActionPressed("thrust_backward");
+		input.StrafeUp       = Input.IsActionPressed("strafe_up");
+		input.StrafeDown     = Input.IsActionPressed("strafe_down");
+		input.StrafeRight    = Input.IsActionPressed("strafe_right");
+		input.StrafeLeft     = Input.IsActionPressed("strafe_left");
+		input.Stop           = Input.IsActionPressed("stop");
+		input.Roll           = Input.GetActionStrength("roll_right") - Input.GetActionStrength("roll_left");
+
+		input.PrimaryFire    = Input.IsActionPressed("primary_fire");
+		input.SecondaryFire  = Input.IsActionPressed("secondary_fire");
+		input.Boost          = Input.IsActionPressed("boost");
+
+		UpdateAim(delta, ref input);
+		return input;
 	}
 
 	// Turns the aim cursor's offset from screen centre into pitch and yaw input.
-	private void UpdateAim(float delta)
+	private void UpdateAim(float delta, ref ShipInput input)
 	{
 		Vector2 center = GetViewport().GetVisibleRect().Size / 2.0f;
 
@@ -400,12 +429,10 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		aimYaw = Mathf.Lerp(aimYaw, aimTargetYaw, AIM_RESPONSIVENESS * delta);
 		aimPitch = Mathf.Lerp(aimPitch, aimTargetPitch, AIM_RESPONSIVENESS * delta);
-		yawInput = aimYaw;
-		pitchInput = aimPitch;
 
 		// Only the result is intent; sensitivity and smoothing stay local.
-		_input.Pitch = aimPitch;
-		_input.Yaw = aimYaw;
+		input.Pitch = aimPitch;
+		input.Yaw = aimYaw;
 	}
 
 	// Collects the movement keys into current frame's thrust and torque vectors.
@@ -428,13 +455,10 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		thrust += Transform.Basis.Y * _currentAcceleration * ShipInput.Axis(_input.StrafeUp, _input.StrafeDown);
 		thrust += Transform.Basis.X * _currentAcceleration * ShipInput.Axis(_input.StrafeRight, _input.StrafeLeft);
 
-		pitchInput = _input.Pitch;
-		yawInput = _input.Yaw;
-		rollInput = _input.Roll;
 		torque = new Vector3(
-			pitchInput * _currentPitchAcceleration,
-			yawInput * _currentYawAcceleration,
-			-rollInput * _currentRollAcceleration);
+			_input.Pitch * _currentPitchAcceleration,
+			_input.Yaw * _currentYawAcceleration,
+			-_input.Roll * _currentRollAcceleration);
 	}
 
 	private void ApplyStopKey(float delta)
