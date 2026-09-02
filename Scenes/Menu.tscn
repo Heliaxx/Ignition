@@ -51,6 +51,15 @@ text = "PVE CHALLENGES"
 alignment = 0
 icon_alignment = 1
 
+[node name="MultiplayerButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+text = "MULTIPLAYER"
+alignment = 0
+icon_alignment = 1
+
 [node name="Space2" type="Control" parent="PanelContainer/VBoxContainer" unique_id=738483202]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2

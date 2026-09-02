@@ -8,6 +8,7 @@ public partial class Menu : Control
 	[Export] private Button graphicsButton;
 	[Export] private Button audioButton;
 	[Export] private Button pveChallengesButton;
+	[Export] private Button multiplayerButton;
 	[Export] private Button exitButton;
 
 	private AudioStreamPlayer hoverSound;
@@ -26,6 +27,7 @@ public partial class Menu : Control
 		audioButton ??= FindChild("AudioButton") as Button;
 		exitButton ??= FindChild("ExitButton") as Button;
 		pveChallengesButton ??= FindChild("PveChallengesButton") as Button;
+		multiplayerButton ??= FindChild("MultiplayerButton") as Button;
 
 		hoverSound = new AudioStreamPlayer();
 		clickSound = new AudioStreamPlayer();
@@ -47,12 +49,14 @@ public partial class Menu : Control
 		AddChild(menuStack);
 
 		pveChallengesButton.Pressed += OnPveChallengesPressed;
+		multiplayerButton.Pressed += OnMultiplayerPressed;
 		exitButton.Pressed += OnExitButtonPressed;
 		controlsButton.Pressed += OnControlsPressed;
 		graphicsButton.Pressed += OnGraphicsPressed;
 		audioButton.Pressed += OnAudioPressed;
 
 		pveChallengesButton.MouseEntered += OnButtonHovered;
+		multiplayerButton.MouseEntered += OnButtonHovered;
 		exitButton.MouseEntered += OnButtonHovered;
 		controlsButton.MouseEntered += OnButtonHovered;
 		graphicsButton.MouseEntered += OnButtonHovered;
@@ -62,6 +66,11 @@ public partial class Menu : Control
 	private void OnPveChallengesPressed()
 	{
 		menuStack.Push(GD.Load<PackedScene>("res://Scenes/PveChallenges.tscn"));
+	}
+
+	private void OnMultiplayerPressed()
+	{
+		menuStack.Push(GD.Load<PackedScene>("res://Scenes/MultiplayerPanel.tscn"));
 	}
 
 	private void OnExitButtonPressed()

@@ -27,6 +27,7 @@ config/icon="uid://cwjdfe4xh5g8c"
 
 ConfigFileHandler="*res://Scripts/ConfigFileHandler.cs"
 MusicManager="*res://Scenes/MusicManager.tscn"
+NetworkManager="*res://Scripts/NetworkManager.cs"
 
 [display]
 
