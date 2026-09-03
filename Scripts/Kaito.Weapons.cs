@@ -32,6 +32,13 @@ public partial class Kaito
     private Label3D _ammoDisplay3D;
     private Label3D _missilesDisplay3D;
 
+    // A shot this ship fired on the machine that owns it, replayed here for the tracer.
+    // Visual only — the owner reports its own hits.
+    public void SpawnRelayedShot(Transform3D muzzle, Vector3 inheritedVelocity)
+    {
+        _gatling?.SpawnBullet(muzzle, inheritedVelocity, hasAuthority: false);
+    }
+
     private void InitWeapons()
     {
         startShooting = GetNode<AudioStreamPlayer3D>("ShootingStart");
@@ -74,7 +81,9 @@ public partial class Kaito
         if (!UnlimitedAmmo && _currentAmmo <= 0) return;
 
         int ammoBefore = _currentAmmo;
-        _gatling?.FireOnce();
+        Transform3D? muzzle = _gatling?.FireOnce();
+        if (muzzle.HasValue)
+            WeaponSync.Instance.ReportGatlingShot(Participants.IdOf(this), muzzle.Value, Velocity);
 
         if (!UnlimitedAmmo && ammoBefore > 0 && _currentAmmo <= 0)
         {

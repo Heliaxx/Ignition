@@ -36,6 +36,14 @@ public partial class HealthComponent : Node
         }
     }
 
+    // Back to full, attacker forgotten, for a respawn.
+    public void Reset()
+    {
+        CurrentHealth = MaxHealth;
+        LastAttacker = null;
+        EmitSignal(SignalName.HealthChanged, CurrentHealth, MaxHealth);
+    }
+
     public void Heal(float amount)
     {
         CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);

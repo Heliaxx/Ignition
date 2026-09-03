@@ -62,6 +62,7 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	public bool IsLocallyControlled { get; set; } = true;
 
 	private bool _justUnpaused = false;
+	private bool _isRemote;
 	private float _currentMaxSpeed = MAX_SPEED;
 	private float _currentAcceleration = ACCELERATION;
 	private float _currentRollAcceleration = ROLL_ACCELERATION;
@@ -84,6 +85,9 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	private Label3D _speedDisplay;
 	private HealthComponent health;
 	private bool _isDead = false;
+	private uint _liveCollisionLayer;
+	private uint _liveCollisionMask;
+	private ColorRect _deathScreen;
 
 	private MeshInstance3D _hull;
 	private bool _showShip = true;
@@ -153,7 +157,17 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		InitBoost();
 		InitTargeting();
 		InitThrusters();
-		_cockpitCamera.MakeCurrent();
+		_liveCollisionLayer = CollisionLayer;
+		_liveCollisionMask = CollisionMask;
+
+		_deathScreen = GetNodeOrNull<ColorRect>("DeathScreenLayer/DeathScreen");
+		// Wired once: hooking this up inside OnDied stacked a new handler on every death.
+		if (_deathScreen != null)
+			_deathScreen.GetNode<Button>("VBoxContainer/MainMenuButton").Pressed
+				+= () => MatchManager.Instance.LeaveMatch();
+
+		// A stand-in for somebody else's ship must not take over the viewport.
+		if (IsLocallyControlled) _cockpitCamera.MakeCurrent();
 	}
 
 	private void InitThrusters()
@@ -210,29 +224,70 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 	private void OnDied()
 	{
+		if (_isDead) return;
 		_isDead = true;
+
 		EventBus.EmitKilled(Participants.IdOf(this), Participants.IdOf(health.LastAttacker));
-
 		ClearTarget();
-		SetProcess(false);
-		SetPhysicsProcess(false);
-		SetProcessInput(false);
+		Explosion.SpawnAt(this, GlobalPosition);
+		SetWrecked(true);
 
-		if (dustParticlesGpu != null)
+		// Only for the ship this machine flies: without the guard, killing somebody released
+		// the killer's own cursor, because the victim's stand-in runs this too.
+		if (IsLocallyControlled)
+		{
+			SetProcessInput(false);
+			Input.MouseMode = Input.MouseModeEnum.Visible;
+			shooting.Stop();
+			startShooting.Stop();
+			endShooting.Stop();
+		}
+
+		MatchManager.Instance.OnShipDestroyed(this);
+	}
+
+	// Called by MatchManager. Explicit and network-free: the manager decides when a ship
+	// dies for good and when it comes back.
+	public void Respawn(Transform3D at)
+	{
+		GlobalTransform = at;
+		Velocity = Vector3.Zero;
+		angularVelocity = Vector3.Zero;
+		thrust = Vector3.Zero;
+		torque = Vector3.Zero;
+
+		_isDead = false;
+		health.Reset();
+		SetWrecked(false);
+
+		if (!IsLocallyControlled) return;
+
+		SetProcessInput(true);
+		if (_deathScreen != null) _deathScreen.Visible = false;
+		if (!GetTree().Paused) Input.MouseMode = Input.MouseModeEnum.Captured;
+	}
+
+	public void ShowDeathScreen()
+	{
+		if (_deathScreen != null) _deathScreen.Visible = true;
+	}
+
+	// A wreck is invisible and intangible rather than freed, so the same node can fly again.
+	private void SetWrecked(bool wrecked)
+	{
+		Visible = !wrecked;
+		CollisionLayer = wrecked ? 0 : _liveCollisionLayer;
+		CollisionMask = wrecked ? 0 : _liveCollisionMask;
+
+		// Stand-ins never run these; the sync manager drives them.
+		SetProcess(!wrecked && IsLocallyControlled);
+		SetPhysicsProcess(!wrecked && IsLocallyControlled);
+
+		if (wrecked && dustParticlesGpu != null)
 		{
 			dustParticlesGpu.Emitting = false;
 			dustParticlesGpu.AmountRatio = 0.0f;
 		}
-		Input.MouseMode = Input.MouseModeEnum.Visible;
-		shooting.Stop();
-		startShooting.Stop();
-		endShooting.Stop();
-
-		var deathScreen = GetNode<ColorRect>("DeathScreenLayer/DeathScreen");
-		deathScreen.Visible = true;
-
-		var button = deathScreen.GetNode<Button>("VBoxContainer/MainMenuButton");
-		button.Pressed += () => GetTree().ChangeSceneToFile("res://Scenes/Menu.tscn");
 	}
 
 	private void OnHealthChanged(float current, float max)
@@ -288,6 +343,35 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		UpdateGimbalTracking((float)delta);
 
 		_prevInput = _input;
+	}
+
+	// Turns this ship into a stand-in for a peer: no input, no flight model, and none of
+	// the local-player fittings. Call before adding it to the tree, so _Ready sees it.
+	// The sync manager drives the transform; this method itself knows nothing about the net.
+	public void MakeRemote()
+	{
+		_isRemote = true;
+		IsLocallyControlled = false;
+		SetPhysicsProcess(false);
+		SetProcess(false);
+		SetProcessInput(false);
+		StripLocalOnlyNodes(this);
+	}
+
+	public bool IsRemote => _isRemote;
+
+	private static void StripLocalOnlyNodes(Node node)
+	{
+		foreach (Node child in node.GetChildren())
+		{
+			switch (child)
+			{
+				case Camera3D camera: camera.Current = false; break;
+				case CanvasLayer layer: layer.Visible = false; break;
+				case Label3D label: label.Visible = false; break;
+			}
+			StripLocalOnlyNodes(child);
+		}
 	}
 
 	// Dead ships act on nothing, and the first tick after unpausing is skipped so a

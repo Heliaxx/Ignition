@@ -22,12 +22,14 @@ public static class Participants
 	}
 
 	// Puts a ship on the roster. Safe to call twice; returns the existing id.
-	public static int Register(Node3D ship)
+	// Pass an explicit id for a networked match, where the server decides who is who;
+	// omit it offline and the local counter assigns one.
+	public static int Register(Node3D ship, int id = None)
 	{
 		if (ship == null) return None;
 		if (_ids.TryGetValue(ship, out int existing)) return existing;
 
-		int id = _nextId++;
+		if (id == None) id = _nextId++;
 		_ids[ship] = id;
 		// Captured now so the name outlives the node: a freed ship must still be nameable
 		// on the scoreboard.
@@ -44,6 +46,15 @@ public static class Participants
 	}
 
 	public static string NameOf(int id) => _names.TryGetValue(id, out string name) ? name : "?";
+
+	// The ship carrying this id on this machine, or null once it has been freed.
+	public static Node3D NodeOf(int id)
+	{
+		foreach (KeyValuePair<Node3D, int> pair in _ids)
+			if (pair.Value == id && GodotObject.IsInstanceValid(pair.Key))
+				return pair.Key;
+		return null;
+	}
 
 	private static string NameFor(Node3D ship)
 	{

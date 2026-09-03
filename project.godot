@@ -28,6 +28,10 @@ config/icon="uid://cwjdfe4xh5g8c"
 ConfigFileHandler="*res://Scripts/ConfigFileHandler.cs"
 MusicManager="*res://Scenes/MusicManager.tscn"
 NetworkManager="*res://Scripts/NetworkManager.cs"
+MatchManager="*res://Scripts/MatchManager.cs"
+ShipSync="*res://Scripts/ShipSync.cs"
+DamageManager="*res://Scripts/DamageManager.cs"
+WeaponSync="*res://Scripts/WeaponSync.cs"
 
 [display]
 

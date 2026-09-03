@@ -9,7 +9,16 @@ public partial class BaseLevel : Node3D
 
 	[Export] public float OriginShiftThreshold = 5000f;
 
+	// Shifting rebases the world on the local player, so two machines would disagree about
+	// every world coordinate. Networked levels keep a fixed origin and stay bounded instead.
+	[Export] public bool ShiftOrigin = true;
+
 	private float _originShiftThresholdSq;
+
+	// Id for the ship this machine flies. None lets Participants assign from its local
+	// counter, which is right offline; a networked level overrides it with the peer id so
+	// both machines name the same ship the same way.
+	protected virtual int LocalParticipantId => Participants.None;
 
 	private static readonly string[] PrewarmScenes =
 	{
@@ -26,7 +35,9 @@ public partial class BaseLevel : Node3D
 		Player = GetNode<Node3D>("Player");
 		PlayerKaito = Player as Kaito;
 		// Ships register themselves in _Ready, but children run before the level does,
-		// so the player would have been wiped by the reset above.
+		// so the player would have been wiped by the reset above. Registering the id first
+		// means the MatchStats call below finds it rather than assigning a local one.
+		Participants.Register(PlayerKaito, LocalParticipantId);
 		MatchStats.Register(PlayerKaito);
 		NavigationRegion = this;
 		MusicManager = GetNode<MusicManager>("/root/MusicManager");
@@ -97,7 +108,7 @@ public partial class BaseLevel : Node3D
 	{
 		TickPrewarmCleanup();
 
-		if (Player != null && Player.GlobalPosition.LengthSquared() > _originShiftThresholdSq)
+		if (ShiftOrigin && Player != null && Player.GlobalPosition.LengthSquared() > _originShiftThresholdSq)
 			ShiftWorldOrigin();
 	}
 

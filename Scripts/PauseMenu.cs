@@ -65,7 +65,8 @@ public partial class PauseMenu : ColorRect
 
 	private void OnMainMenuButtonPressed()
 	{
-		GetTree().ChangeSceneToFile("res://Scenes/Menu.tscn");
+		GetTree().Paused = false;
+		MatchManager.Instance.LeaveMatch();
 	}
 
 	public override void _Input(InputEvent @event)

@@ -72,17 +72,12 @@ public partial class GatlingWeapon : WeaponBase
         }
     }
 
-    // Fires one bullet. The caller handles rate limiting.
-    public void FireOnce()
+    // Fires one bullet, returning the muzzle transform it actually used, spread included,
+    // so the caller can relay the shot. Null when nothing was fired.
+    public Transform3D? FireOnce()
     {
-        if (BulletScene == null) return;
-        if (!UnlimitedAmmo && CurrentAmmo <= 0) return;
-
-        var bullet = BulletScene.Instantiate<Bullet>();
-        bullet.Speed = BulletSpeed;
-        bullet.Damage = DamagePerBullet;
-        bullet.InheritedVelocity = ShipVelocity;
-        bullet.Source = Shooter;
+        if (BulletScene == null) return null;
+        if (!UnlimitedAmmo && CurrentAmmo <= 0) return null;
 
         Transform3D spawn = GlobalTransform;
         if (SpreadAngle > 0f)
@@ -94,9 +89,7 @@ public partial class GatlingWeapon : WeaponBase
             spawn.Basis = spawn.Basis.Rotated(axis, theta);
         }
 
-        var parent = SpawnParent ?? GetTree().CurrentScene;
-        parent.AddChild(bullet);
-        bullet.GlobalTransform = spawn;
+        SpawnBullet(spawn, ShipVelocity, hasAuthority: true);
 
         if (!UnlimitedAmmo)
         {
@@ -105,5 +98,24 @@ public partial class GatlingWeapon : WeaponBase
         }
 
         EmitSignal(SignalName.ShotFired);
+        return spawn;
+    }
+
+    // Used by the local shot and by one relayed from another peer. A relayed bullet has no
+    // authority: it draws the tracer but never reports a hit.
+    public void SpawnBullet(Transform3D spawn, Vector3 inheritedVelocity, bool hasAuthority)
+    {
+        if (BulletScene == null) return;
+
+        var bullet = BulletScene.Instantiate<Bullet>();
+        bullet.Speed = BulletSpeed;
+        bullet.Damage = DamagePerBullet;
+        bullet.InheritedVelocity = inheritedVelocity;
+        bullet.Source = Shooter;
+        bullet.HasAuthority = hasAuthority;
+
+        var parent = SpawnParent ?? GetTree().CurrentScene;
+        parent.AddChild(bullet);
+        bullet.GlobalTransform = spawn;
     }
 }

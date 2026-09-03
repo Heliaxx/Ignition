@@ -16,6 +16,10 @@ public partial class Bullet : Node3D
 	// Ship that fired this bullet for kill credit. Set before adding to the scene.
 	public Node3D Source { get; set; }
 
+	// False on a tracer relayed from another peer: it flies and sparks, but only the peer
+	// that fired reports the hit, so damage is never counted twice.
+	public bool HasAuthority { get; set; } = true;
+
 	private MeshInstance3D mesh;
 	private RayCast3D ray;
 	private GpuParticles3D particles;
@@ -43,7 +47,7 @@ public partial class Bullet : Node3D
 
 			var collider = ray.GetCollider();
 
-			if (collider is IDamageable damageable)
+			if (HasAuthority && collider is IDamageable && collider is Node3D target)
 			{
 				CollisionShape3D hitShape = null;
 				if (collider is StaticBody3D body)
@@ -51,7 +55,7 @@ public partial class Bullet : Node3D
 					uint ownerId = body.ShapeFindOwner(ray.GetColliderShape());
 					hitShape = body.ShapeOwnerGetOwner(ownerId) as CollisionShape3D;
 				}
-				damageable.TakeDamage(Damage, hitShape, Source);
+				DamageManager.Instance.Report(target, Damage, hitShape, Source);
 			}
 			GetTree().CreateTimer(COLLISION_DESTROY_DELAY).Timeout += QueueFree;
 		}

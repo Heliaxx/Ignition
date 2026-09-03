@@ -1,12 +1,13 @@
 using Godot;
 
-// Host/join bench for the ENet transport and the roster in NetworkManager. The real
-// lobby grows out of this; right now it only proves a connection is established and
-// torn down cleanly.
+// Host/join bench for the ENet transport and the roster in NetworkManager.
 public partial class MultiplayerPanel : Control
 {
 	private LineEdit _address;
 	private Label _status;
+	private Button _host;
+	private Button _join;
+	private Button _start;
 
 	public override void _Ready()
 	{
@@ -15,8 +16,13 @@ public partial class MultiplayerPanel : Control
 		_address = (LineEdit)FindChild("AddressEdit");
 		_status = (Label)FindChild("StatusLabel");
 
-		((Button)FindChild("HostButton")).Pressed += OnHost;
-		((Button)FindChild("JoinButton")).Pressed += OnJoin;
+		_host = (Button)FindChild("HostButton");
+		_join = (Button)FindChild("JoinButton");
+		_start = (Button)FindChild("StartButton");
+
+		_host.Pressed += OnHost;
+		_join.Pressed += OnJoin;
+		_start.Pressed += OnStart;
 		((Button)FindChild("BackButton")).Pressed += OnBack;
 
 		NetworkManager net = NetworkManager.Instance;
@@ -57,10 +63,13 @@ public partial class MultiplayerPanel : Control
 			_status.Text = $"could not reach {address}";
 	}
 
+	private void OnStart()
+	{
+		MatchManager.Instance.StartMatch();
+	}
+
 	private void OnBack()
 	{
-		// Leaving the panel drops the session: a connection with no UI behind it is worse
-		// than none while this is still a bench.
 		NetworkManager.Instance.Leave();
 		GetParent<MenuStack>().Pop();
 	}
@@ -76,10 +85,19 @@ public partial class MultiplayerPanel : Control
 		if (!net.IsActive)
 		{
 			_status.Text = "offline";
+			_start.Disabled = true;
+			_host.Disabled = false;
+			_join.Disabled = false;
 			return;
 		}
 
 		string role = net.IsServer ? "hosting" : "client";
 		_status.Text = $"{role} · id {net.LocalPeerId} · {net.Peers.Count} peer(s)";
+
+		// Only the host starts the match; clients are taken along by its RPC.
+		_start.Disabled = !net.IsServer;
+		// Already in a session: leave with BACK before opening another.
+		_host.Disabled = true;
+		_join.Disabled = true;
 	}
 }
