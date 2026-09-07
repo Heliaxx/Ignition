@@ -11,6 +11,8 @@
 [ext_resource type="Texture2D" uid="uid://byh22h6q3rc0d" path="res://Imports/Planets/earth/textures/Material_62_emissive.jpeg" id="11_n0ucd"]
 [ext_resource type="Texture2D" uid="uid://b1318syjhu2cq" path="res://Imports/Planets/Rings/2k_saturn_ring_alpha.png" id="12_ringt"]
 [ext_resource type="Material" uid="uid://bcjj72a158t5m" path="res://Resources/Materials/FogStreaksMaterial.tres" id="13_fogstreak"]
+[ext_resource type="PackedScene" path="res://Scenes/Scoreboard.tscn" id="99_scoreboard"]
+[ext_resource type="PackedScene" path="res://Scenes/MatchHud.tscn" id="98_matchhud"]
 
 [sub_resource type="Shader" id="Shader_6tkp5"]
 code = "shader_type sky;
@@ -382,3 +384,8 @@ transform = Transform3D(-0.866025, 0.000000, -0.500000, 0.000000, 1.000000, 0.00
 
 [node name="Spawn11" type="Marker3D" parent="SpawnPoints" unique_id=1474141772]
 transform = Transform3D(-0.500000, 0.000000, -0.866025, 0.000000, 1.000000, 0.000000, 0.866025, 0.000000, -0.500000, 606.218, 0, -350.000)
+
+
+[node name="Scoreboard" parent="." instance=ExtResource("99_scoreboard")]
+
+[node name="MatchHud" parent="." instance=ExtResource("98_matchhud")]

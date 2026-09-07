@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
+// What a death means for the participant: back shortly, out for good, or the match itself
+// is already over and something else is showing the result.
+public enum DeathOutcome { Respawning, RunOver, MatchOver }
+
 // Owns match lifecycle: which level everyone loads and who spawns where. Sits above
 // NetworkManager, which knows only about connections and nothing about a match.
 public partial class MatchManager : Node
@@ -38,40 +42,89 @@ public partial class MatchManager : Node
 	private void BeginMatch(string levelPath, int[] spawnOrder)
 	{
 		_spawnOrder = spawnOrder;
+		_matchOver = false;
+		_timeLeft = MatchDuration;
 		GetTree().ChangeSceneToFile(levelPath);
 	}
 
 	// Long enough to see the explosion, short enough not to sit out the match.
 	private const double RespawnDelay = 3.0;
 
-	// A ship was destroyed. Offline that ends the run; a deathmatch puts the player back in,
-	// and only the server decides when.
-	public void OnShipDestroyed(Kaito ship)
+	// First to this many kills takes the match, or the highest score when time runs out.
+	// The lobby will own both of these once it exists.
+	private const int KillLimit = 15;
+	private const double MatchDuration = 600.0;
+
+	// Counted down on every peer for the clock; only the server's expiry ends the match.
+	private double _timeLeft;
+
+	public double TimeRemaining => _timeLeft;
+
+	// Set on every peer when the server calls the match, so nothing respawns afterwards.
+	private bool _matchOver;
+
+	[Signal] public delegate void MatchEndedEventHandler(int winnerId);
+
+	// A participant was destroyed. The outcome tells the caller whether to show an end-of-run
+	// screen of its own; the scoreboard already covers a finished match.
+	public DeathOutcome OnParticipantDestroyed(int participantId)
 	{
-		if (!NetworkManager.Instance.IsActive)
+		if (!NetworkManager.Instance.IsActive) return DeathOutcome.RunOver;
+		if (_matchOver) return DeathOutcome.MatchOver;
+		if (!NetworkManager.Instance.IsServer) return DeathOutcome.Respawning;
+
+		// EventBus.Killed has already run, so the scoreboard behind this is up to date.
+		int leader = Leader();
+		if (leader != Participants.None && MatchStats.Entries[leader].Kills >= KillLimit)
 		{
-			ship.ShowDeathScreen();
-			return;
+			Rpc(MethodName.EndMatch, leader);
+			return DeathOutcome.MatchOver;
 		}
 
-		if (!NetworkManager.Instance.IsServer) return;
-
-		int participantId = Participants.IdOf(ship);
 		GetTree().CreateTimer(RespawnDelay).Timeout += () =>
 		{
 			// The match can end, or everyone can leave, while the timer runs.
-			if (NetworkManager.Instance.IsActive)
+			if (NetworkManager.Instance.IsActive && !_matchOver)
 				Rpc(MethodName.RespawnShip, participantId);
 		};
+		return DeathOutcome.Respawning;
+	}
+
+	// Highest kill count, or None on an empty board.
+	private static int Leader()
+	{
+		int best = Participants.None;
+		foreach (KeyValuePair<int, MatchStats.Entry> pair in MatchStats.Entries)
+			if (best == Participants.None || pair.Value.Kills > MatchStats.Entries[best].Kills)
+				best = pair.Key;
+		return best;
+	}
+
+	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+	private void EndMatch(int winnerId)
+	{
+		_matchOver = true;
+		EmitSignal(SignalName.MatchEnded, winnerId);
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
 	private void RespawnShip(int participantId)
 	{
-		if (Participants.NodeOf(participantId) is not Kaito ship) return;
-		if (GetTree().CurrentScene is not LevelDeathmatch level) return;
+		// The level owns which ship a participant flies; this only says when.
+		if (GetTree().CurrentScene is LevelDeathmatch level)
+			level.Respawn(participantId);
+	}
 
-		ship.Respawn(level.SpawnTransform(SpawnIndexOf(participantId)));
+	public override void _Process(double delta)
+	{
+		if (_matchOver || _timeLeft <= 0.0) return;
+
+		_timeLeft -= delta;
+		if (_timeLeft > 0.0) return;
+
+		_timeLeft = 0.0;
+		if (NetworkManager.Instance.IsServer)
+			Rpc(MethodName.EndMatch, Leader());
 	}
 
 	// Ends the session and returns to the menu. Without this a player could walk out of a
@@ -79,6 +132,7 @@ public partial class MatchManager : Node
 	public void LeaveMatch(string menuPath = MenuScene)
 	{
 		NetworkManager.Instance.Leave();
+		_timeLeft = 0.0;
 		ShipSync.Instance.Clear();
 		MissileSync.Instance.Clear();
 		GetTree().ChangeSceneToFile(menuPath);

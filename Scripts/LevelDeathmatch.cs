@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 // PVP arena. Keeps a fixed world origin — see BaseLevel.ShiftOrigin — so every machine
@@ -8,16 +9,22 @@ public partial class LevelDeathmatch : BaseLevel
 
 	protected override int LocalParticipantId => NetworkManager.Instance.LocalPeerId;
 
+	private Node3D _spawnPoints;
+
 	public override void _Ready()
 	{
 		base._Ready();
 
-		Node3D points = GetNodeOrNull<Node3D>("SpawnPoints");
-		PlaceAtSpawn(Player, points, MatchManager.Instance.SpawnIndexOf(NetworkManager.Instance.LocalPeerId));
-		SpawnRemoteShips(points);
+		_spawnPoints = GetNodeOrNull<Node3D>("SpawnPoints");
+		if (_spawnPoints == null || _spawnPoints.GetChildCount() == 0)
+			GD.PushError("LevelDeathmatch: no SpawnPoints, every ship will start on the origin");
+
+		Player.GlobalTransform = SpawnTransform(
+			MatchManager.Instance.SpawnIndexOf(NetworkManager.Instance.LocalPeerId));
+		SpawnRemoteShips();
 	}
 
-	private void SpawnRemoteShips(Node3D points)
+	private void SpawnRemoteShips()
 	{
 		ShipSync.Instance.Clear();
 		ShipSync.Instance.SetLocalShip(PlayerKaito);
@@ -25,7 +32,7 @@ public partial class LevelDeathmatch : BaseLevel
 
 		var scene = GD.Load<PackedScene>(ShipScene);
 		int localId = NetworkManager.Instance.LocalPeerId;
-		System.Collections.Generic.IReadOnlyList<int> roster = MatchManager.Instance.Roster;
+		IReadOnlyList<int> roster = MatchManager.Instance.Roster;
 
 		for (int i = 0; i < roster.Count; i++)
 		{
@@ -37,30 +44,34 @@ public partial class LevelDeathmatch : BaseLevel
 			ship.MakeRemote();
 			AddChild(ship);
 
-			PlaceAtSpawn(ship, points, i);
+			ship.GlobalTransform = SpawnTransform(i);
 			Participants.Register(ship, peerId);
 			MatchStats.Register(ship);
 			ShipSync.Instance.AddRemoteShip(peerId, ship);
 		}
 	}
 
-	private static void PlaceAtSpawn(Node3D ship, Node3D points, int index)
+	// Puts a participant back in the arena. The level owns which ship a participant flies
+	public void Respawn(int participantId)
 	{
-		if (ship == null) return;
-		ship.GlobalTransform = TransformAt(points, index) ?? ship.GlobalTransform;
+		if (Participants.NodeOf(participantId) is Kaito ship)
+			ship.Respawn(SpawnTransform(MatchManager.Instance.SpawnIndexOf(participantId)));
 	}
 
 	// Where a participant belongs at match start and on every respawn.
-	public Transform3D SpawnTransform(int index) =>
-		TransformAt(GetNodeOrNull<Node3D>("SpawnPoints"), index) ?? GlobalTransform;
-
-	private static Transform3D? TransformAt(Node3D points, int index)
+	public Transform3D SpawnTransform(int index)
 	{
-		if (points == null || points.GetChildCount() == 0) return null;
-		if (index < 0) index = 0;
+		if (_spawnPoints == null || _spawnPoints.GetChildCount() == 0)
+			return GlobalTransform;
 
-		return points.GetChild(index % points.GetChildCount()) is Node3D marker
+		if (index < 0)
+		{
+			GD.PushError("LevelDeathmatch: participant has no spawn index, falling back to the first");
+			index = 0;
+		}
+
+		return _spawnPoints.GetChild(index % _spawnPoints.GetChildCount()) is Node3D marker
 			? marker.GlobalTransform
-			: null;
+			: GlobalTransform;
 	}
 }

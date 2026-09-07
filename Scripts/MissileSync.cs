@@ -31,6 +31,7 @@ public partial class MissileSync : Node
 
 	private int _nextSeq = 1;
 	private double _sendTimer;
+	private PackedScene _missileScene;
 
 	public override void _Ready() => Instance = this;
 
@@ -123,7 +124,8 @@ public partial class MissileSync : Node
 	{
 		if (owner == NetworkManager.Instance.LocalPeerId) return;
 
-		var missile = GD.Load<PackedScene>(MissileScene).Instantiate<FlightModelMissile>();
+		_missileScene ??= GD.Load<PackedScene>(MissileScene);
+		var missile = _missileScene.Instantiate<FlightModelMissile>();
 		GetTree().CurrentScene.AddChild(missile);
 		missile.GlobalTransform = spawn;
 		missile.MakeRemote();

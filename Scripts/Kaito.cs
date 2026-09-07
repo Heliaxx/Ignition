@@ -243,7 +243,10 @@ public partial class Kaito : CharacterBody3D, IDamageable
 			endShooting.Stop();
 		}
 
-		MatchManager.Instance.OnShipDestroyed(this);
+		// Only a finished single run gets this ship's own screen; a finished match already has
+		// the scoreboard up.
+		if (MatchManager.Instance.OnParticipantDestroyed(Participants.IdOf(this)) == DeathOutcome.RunOver)
+			ShowDeathScreen();
 	}
 
 	// Called by MatchManager. Explicit and network-free: the manager decides when a ship
