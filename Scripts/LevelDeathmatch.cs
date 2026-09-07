@@ -21,6 +21,7 @@ public partial class LevelDeathmatch : BaseLevel
 	{
 		ShipSync.Instance.Clear();
 		ShipSync.Instance.SetLocalShip(PlayerKaito);
+		MissileSync.Instance.Clear();
 
 		var scene = GD.Load<PackedScene>(ShipScene);
 		int localId = NetworkManager.Instance.LocalPeerId;

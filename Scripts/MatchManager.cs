@@ -80,6 +80,7 @@ public partial class MatchManager : Node
 	{
 		NetworkManager.Instance.Leave();
 		ShipSync.Instance.Clear();
+		MissileSync.Instance.Clear();
 		GetTree().ChangeSceneToFile(menuPath);
 	}
 

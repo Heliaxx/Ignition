@@ -62,7 +62,6 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	public bool IsLocallyControlled { get; set; } = true;
 
 	private bool _justUnpaused = false;
-	private bool _isRemote;
 	private float _currentMaxSpeed = MAX_SPEED;
 	private float _currentAcceleration = ACCELERATION;
 	private float _currentRollAcceleration = ROLL_ACCELERATION;
@@ -168,6 +167,8 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		// A stand-in for somebody else's ship must not take over the viewport.
 		if (IsLocallyControlled) _cockpitCamera.MakeCurrent();
+
+		ApplyActivation();
 	}
 
 	private void InitThrusters()
@@ -230,13 +231,12 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		EventBus.EmitKilled(Participants.IdOf(this), Participants.IdOf(health.LastAttacker));
 		ClearTarget();
 		Explosion.SpawnAt(this, GlobalPosition);
-		SetWrecked(true);
+		ApplyActivation();
 
 		// Only for the ship this machine flies: without the guard, killing somebody released
 		// the killer's own cursor, because the victim's stand-in runs this too.
 		if (IsLocallyControlled)
 		{
-			SetProcessInput(false);
 			Input.MouseMode = Input.MouseModeEnum.Visible;
 			shooting.Stop();
 			startShooting.Stop();
@@ -258,13 +258,26 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		_isDead = false;
 		health.Reset();
-		SetWrecked(false);
+		ApplyActivation();
 
 		if (!IsLocallyControlled) return;
 
-		SetProcessInput(true);
 		if (_deathScreen != null) _deathScreen.Visible = false;
 		if (!GetTree().Paused) Input.MouseMode = Input.MouseModeEnum.Captured;
+	}
+
+	// Engine state the thruster flames run on. Read from the ship this machine flies and
+	// written onto a stand-in, so other players see the same engines burning.
+	public bool ThrustingForward => _input.ThrustForward;
+	public bool ThrustingBackward => _input.ThrustBackward;
+	public bool ThrusterBoostOn => _isBoosting;
+
+	public void SetRemoteEngines(Vector3 velocity, bool forward, bool backward, bool boosting)
+	{
+		Velocity = velocity;
+		_input.ThrustForward = forward;
+		_input.ThrustBackward = backward;
+		_isBoosting = boosting;
 	}
 
 	public void ShowDeathScreen()
@@ -272,18 +285,21 @@ public partial class Kaito : CharacterBody3D, IDamageable
 		if (_deathScreen != null) _deathScreen.Visible = true;
 	}
 
-	// A wreck is invisible and intangible rather than freed, so the same node can fly again.
-	private void SetWrecked(bool wrecked)
+	// Everything that follows from the two facts about this ship: whether this machine flies
+	// it, and whether it is dead. A wreck is invisible and intangible rather than freed, so
+	// the same node can fly again.
+	private void ApplyActivation()
 	{
-		Visible = !wrecked;
-		CollisionLayer = wrecked ? 0 : _liveCollisionLayer;
-		CollisionMask = wrecked ? 0 : _liveCollisionMask;
+		bool piloted = IsLocallyControlled && !_isDead;
+		SetProcess(!_isDead);
+		SetPhysicsProcess(piloted);
+		SetProcessInput(piloted);
 
-		// Stand-ins never run these; the sync manager drives them.
-		SetProcess(!wrecked && IsLocallyControlled);
-		SetPhysicsProcess(!wrecked && IsLocallyControlled);
+		Visible = !_isDead;
+		CollisionLayer = _isDead ? 0 : _liveCollisionLayer;
+		CollisionMask = _isDead ? 0 : _liveCollisionMask;
 
-		if (wrecked && dustParticlesGpu != null)
+		if (_isDead && dustParticlesGpu != null)
 		{
 			dustParticlesGpu.Emitting = false;
 			dustParticlesGpu.AmountRatio = 0.0f;
@@ -318,10 +334,15 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 	public override void _Process(double delta)
 	{
+		// Engines are what other players see of this ship, so they run on stand-ins too.
+		UpdateThrusterFlame((float)delta);
+
+		// Everything below is for the pilot alone: dust is a cockpit effect, the rest is HUD.
+		if (!IsLocallyControlled) return;
+
 		UpdateDustSpawnBySpeed();
 		AlignDustSpawnToVelocity((float)delta);
 		UpdateAutoCenterCursor((float)delta);
-		UpdateThrusterFlame((float)delta);
 		if (_speedDisplay != null)
 			_speedDisplay.Text = $"{CurrentSpeed:F0}";
 		UpdateTargetHUD((float)delta);
@@ -346,19 +367,14 @@ public partial class Kaito : CharacterBody3D, IDamageable
 	}
 
 	// Turns this ship into a stand-in for a peer: no input, no flight model, and none of
-	// the local-player fittings. Call before adding it to the tree, so _Ready sees it.
+	// the local-player fittings. Must run before the ship enters the tree — _Ready reads
+	// this to decide the camera and to apply activation.
 	// The sync manager drives the transform; this method itself knows nothing about the net.
 	public void MakeRemote()
 	{
-		_isRemote = true;
 		IsLocallyControlled = false;
-		SetPhysicsProcess(false);
-		SetProcess(false);
-		SetProcessInput(false);
 		StripLocalOnlyNodes(this);
 	}
-
-	public bool IsRemote => _isRemote;
 
 	private static void StripLocalOnlyNodes(Node node)
 	{
@@ -589,8 +605,9 @@ public partial class Kaito : CharacterBody3D, IDamageable
 
 		float impactSpeed = Mathf.Max(0.0f, -Velocity.Dot(normal));
 		if (impactSpeed > CollisionDamageSpeedThreshold)
-			health.TakeDamage((impactSpeed - CollisionDamageSpeedThreshold) * CollisionDamageMultiplier,
-				collision.GetCollider() as Node3D);
+			DamageManager.Instance.Report(this,
+				(impactSpeed - CollisionDamageSpeedThreshold) * CollisionDamageMultiplier,
+				null, collision.GetCollider() as Node3D);
 
 		Velocity = Velocity.Slide(normal) * CollisionLinearDamping;
 		angularVelocity *= CollisionAngularDamping;

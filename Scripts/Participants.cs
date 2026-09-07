@@ -9,15 +9,21 @@ public static class Participants
 {
 	public const int None = 0;
 
+	private sealed class Entry
+	{
+		public Node3D Ship;
+		public string Name;
+	}
+
 	private static readonly Dictionary<Node3D, int> _ids = new();
-	private static readonly Dictionary<int, string> _names = new();
+	private static readonly Dictionary<int, Entry> _byId = new();
 	private static int _nextId = 1;
 
 	// Call before MatchStats.Reset() on scene change; both are scoped to one match.
 	public static void Reset()
 	{
 		_ids.Clear();
-		_names.Clear();
+		_byId.Clear();
 		_nextId = 1;
 	}
 
@@ -30,10 +36,17 @@ public static class Participants
 		if (_ids.TryGetValue(ship, out int existing)) return existing;
 
 		if (id == None) id = _nextId++;
+
+		// Two ships under one id would make NodeOf ambiguous and merge their scoreboard
+		// rows. The local counter and server-assigned peer ids share a range, so this is
+		// reachable rather than theoretical.
+		if (_byId.TryGetValue(id, out Entry taken) && taken.Ship != ship)
+			GD.PushError($"Participants: id {id} already belongs to {taken.Name}");
+
 		_ids[ship] = id;
-		// Captured now so the name outlives the node: a freed ship must still be nameable
+		// Name captured now so it outlives the node: a freed ship must still be nameable
 		// on the scoreboard.
-		_names[id] = NameFor(ship);
+		_byId[id] = new Entry { Ship = ship, Name = NameFor(ship) };
 		return id;
 	}
 
@@ -45,16 +58,13 @@ public static class Participants
 		return _ids.TryGetValue(ship, out int id) ? id : None;
 	}
 
-	public static string NameOf(int id) => _names.TryGetValue(id, out string name) ? name : "?";
+	public static string NameOf(int id) => _byId.TryGetValue(id, out Entry entry) ? entry.Name : "?";
 
 	// The ship carrying this id on this machine, or null once it has been freed.
-	public static Node3D NodeOf(int id)
-	{
-		foreach (KeyValuePair<Node3D, int> pair in _ids)
-			if (pair.Value == id && GodotObject.IsInstanceValid(pair.Key))
-				return pair.Key;
-		return null;
-	}
+	public static Node3D NodeOf(int id) =>
+		_byId.TryGetValue(id, out Entry entry) && GodotObject.IsInstanceValid(entry.Ship)
+			? entry.Ship
+			: null;
 
 	private static string NameFor(Node3D ship)
 	{

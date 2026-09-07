@@ -32,6 +32,7 @@ MatchManager="*res://Scripts/MatchManager.cs"
 ShipSync="*res://Scripts/ShipSync.cs"
 DamageManager="*res://Scripts/DamageManager.cs"
 WeaponSync="*res://Scripts/WeaponSync.cs"
+MissileSync="*res://Scripts/MissileSync.cs"
 
 [display]
 

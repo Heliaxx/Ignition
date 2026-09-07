@@ -118,6 +118,7 @@ public partial class Kaito
         spawn.Origin -= spawn.Basis.Z * 5f;
         instance.Transform = spawn;
         GetParent().AddChild(instance);
+        MissileSync.Instance.ReportLaunch(instance, instance.GlobalTransform);
 
         if (!UnlimitedMissiles) _currentMissiles--;
         _timeSinceLastMissile = 0.0;

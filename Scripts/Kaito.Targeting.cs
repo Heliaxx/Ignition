@@ -45,6 +45,8 @@ public partial class Kaito
 		{
 			if (node is not GimbalTarget gt || !gt.IsValid())
 				continue;
+			// Own ship now carries one of these too.
+			if (gt.TargetOwner == this) continue;
 
 			float worldDist = GlobalPosition.DistanceTo(gt.GlobalPosition);
 			if (worldDist > TARGET_MAX_RANGE) continue;

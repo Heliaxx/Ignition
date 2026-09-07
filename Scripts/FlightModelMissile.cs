@@ -47,6 +47,10 @@ public partial class FlightModelMissile : RigidBody3D
 	// Ship that launched this missile for kill credit. Set before adding to the tree.
 	public Node3D Source { get; set; }
 
+	// Impact point. A replicated copy has to blow up when the original does, not three
+	// seconds later when the coasting wreck is finally freed.
+	[Signal] public delegate void DetonatedEventHandler(Vector3 at);
+
 	// Remaining engine burn time in seconds; with the fuel spent the missile can only coast.
 	private float _thrustTime = 10.0f;
 
@@ -133,6 +137,18 @@ public partial class FlightModelMissile : RigidBody3D
 	// Call before adding to the tree: the missile will never collide with / detonate
 	// on this body (the launcher). Prevents self-detonation on spawn.
 	public void IgnoreBody(CollisionObject3D body) => _ignoredBody = body;
+
+	// Turns this into a copy of a missile somebody else fired: no physics, no guidance, no
+	// collisions, so it can neither steer nor detonate. MissileSync drives its transform.
+	// Call after it enters the tree — _Ready resolves the collision check this switches off.
+	public void MakeRemote()
+	{
+		Freeze = true;
+		SetPhysicsProcess(false);
+		CollisionLayer = 0;
+		CollisionMask = 0;
+		if (_collisionCheck != null) _collisionCheck.Enabled = false;
+	}
 
 	private void SetSmokeTrail(bool emitting)
 	{
@@ -424,10 +440,11 @@ public partial class FlightModelMissile : RigidBody3D
 		if (_armedTimer < ArmingTime)
 			return;
 
-		// Deal damage to whatever we hit if it's damageable. Asteroids need the hit
-		// CollisionShape3D to know which asteroid was struck (see AsteroidBody).
-		if (collider is IDamageable damageable)
-			damageable.TakeDamage(Damage, hitShape, Source);
+		// Through the manager so a hit on a ship is the server's call. Asteroids need the hit
+		// CollisionShape3D to know which asteroid was struck (see AsteroidBody); they are not
+		// replicated, so the manager keeps that on the local path.
+		if (collider is IDamageable && collider is Node3D target)
+			DamageManager.Instance.Report(target, Damage, hitShape, Source);
 
 		GetNode<AudioStreamPlayer3D>("explosion").Play();
 		GetNode<GpuParticles3D>("impact").Emitting = true;
@@ -445,6 +462,7 @@ public partial class FlightModelMissile : RigidBody3D
 		_thrustTime = -1;
 		_hitTarget = true;
 		_despawnAt = _lifeTimer + 3f; // explosion audio/particles linger
+		EmitSignal(SignalName.Detonated, GlobalPosition);
 	}
 
 	// Resolves which CollisionShape3D of a StaticBody3D was hit, from a physics

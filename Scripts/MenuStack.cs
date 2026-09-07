@@ -5,7 +5,9 @@ using Godot;
 // under the topmost panel, so everything behind it — earlier panels and the live 3D
 // backdrop — reads as background. Nothing is paused; PauseMenu uses the same shader but
 // halts the tree, this does not.
-public partial class MenuStack : Control
+// A CanvasLayer, not a Control: its children anchor to the viewport instead of to the
+// menu's fixed 1920x1080 rect, so the blur still covers the screen after a resize.
+public partial class MenuStack : CanvasLayer
 {
 	[Export] public float FadeTime = 0.3f;
 	[Export] public float BlurAmount = 2.5f;
@@ -18,10 +20,6 @@ public partial class MenuStack : Control
 
 	public override void _Ready()
 	{
-		SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-		// The stack itself must not eat clicks meant for the menu underneath it.
-		MouseFilter = MouseFilterEnum.Ignore;
-
 		var material = new ShaderMaterial { Shader = GD.Load<Shader>("res://Shaders/Blur.gdshader") };
 		material.SetShaderParameter("blur", 0.0f);
 		material.SetShaderParameter("brightness", 1.0f);
@@ -32,17 +30,17 @@ public partial class MenuStack : Control
 			Material = material,
 			Visible = false,
 			// Stop, not Ignore: a blurred menu must not still be clickable.
-			MouseFilter = MouseFilterEnum.Stop,
+			MouseFilter = Control.MouseFilterEnum.Stop,
 		};
 		AddChild(_blur);
-		_blur.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+		_blur.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
 	}
 
 	public void Push(PackedScene panelScene)
 	{
 		var panel = panelScene.Instantiate<Control>();
 		AddChild(panel);
-		panel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+		panel.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
 		_panels.Add(panel);
 
 		_blur.Visible = true;

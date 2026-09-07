@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://bwpphn8333nc7" path="res://Scenes/ThrusterFlame.tscn" id="14_thruster"]
 [ext_resource type="PackedScene" uid="uid://brlfy145vlmbn" path="res://Scenes/GatlingWeapon.tscn" id="15_gatling"]
 [ext_resource type="PackedScene" uid="uid://d0x8ba3p47i5m" path="res://Scenes/Bullet.tscn" id="16_bullet"]
+[ext_resource type="Script" uid="uid://iuhcmmfkmh3" path="res://Scripts/GimbalTarget.cs" id="17_gimbal"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ow3ph"]
 points = PackedVector3Array(-5.37973, 0.767429, 3.13164, -7.01603, 0.767429, 2.04045, -7.83483, 0.767429, 3.13164, -7.01603, 1.31308, 2.31349, -7.83483, 1.31308, 3.67739, -4.56094, 1.04025, 2.04045, -6.19788, 1.31308, 3.67739, -6.74299, 0.767429, 3.67739, -4.56094, 0.767429, 2.04045, -5.65245, 1.31308, 2.31349, -7.83483, 1.31308, 3.13164, -7.83483, 0.767429, 3.67739, -4.56094, 1.04025, 2.31349, -7.01603, 1.04025, 2.04045, -5.65245, 1.31308, 3.13164, -6.19788, 1.04025, 3.67739, -4.56094, 0.767429, 2.31349, -5.37973, 1.04025, 3.13164)
@@ -145,6 +146,9 @@ albedo_texture = ExtResource("2_nhkah")
 
 [node name="Kaito MCS-71" type="CharacterBody3D" unique_id=1515295186 groups=["Player"]]
 script = ExtResource("1_8p5tm")
+
+[node name="GimbalTarget" type="Node3D" parent="."]
+script = ExtResource("17_gimbal")
 
 [node name="@CollisionShape3D@78770" type="CollisionShape3D" parent="." unique_id=1709394737]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 1.17198, 0)

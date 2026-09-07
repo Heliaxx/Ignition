@@ -61,8 +61,19 @@ public partial class GimbalTarget : Node3D
 	}
 
 	// True if the owner exposes health for the target HUD bar.
-	public bool HasHealthData() => _owner is Fighter && IsInstanceValid(_owner);
+	public bool HasHealthData() => IsInstanceValid(_owner) && _owner is Fighter or Kaito;
 
-	public float GetCurrentHealth() => _owner is Fighter f ? f.CurrentHealthValue : 0;
-	public float GetMaxHealth()     => _owner is Fighter f ? f.MaxHealthValue     : 1;
+	public float GetCurrentHealth() => _owner switch
+	{
+		Fighter fighter => fighter.CurrentHealthValue,
+		Kaito kaito => kaito.CurrentHealth,
+		_ => 0,
+	};
+
+	public float GetMaxHealth() => _owner switch
+	{
+		Fighter fighter => fighter.MaxHealthValue,
+		Kaito kaito => kaito.MaxHealth,
+		_ => 1,
+	};
 }

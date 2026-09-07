@@ -24,6 +24,9 @@ public partial class ShipSync : Node
 		public Vector3 Velocity;
 	}
 
+	// Thrust flags ride along with the transform: the flames read them, and without them a
+	// stand-in's engines would sit dark however hard its pilot is burning.
+
 	private Kaito _local;
 	private readonly Dictionary<int, Remote> _remotes = new();
 	private double _sendTimer;
@@ -90,29 +93,36 @@ public partial class ShipSync : Node
 		Vector3 velocity = _local.Velocity;
 
 		if (NetworkManager.Instance.IsServer)
-			Rpc(MethodName.ApplyShipState, NetworkManager.Instance.LocalPeerId, position, rotation, velocity);
+			Rpc(MethodName.ApplyShipState, NetworkManager.Instance.LocalPeerId, position, rotation, velocity,
+				_local.ThrustingForward, _local.ThrustingBackward, _local.ThrusterBoostOn);
 		else
-			RpcId(1, MethodName.SubmitShipState, position, rotation, velocity);
+			RpcId(1, MethodName.SubmitShipState, position, rotation, velocity,
+				_local.ThrustingForward, _local.ThrustingBackward, _local.ThrusterBoostOn);
 	}
 
 	// Client -> server only. The server stamps the sender id itself, so a client cannot
 	// claim to be somebody else.
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.UnreliableOrdered)]
-	private void SubmitShipState(Vector3 position, Quaternion rotation, Vector3 velocity)
+	private void SubmitShipState(Vector3 position, Quaternion rotation, Vector3 velocity,
+		bool forward, bool backward, bool boosting)
 	{
 		int sender = Multiplayer.GetRemoteSenderId();
-		Rpc(MethodName.ApplyShipState, sender, position, rotation, velocity);
+		Rpc(MethodName.ApplyShipState, sender, position, rotation, velocity, forward, backward, boosting);
 	}
 
 	// Server -> everyone. A peer has no entry for its own ship, so its own state echoing
 	// back is ignored without a special case.
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.UnreliableOrdered)]
-	private void ApplyShipState(int peerId, Vector3 position, Quaternion rotation, Vector3 velocity)
+	private void ApplyShipState(int peerId, Vector3 position, Quaternion rotation, Vector3 velocity,
+		bool forward, bool backward, bool boosting)
 	{
 		if (!_remotes.TryGetValue(peerId, out Remote remote)) return;
 
 		remote.Position = position;
 		remote.Rotation = rotation;
 		remote.Velocity = velocity;
+
+		if (IsInstanceValid(remote.Ship))
+			remote.Ship.SetRemoteEngines(velocity, forward, backward, boosting);
 	}
 }
